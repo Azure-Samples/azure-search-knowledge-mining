@@ -1,0 +1,364 @@
+{
+	"info": {
+		"_postman_id": "a8990c8e-fd7a-4578-b4c9-7c953d1aba43",
+		"name": "Cognitive Search Pipeline APIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "01 - Create a datasource",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "api-key",
+						"value": "{{env_search_api_key}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{   \r\n    \"description\" : \"Demo files to demonstrate cognitive search capabilities.\",  \r\n    \"type\" : \"azureblob\",\r\n    \"credentials\" : { \r\n    \t\"connectionString\": \"{{env_storage_connection_string}}\"\r\n    },  \r\n\t\"container\" : { \r\n\t\t\"name\" : \"{{env_storage_container}}\"\r\n\t}\r\n}"
+				},
+				"url": {
+					"raw": "https://{{search_service}}.search.windows.net/datasources/{{index_name}}-datasource?api-version=2017-11-11-Preview",
+					"protocol": "https",
+					"host": [
+						"{{search_service}}",
+						"search",
+						"windows",
+						"net"
+					],
+					"path": [
+						"datasources",
+						"{{index_name}}-datasource"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2017-11-11-Preview"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "02 - Create Index",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "api-key",
+						"value": "{{env_search_api_key}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"fields\": [\r\n    {\r\n      \"name\": \"id\",\r\n      \"type\": \"Edm.String\",\r\n      \"key\": true,\r\n      \"searchable\": true,\r\n      \"filterable\": true,\r\n      \"facetable\": false,\r\n      \"sortable\": true\r\n    },\r\n    {\r\n      \"name\": \"content\",\r\n      \"type\": \"Edm.String\",\r\n      \"sortable\": false,\r\n      \"searchable\": true,\r\n      \"filterable\": false,\r\n      \"facetable\": false\r\n    },\r\n    {\r\n      \"name\": \"keyPhrases\",\r\n      \"type\": \"Collection(Edm.String)\",\r\n      \"searchable\": true,\r\n      \"sortable\": false,\r\n      \"filterable\": true,\r\n      \"facetable\": true\r\n    },\r\n    {\r\n      \"name\": \"organizations\",\r\n      \"type\": \"Collection(Edm.String)\",\r\n      \"searchable\": true,\r\n      \"sortable\": false,\r\n      \"filterable\": true,\r\n      \"facetable\": true\r\n    },\r\n        {\r\n      \"name\": \"persons\",\r\n      \"type\": \"Collection(Edm.String)\",\r\n      \"searchable\": true,\r\n      \"sortable\": false,\r\n      \"filterable\": true,\r\n      \"facetable\": true\r\n    },\r\n        {\r\n      \"name\": \"locations\",\r\n      \"type\": \"Collection(Edm.String)\",\r\n      \"searchable\": true,\r\n      \"sortable\": false,\r\n      \"filterable\": true,\r\n      \"facetable\": true\r\n    },\r\n    {\r\n      \"name\": \"metadata_storage_path\",\r\n      \"type\": \"Edm.String\",\r\n      \"searchable\": true,\r\n      \"sortable\": false,\r\n      \"filterable\": false,\r\n      \"facetable\": false\r\n    },\r\n    {\r\n      \"name\": \"metadata_storage_name\",\r\n      \"type\": \"Edm.String\",\r\n      \"searchable\": true,\r\n      \"sortable\": false,\r\n      \"filterable\": false,\r\n      \"facetable\": false\r\n    }\r\n  ]\r\n}"
+				},
+				"url": {
+					"raw": "https://{{search_service}}.search.windows.net/indexes/{{index_name}}?api-version=2017-11-11-Preview",
+					"protocol": "https",
+					"host": [
+						"{{search_service}}",
+						"search",
+						"windows",
+						"net"
+					],
+					"path": [
+						"indexes",
+						"{{index_name}}"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2017-11-11-Preview"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "03 - Create a skillset",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "api-key",
+						"value": "{{env_search_api_key}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"description\": \"Extract entities, detect language and extract key-phrases\",\r\n  \"cognitiveServices\": {\r\n    \t\"@odata.type\": \"#Microsoft.Azure.Search.CognitiveServicesByKey\",\r\n    \t\"description\": \"mycogsvcs\",\r\n    \t\"key\": \"{{cog_services_key}}\"\r\n  },\r\n  \"skills\":\r\n  [\r\n  \t{\r\n        \"@odata.type\": \"#Microsoft.Skills.Vision.OcrSkill\",\r\n        \"context\": \"/document/normalized_images/*\",\r\n        \"defaultLanguageCode\": \"en\",\r\n        \"detectOrientation\": true,\r\n        \"inputs\": [\r\n          {\r\n            \"name\": \"image\",\r\n            \"source\": \"/document/normalized_images/*\"\r\n          }\r\n        ],\r\n        \"outputs\": [\r\n          {\r\n            \"name\": \"text\"\r\n          }\r\n        ]\r\n    },\r\n    {\r\n      \"@odata.type\": \"#Microsoft.Skills.Text.MergeSkill\",\r\n      \"description\": \"Create merged_text, which includes all the textual representation of each image inserted at the right location in the content field.\",\r\n      \"context\": \"/document\",\r\n      \"insertPreTag\": \" \",\r\n      \"insertPostTag\": \" \",\r\n      \"inputs\": [\r\n        {\r\n          \"name\":\"text\", \r\n          \"source\": \"/document/content\"\r\n        },\r\n        {\r\n          \"name\": \"itemsToInsert\", \r\n          \"source\": \"/document/normalized_images/*/text\"\r\n        },\r\n        {\r\n          \"name\":\"offsets\", \r\n          \"source\": \"/document/normalized_images/*/contentOffset\" \r\n        }\r\n      ],\r\n      \"outputs\": [\r\n        {\r\n          \"name\": \"mergedText\", \r\n          \"targetName\" : \"merged_text\"\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"@odata.type\": \"#Microsoft.Skills.Text.SplitSkill\",\r\n      \"textSplitMode\": \"pages\",\r\n      \"maximumPageLength\": 4000,\r\n      \"defaultLanguageCode\": \"en\",\r\n      \"context\": \"/document\",\r\n      \"inputs\": [\r\n        {\r\n          \"name\": \"text\",\r\n          \"source\": \"/document/merged_text\"\r\n        }\r\n      ],\r\n      \"outputs\": [\r\n        {\r\n          \"name\": \"textItems\",\r\n          \"targetName\": \"pages\"\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"@odata.type\": \"#Microsoft.Skills.Text.KeyPhraseExtractionSkill\",\r\n      \"context\": \"/document/pages/*\",\r\n      \"inputs\": [\r\n        {\r\n          \"name\": \"text\",\r\n          \"source\": \"/document/pages/*\"\r\n        }\r\n      ],\r\n      \"outputs\": [\r\n        {\r\n          \"name\": \"keyPhrases\",\r\n          \"targetName\": \"keyPhrases\"\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"@odata.type\": \"#Microsoft.Skills.Text.EntityRecognitionSkill\",\r\n      \"categories\": [\"Organization\"],\r\n      \"context\": \"/document\",\r\n      \"inputs\": [\r\n        {\r\n          \"name\": \"text\",\r\n          \"source\": \"/document/merged_text\"\r\n        }\r\n      ],\r\n      \"outputs\": [\r\n        {\r\n          \"name\": \"organizations\",\r\n          \"targetName\": \"organizations\"\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"@odata.type\": \"#Microsoft.Skills.Text.EntityRecognitionSkill\",\r\n      \"categories\": [\"Location\"],\r\n      \"context\": \"/document\",\r\n      \"inputs\": [\r\n        {\r\n          \"name\": \"text\",\r\n          \"source\": \"/document/merged_text\"\r\n        }\r\n      ],\r\n      \"outputs\": [\r\n        {\r\n          \"name\": \"locations\",\r\n          \"targetName\": \"locations\"\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"@odata.type\": \"#Microsoft.Skills.Text.EntityRecognitionSkill\",\r\n      \"categories\": [\"Person\"],\r\n      \"context\": \"/document\",\r\n      \"inputs\": [\r\n        {\r\n          \"name\": \"text\",\r\n          \"source\": \"/document/merged_text\"\r\n        }\r\n      ],\r\n      \"outputs\": [\r\n        {\r\n          \"name\": \"persons\",\r\n          \"targetName\": \"persons\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}"
+				},
+				"url": {
+					"raw": "https://{{search_service}}.search.windows.net/skillsets/{{index_name}}-skillset?api-version=2017-11-11-Preview",
+					"protocol": "https",
+					"host": [
+						"{{search_service}}",
+						"search",
+						"windows",
+						"net"
+					],
+					"path": [
+						"skillsets",
+						"{{index_name}}-skillset"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2017-11-11-Preview"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "04 - Create Indexer",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "api-key",
+						"value": "{{env_search_api_key}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"dataSourceName\" : \"{{index_name}}-datasource\",\r\n  \"targetIndexName\" : \"{{index_name}}\",\r\n  \"skillsetName\" : \"{{index_name}}-skillset\",\r\n  \"fieldMappings\" : [\r\n        {\r\n          \"sourceFieldName\" : \"metadata_storage_path\",\r\n          \"targetFieldName\" : \"id\",\r\n          \"mappingFunction\" : { \"name\" : \"base64Encode\" }\r\n        },\r\n        {\r\n        \t\"sourceFieldName\": \"metadata_storage_path\",\r\n        \t\"targetFieldName\": \"metadata_storage_path\"\r\n        },\r\n        {\r\n        \t\"sourceFieldName\": \"metadata_storage_name\",\r\n        \t\"targetFieldName\": \"metadata_storage_name\"\r\n        }\r\n   ],\r\n  \"outputFieldMappings\" : \r\n\t[\r\n\t\t{\r\n        \t\"sourceFieldName\": \"/document/merged_text\",\r\n        \t\"targetFieldName\": \"content\"\r\n        },\r\n  \t\t{\r\n          \"sourceFieldName\" : \"/document/organizations\", \r\n          \"targetFieldName\" : \"organizations\"\r\n        },\r\n  \t\t{\r\n          \"sourceFieldName\" : \"/document/persons\", \r\n          \"targetFieldName\" : \"persons\"\r\n        },\r\n  \t\t{\r\n          \"sourceFieldName\" : \"/document/locations\", \r\n          \"targetFieldName\" : \"locations\"\r\n        },\r\n        {\r\n          \"sourceFieldName\" : \"/document/pages/*/keyPhrases/*\", \r\n          \"targetFieldName\" : \"keyPhrases\"\r\n        }\r\n    ],\r\n  \"parameters\":\r\n  {\r\n\t\"batchSize\": 1,\r\n  \t\"maxFailedItems\":-1,\r\n  \t\"maxFailedItemsPerBatch\":-1,\r\n  \t\"configuration\": \r\n\t{\r\n    \t\"dataToExtract\": \"contentAndMetadata\",\r\n    \t\"imageAction\": \"generateNormalizedImages\"\r\n\t}\r\n  }\r\n}"
+				},
+				"url": {
+					"raw": "https://{{search_service}}.search.windows.net/indexers/{{index_name}}-indexer?api-version=2017-11-11-Preview",
+					"protocol": "https",
+					"host": [
+						"{{search_service}}",
+						"search",
+						"windows",
+						"net"
+					],
+					"path": [
+						"indexers",
+						"{{index_name}}-indexer"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2017-11-11-Preview"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "05 - Check Indexer Status",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "api-key",
+						"value": "{{env_search_api_key}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://{{search_service}}.search.windows.net/indexers/{{index_name}}-indexer/status?api-version=2017-11-11-Preview",
+					"protocol": "https",
+					"host": [
+						"{{search_service}}",
+						"search",
+						"windows",
+						"net"
+					],
+					"path": [
+						"indexers",
+						"{{index_name}}-indexer",
+						"status"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2017-11-11-Preview"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "06 - Search the Index",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "api-key",
+						"value": "{{env_search_api_key}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://{{search_service}}.search.windows.net/indexes/{{index_name}}/docs?search=*&api-version=2017-11-11-Preview",
+					"protocol": "https",
+					"host": [
+						"{{search_service}}",
+						"search",
+						"windows",
+						"net"
+					],
+					"path": [
+						"indexes",
+						"{{index_name}}",
+						"docs"
+					],
+					"query": [
+						{
+							"key": "search",
+							"value": "*"
+						},
+						{
+							"key": "api-version",
+							"value": "2017-11-11-Preview"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "07 - Test Local Web API Skill",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"values\": [\r\n        {\r\n        \t\"recordId\": \"1\",\r\n        \t\"data\":\r\n\t        {\r\n\t        \t\"value\": \"<your-value>\"\r\n           }\r\n        }\r\n   ]\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:7071/api/ExampleSkill",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7071",
+					"path": [
+						"api",
+						"ExampleSkill"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "08 - Run Indexer",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "api-key",
+						"value": "{{env_search_api_key}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://{{search_service}}.search.windows.net/indexers/{{index_name}}-indexer/run?api-version=2017-11-11-preview",
+					"protocol": "https",
+					"host": [
+						"{{search_service}}",
+						"search",
+						"windows",
+						"net"
+					],
+					"path": [
+						"indexers",
+						"{{index_name}}-indexer",
+						"run"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2017-11-11-preview"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "c8e63687-c09c-42f2-b0b2-46c971fdc258",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "3aeb9abb-2756-447a-8c22-98035f712a89",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "8db1a41a-2b9d-4bc6-8374-6bf00316e71e",
+			"key": "search_service",
+			"value": "cogsearchdemosearch",
+			"type": "string"
+		},
+		{
+			"id": "70d841bf-fade-4370-be56-e791d62848d3",
+			"key": "index_name",
+			"value": "cogsearchdemo",
+			"type": "string"
+		}
+	]
+}
