@@ -1,4 +1,4 @@
-# Project Name
+# Azure Search Knowledge Mining Accelerator
 
 (short, 1-3 sentenced, description of the project)
 
