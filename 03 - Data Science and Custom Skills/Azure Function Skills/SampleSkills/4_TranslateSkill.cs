@@ -1,3 +1,53 @@
+/*****************************************************************************
+ * Custom Translate skill
+ * Calls the translate API to translate a piece of text.
+ * 
+ * IMPORTANT: Enter the key for the Text API in the credentials section.
+ * By default the skill translates to english as the destination language.
+ * Feel free to change the destination language in the call to the
+ * TranslateText method.
+ * 
+ * Sample input:
+ 
+        {
+	        "values": 
+	        [
+    	        {
+        	        "recordId": "foo1",
+          	        "data": { "text":  "En los dias del cólera no había ninguna hoja de papel."}
+                },
+                {
+        	        "recordId": "bar2",
+          	        "data": { "text":  "Oui, avec plaisir! Dis-moi, parles-tu aussi anglais? "}
+                }
+            ]
+        }
+
+ * Sample output:
+
+        {
+            "values": [
+                {
+                    "recordId": "foo1",
+                    "data": {
+                        "translatedText": "In the days of cholera there was no sheet of paper."
+                    },
+                    "errors": null,
+                    "warnings": null
+                },
+                {
+                    "recordId": "bar2",
+                    "data": {
+                        "translatedText": "Yes, with pleasure! Tell me, do you speak English too? "
+                    },
+                    "errors": null,
+                    "warnings": null
+                }
+            ]
+        }
+
+ *****************************************************************************/
+
 using System;
 using System.IO;
 using System.Threading.Tasks;
