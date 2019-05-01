@@ -1,20 +1,7 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
-
-#region Input-Output Documentation
-/*****
+/*****************************************************************************
  *  Object Detecion Custom Skill. 
- *  Important: Make sure to update credentials in the code. See credentials section.
+ *  Important: Make sure to update credentials in the code. 
+ *  See credentials section.
  *  
  *  Sample input:
  *  
@@ -53,9 +40,20 @@ using System.Text;
         }
 
  * 
- * ****************/
+ ***********************************************************************/
 
-#endregion
+using System;
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Text;
 
 namespace SampleSkills
 {
@@ -63,8 +61,8 @@ namespace SampleSkills
     {
 
         #region Credentials
-        static string path = "https://westus.api.cognitive.microsoft.com/vision/v2.0/detect";
-        // IMPORTANT: Enter your Cognitive Services key below.
+        // IMPORTANT: Enter your Cognitive Services key below and make sure the URL matches the URL for your region.
+        static string path = "https://westus.api.cognitive.microsoft.com/vision/v2.0/detect";        
         static string cognitiveServicesKey = "";
         #endregion
 
@@ -73,16 +71,16 @@ namespace SampleSkills
         {
             public class InputRecordData
             {
-                public string url;
+                public string Url;
             }
 
-            public string recordId { get; set; }
-            public InputRecordData data { get; set; }
+            public string RecordId { get; set; }
+            public InputRecordData Data { get; set; }
         }
 
         private class WebApiRequest
         {
-            public List<InputRecord> values { get; set; }
+            public List<InputRecord> Values { get; set; }
         }
         #endregion
 
@@ -92,30 +90,25 @@ namespace SampleSkills
             public class ComputerVisionObject
             {
                 [JsonProperty(PropertyName = "object")]
-                public string cvObject { get; set; } 
-                public string confidence { get; set; }
+                public string CvObject { get; set; } 
+                public string Confidence { get; set; }
             }
 
             public class OutputRecordData
             {
-                public List<ComputerVisionObject> objects { get; set; }
+                public List<ComputerVisionObject> Objects { get; set; }
             }
 
 
-            public class OutputRecordErrors
+            public class OutputRecordMessage
             {
-                public string message { get; set; }
+                public string Message { get; set; }
             }
 
-            public class OutputRecordWarnings
-            {
-                public string message { get; set; }
-            }
-
-            public string recordId { get; set; }
-            public OutputRecordData data { get; set; }
-            public List<OutputRecordErrors> errors { get; set; }
-            public List<OutputRecordWarnings> warnings { get; set; }
+            public string RecordId { get; set; }
+            public OutputRecordData Data { get; set; }
+            public List<OutputRecordMessage> Errors { get; set; }
+            public List<OutputRecordMessage> Warnings { get; set; }
         }
 
         private class WebApiResponse
@@ -142,33 +135,33 @@ namespace SampleSkills
             {
                 return new BadRequestObjectResult("The request schema does not match expected schema.");
             }
-            if (data.values == null)
+            if (data.Values == null)
             {
                 return new BadRequestObjectResult("The request schema does not match expected schema. Could not find values array.");
             }
 
             // Calculate the response for each value.
-            foreach (var record in data.values)
+            foreach (var record in data.Values)
             {
-                if (record == null || record.recordId == null) continue;
+                if (record == null || record.RecordId == null) continue;
 
                 OutputRecord responseRecord = new OutputRecord();
-                responseRecord.recordId = record.recordId;
+                responseRecord.RecordId = record.RecordId;
 
                 try
                 {
-                    responseRecord.data = GetObjects(record.data.url).Result;
+                    responseRecord.Data = GetObjects(record.Data.Url).Result;
                 }
                 catch (Exception e)
                 {
                     // Something bad happened, log the issue.
-                    var error = new OutputRecord.OutputRecordErrors
+                    var error = new OutputRecord.OutputRecordMessage
                     {
-                        message = e.Message
+                        Message = e.Message
                     };
 
-                    responseRecord.errors = new List<OutputRecord.OutputRecordErrors>();
-                    responseRecord.errors.Add(error);
+                    responseRecord.Errors = new List<OutputRecord.OutputRecordMessage>();
+                    responseRecord.Errors.Add(error);
                 }
                 finally
                 {

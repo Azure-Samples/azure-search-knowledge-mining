@@ -16,9 +16,9 @@ namespace SampleSkills
     public static class TranslateSkill
     {
         #region Translator Text API Credentials
-        static string path = "https://api.cognitive.microsofttranslator.com/translate?api-version=3.0";
+        static readonly string path = "https://api.cognitive.microsofttranslator.com/translate?api-version=3.0";
         // NOTE: Replace this example key with a valid subscription key.
-        static string translatorApiKey = "";
+        static readonly string translatorApiKey = "";
         #endregion
 
         #region Class used to deserialize the request
@@ -26,48 +26,36 @@ namespace SampleSkills
         {
             public class InputRecordData
             {
-                public string text;
+                public string Text;
             }
 
-            public string recordId { get; set; }
-            public InputRecordData data { get; set; }
+            public string RecordId { get; set; }
+            public InputRecordData Data { get; set; }
         }
 
         private class WebApiRequest
         {
-            public List<InputRecord> values { get; set; }
+            public List<InputRecord> Values { get; set; }
         }
         #endregion
 
         #region Classes used to serialize the response
         public class OutputRecord
         {
-            public class ComputerVisionObject
-            {
-                [JsonProperty(PropertyName = "object")]
-                public string cvObject { get; set; }
-                public string confidence { get; set; }
-            }
-
             public class OutputRecordData
             {
-                public string translatedText { get; set; }
+                public string TranslatedText { get; set; }
             }
 
-            public class OutputRecordErrors
+            public class OutputRecordMessage
             {
-                public string message { get; set; }
+                public string Message { get; set; }
             }
 
-            public class OutputRecordWarnings
-            {
-                public string message { get; set; }
-            }
-
-            public string recordId { get; set; }
-            public OutputRecordData data { get; set; }
-            public List<OutputRecordErrors> errors { get; set; }
-            public List<OutputRecordWarnings> warnings { get; set; }
+            public string RecordId { get; set; }
+            public OutputRecordData Data { get; set; }
+            public List<OutputRecordMessage> Errors { get; set; }
+            public List<OutputRecordMessage> Warnings { get; set; }
         }
 
         private class WebApiResponse
@@ -97,27 +85,29 @@ namespace SampleSkills
 
             // Calculate the response for each value.
             var response = new WebApiResponse();
-            foreach (var record in data.values)
+            foreach (var record in data.Values)
             {
-                if (record == null || record.recordId == null) continue;
+                if (record == null || record.RecordId == null) continue;
 
                 OutputRecord responseRecord = new OutputRecord();
-                responseRecord.recordId = record.recordId;
+                responseRecord.RecordId = record.RecordId;
 
                 try
                 {
-                    responseRecord.data = TranslateText(record.data, "en").Result;
+                    responseRecord.Data = TranslateText(record.Data, "en").Result;
                 }
                 catch (Exception e)
                 {
                     // Something bad happened, log the issue.
-                    var error = new OutputRecord.OutputRecordErrors
+                    var error = new OutputRecord.OutputRecordMessage
                     {
-                        message = e.Message
+                        Message = e.Message
                     };
 
-                    responseRecord.errors = new List<OutputRecord.OutputRecordErrors>();
-                    responseRecord.errors.Add(error);
+                    responseRecord.Errors = new List<OutputRecord.OutputRecordMessage>
+                    {
+                        error
+                    };
                 }
                 finally
                 {
@@ -148,16 +138,14 @@ namespace SampleSkills
         /// <returns>Asynchronous task that returns the translated text. </returns>
         async static Task<OutputRecord.OutputRecordData> TranslateText(InputRecord.InputRecordData inputRecord, string toLanguage)
         {
-            string originalText = inputRecord.text;
+            string originalText = inputRecord.Text;
 
             var outputRecord = new OutputRecord.OutputRecordData();
 
-            System.Object[] body = new System.Object[] { new { Text = originalText } };
+            object[] body = new object[] { new { Text = originalText } };
             var requestBody = JsonConvert.SerializeObject(body);
 
             var uri = $"{path}&to={toLanguage}";
-
-            string result = "";
 
             using (var client = new HttpClient())
             using (var request = new HttpRequestMessage())
@@ -172,7 +160,7 @@ namespace SampleSkills
 
                 dynamic data = JsonConvert.DeserializeObject(responseBody);
 
-                outputRecord.translatedText = data?.First?.translations?.First?.text?.Value as string;
+                outputRecord.TranslatedText = data?.First?.translations?.First?.text?.Value as string;
                 return outputRecord;
             }
         }

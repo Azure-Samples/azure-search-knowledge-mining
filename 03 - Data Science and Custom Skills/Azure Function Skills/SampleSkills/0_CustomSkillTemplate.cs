@@ -10,8 +10,8 @@
  * 2. Define the output fields for your skill.
  *    Modify the OutputRecordData class.
  *    
- * 3. Define what action your will will take to enrich/transform the input into the output.
- *    Modify the DoWorkHere class.
+ * 3. Define what action your skill will take to enrich/transform the input into the output.
+ *    Modify the DoWork method.  
  *    
  ****************************************************************************************/
 
@@ -28,7 +28,6 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 
-
 namespace SampleSkills
 {
 
@@ -36,52 +35,40 @@ namespace SampleSkills
     {
 
         #region Class used to deserialize the request
-        public class InputRecord
+        private class InputRecord
         {
             public class InputRecordData
             {
-                public string myInputField;
+                public string MyInputField;
             }
 
-            public string recordId { get; set; }
-            public InputRecordData data { get; set; }
+            public string RecordId { get; set; }
+            public InputRecordData Data { get; set; }
         }
 
         private class WebApiRequest
         {
-            public List<InputRecord> values { get; set; }
+            public List<InputRecord> Values { get; set; }
         }
         #endregion
 
         #region Classes used to serialize the response
-        public class OutputRecord
+        private class OutputRecord
         {
-            public class ComputerVisionObject
-            {
-                [JsonProperty(PropertyName = "object")]
-                public string cvObject { get; set; }
-                public string confidence { get; set; }
-            }
-
             public class OutputRecordData
             {
-                public string myOutputField { get; set; }
+                public string MyOutputField { get; set; }
             }
 
-            public class OutputRecordErrors
+            public class OutputRecordMessage
             {
-                public string message { get; set; }
+                public string Message { get; set; }
             }
 
-            public class OutputRecordWarnings
-            {
-                public string message { get; set; }
-            }
-
-            public string recordId { get; set; }
-            public OutputRecordData data { get; set; }
-            public List<OutputRecordErrors> errors { get; set; }
-            public List<OutputRecordWarnings> warnings { get; set; }
+            public string RecordId { get; set; }
+            public OutputRecordData Data { get; set; }
+            public List<OutputRecordMessage> Errors { get; set; }
+            public List<OutputRecordMessage> Warnings { get; set; }
         }
 
         private class WebApiResponse
@@ -111,27 +98,29 @@ namespace SampleSkills
 
             // Calculate the response for each value.
             var response = new WebApiResponse();
-            foreach (var record in data.values)
+            foreach (var record in data.Values)
             {
-                if (record == null || record.recordId == null) continue;
+                if (record == null || record.RecordId == null) continue;
 
                 OutputRecord responseRecord = new OutputRecord();
-                responseRecord.recordId = record.recordId;
+                responseRecord.RecordId = record.RecordId;
 
                 try
                 {
-                    responseRecord.data = DoWork(record.data).Result;
+                    responseRecord.Data = DoWork(record.Data).Result;
                 }
                 catch (Exception e)
                 {
                     // Something bad happened, log the issue.
-                    var error = new OutputRecord.OutputRecordErrors
+                    var error = new OutputRecord.OutputRecordMessage
                     {
-                        message = e.Message
+                        Message = e.Message
                     };
 
-                    responseRecord.errors = new List<OutputRecord.OutputRecordErrors>();
-                    responseRecord.errors.Add(error);
+                    responseRecord.Errors = new List<OutputRecord.OutputRecordMessage>
+                    {
+                        error
+                    };
                 }
                 finally
                 {
@@ -145,12 +134,7 @@ namespace SampleSkills
         private static WebApiRequest GetStructuredInput(Stream requestBody)
         {
             string request = new StreamReader(requestBody).ReadToEnd();
-
             var data = JsonConvert.DeserializeObject<WebApiRequest>(request);
-            if (data == null)
-            {
-                return null;
-            }
             return data;
         }
 
@@ -160,10 +144,10 @@ namespace SampleSkills
         /// </summary>
         /// <param name="inputField">Replace this with any fields you need to process.</param>
         /// <returns>Feel free to change the return type to meet your needs. </returns>
-        async static Task<OutputRecord.OutputRecordData> DoWork(InputRecord.InputRecordData inputRecord)
+        private static async  Task<OutputRecord.OutputRecordData> DoWork(InputRecord.InputRecordData inputRecord)
         {
             var outputRecord = new OutputRecord.OutputRecordData();
-            outputRecord.myOutputField = "Hello " + inputRecord.myInputField;
+            outputRecord.MyOutputField = "Hello " + inputRecord.MyInputField;
 
             return outputRecord;
         }

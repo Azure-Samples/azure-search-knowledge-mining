@@ -1,8 +1,9 @@
-/***
- * This custom skill takes a string input that represents a location (city, country, address or point of interest) and 
- * returns a geo-point with the coordinates for that location.
+/****************************************************************************
+ * This custom skill takes a string input that represents a location (city, 
+ * country, address or point of interest) and returns a geo-point with the coordinates 
+ * for that location.
  * 
- * Important: Please enter your credentials to the Azure Maps API in the credentials section.
+ * IMPORTANT: Please enter your credentials to the Azure Maps API in the credentials section.
  * 
  * Sample Input:
      {
@@ -21,49 +22,46 @@
 
    Sample Output:
 
-   {
-    "values": [
-        {
-            "recordId": "foo1",
-            "data": {
-                "mainGeoPoint": {
-                    "type": "Point",
-                    "coordinates": [
-                        -90.51557,
-                        14.60043
+    {
+        "values": 
+        [
+            {
+                "recordId": "foo1",
+                "data": {
+                    "mainGeoPoint": {
+                        "type": "Point",
+                        "coordinates": [
+                            -90.51557,
+                            14.60043
+                        ]
+                    },
+                    "results": [
+                        {
+                            "type": "POI",
+                            "score": "4.203",
+                            "position": {
+                                "lat": "14.60043",
+                                "lon": "-90.51557"
+                            }
+                        },
+                        {
+                            "type": "POI",
+                            "score": "4.048",
+                            "position": {
+                                "lat": "10.3132",
+                                "lon": "-85.7697"
+                            }
+                        },
+                        ...
                     ]
                 },
-                "results": [
-                    {
-                        "type": "POI",
-                        "score": "4.203",
-                        "position": {
-                            "lat": "14.60043",
-                            "lon": "-90.51557"
-                        }
-                    },
-                    {
-                        "type": "POI",
-                        "score": "4.048",
-                        "position": {
-                            "lat": "10.3132",
-                            "lon": "-85.7697"
-                        }
-                    },
-                    ...
-                ]
+                "errors": null,
+                "warnings": null
             },
-            "errors": null,
-            "warnings": null
-        },
-        ...
-    ]
-}
-
- * 
- * 
- * 
- * ***/
+            ...
+        ]
+    }
+ *****************************************************************************/
 
 using System;
 using System.IO;
@@ -87,25 +85,25 @@ namespace SampleSkills
         #endregion
 
         #region Class used to deserialize the request
-        public class InputRecord
+        private class InputRecord
         {
             public class InputRecordData
             {
-                public string address;
+                public string Address;
             }
 
-            public string recordId { get; set; }
-            public InputRecordData data { get; set; }
+            public string RecordId { get; set; }
+            public InputRecordData Data { get; set; }
         }
 
         private class WebApiRequest
         {
-            public List<InputRecord> values { get; set; }
+            public List<InputRecord> Values { get; set; }
         }
         #endregion
 
         #region Classes used to serialize the response
-        public class OutputRecord
+        private class OutputRecord
         {
             public class Position
             {
@@ -117,43 +115,38 @@ namespace SampleSkills
             {
                 public EdmGeographPoint(double lat, double lon)
                 {
-                    type = "Point";
-                    coordinates = new double[2];
-                    coordinates[0] = lon;
-                    coordinates[1] = lat;
+                    Type = "Point";
+                    Coordinates = new double[2];
+                    Coordinates[0] = lon;
+                    Coordinates[1] = lat;
                 }
 
-                public string type;
-                public double[] coordinates { get; set; }
+                public string Type;
+                public double[] Coordinates { get; set; }
             }
 
             public class Geography
             {
-                public string type { get; set; } 
-                public string score { get; set; }
-                public Position position { get; set; }
+                public string Type { get; set; } 
+                public string Score { get; set; }
+                public Position Position { get; set; }
             }
 
             public class OutputRecordData
             {
-                public List<Geography> results { get; set; }
-                public EdmGeographPoint mainGeoPoint { get; set; }
+                public List<Geography> Results { get; set; }
+                public EdmGeographPoint MainGeoPoint { get; set; }
             }
 
-            public class OutputRecordErrors
+            public class OutputRecordMessage
             {
-                public string message { get; set; }
+                public string Message { get; set; }
             }
 
-            public class OutputRecordWarnings
-            {
-                public string message { get; set; }
-            }
-
-            public string recordId { get; set; }
-            public OutputRecordData data { get; set; }
-            public List<OutputRecordErrors> errors { get; set; }
-            public List<OutputRecordWarnings> warnings { get; set; }
+            public string RecordId { get; set; }
+            public OutputRecordData Data { get; set; }
+            public List<OutputRecordMessage> Errors { get; set; }
+            public List<OutputRecordMessage> Warnings { get; set; }
         }
 
         private class WebApiResponse
@@ -183,28 +176,28 @@ namespace SampleSkills
 
             // Calculate the response for each value.
             var response = new WebApiResponse();
-            foreach (var record in data.values)
+            foreach (var record in data.Values)
             {
-                if (record == null || record.recordId == null) continue;
+                if (record == null || record.RecordId == null) continue;
 
                 OutputRecord responseRecord = new OutputRecord();
-                responseRecord.recordId = record.recordId;
+                responseRecord.RecordId = record.RecordId;
 
                 try
                 {
-                    responseRecord.data = GetPosition(record.data).Result;
+                    responseRecord.Data = GetPosition(record.Data).Result;
 
                     
-                    if (responseRecord.data != null && responseRecord.data.results != null && responseRecord.data.results.Count > 0)
+                    if (responseRecord.Data != null && responseRecord.Data.Results != null && responseRecord.Data.Results.Count > 0)
                     {
 
-                        var firstPoint = responseRecord.data.results[0];
+                        var firstPoint = responseRecord.Data.Results[0];
 
-                        if (firstPoint.position != null)
+                        if (firstPoint.Position != null)
                         {
-                            responseRecord.data.mainGeoPoint = new OutputRecord.EdmGeographPoint(
-                                Convert.ToDouble(firstPoint.position.lat), 
-                                Convert.ToDouble(firstPoint.position.lon));
+                            responseRecord.Data.MainGeoPoint = new OutputRecord.EdmGeographPoint(
+                                Convert.ToDouble(firstPoint.Position.lat), 
+                                Convert.ToDouble(firstPoint.Position.lon));
                         }
                     }
 
@@ -212,13 +205,15 @@ namespace SampleSkills
                 catch (Exception e)
                 {
                     // Something bad happened, log the issue.
-                    var error = new OutputRecord.OutputRecordErrors
+                    var error = new OutputRecord.OutputRecordMessage
                     {
-                        message = e.Message
+                        Message = e.Message
                     };
 
-                    responseRecord.errors = new List<OutputRecord.OutputRecordErrors>();
-                    responseRecord.errors.Add(error);
+                    responseRecord.Errors = new List<OutputRecord.OutputRecordMessage>
+                    {
+                        error
+                    };
                 }
                 finally
                 {
@@ -241,7 +236,6 @@ namespace SampleSkills
             return data;
         }
 
-
         /// <summary>
         /// Use Azure Maps to find location of an address
         /// </summary>
@@ -251,7 +245,7 @@ namespace SampleSkills
         {
             var result = new OutputRecord.OutputRecordData();
 
-            var uri = azureMapstUri + "?api-version=1.0&query=" + inputRecord.address;
+            var uri = azureMapstUri + "?api-version=1.0&query=" + inputRecord.Address;
 
             try
             {
@@ -277,18 +271,5 @@ namespace SampleSkills
 
             return result;
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 }

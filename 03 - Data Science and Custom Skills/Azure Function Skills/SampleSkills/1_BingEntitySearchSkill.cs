@@ -62,7 +62,6 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 
-
 namespace SampleSkills
 {
     /// <summary>
@@ -72,13 +71,13 @@ namespace SampleSkills
     public static class BingEntitySearch
     {
         #region Credentials
-        // IMPORTATNT: Make sure to enter your credential and to verify the API endpoint matches yours.
-        static string bingApiEndpoint = "https://api.cognitive.microsoft.com/bing/v7.0/entities/";
-        static string key = "";  
+        // IMPORTANT: Make sure to enter your credential and to verify the API endpoint matches yours.
+        static readonly string bingApiEndpoint = "https://api.cognitive.microsoft.com/bing/v7.0/entities/";
+        static readonly string key = "";  
         #endregion
 
         #region Class used to deserialize the request
-        public class InputRecord
+        private class InputRecord
         {
             public class InputRecordData
             {
@@ -96,32 +95,28 @@ namespace SampleSkills
         #endregion
 
         #region Classes used to serialize the response
-        public class OutputRecord
+
+        private class OutputRecord
         {
             public class OutputRecordData
             {
-                public string name;
-                public string description;
-                public string imageUrl;
-                public string url;
-                public string licenseAttribution;
-                public Entities entities { get; set; }
+                public string Name;
+                public string Description;
+                public string ImageUrl;
+                public string Url;
+                public string LicenseAttribution;
+                public Entities Entities { get; set; }
             }
 
-            public class OutputRecordErrors
+            public class OutputRecordMessage
             {
-                public string message { get; set; }
+                public string Message { get; set; }
             }
 
-            public class OutputRecordWarnings
-            {
-                public string message { get; set; }
-            }
-
-            public string recordId { get; set; }
-            public OutputRecordData data { get; set; }
-            public List<OutputRecordErrors> errors { get; set; }
-            public List<OutputRecordWarnings> warnings { get; set; }
+            public string RecordId { get; set; }
+            public OutputRecordData Data { get; set; }
+            public List<OutputRecordMessage> Errors { get; set; }
+            public List<OutputRecordMessage> Warnings { get; set; }
         }
 
         private class WebApiResponse
@@ -131,62 +126,62 @@ namespace SampleSkills
         #endregion
 
         #region Classes used to interact with the Bing API
-        public class Entities
+        private class Entities
         {
             public BingEntity[] value { get; set; }
         }
 
-        public class BingEntity
+        private class BingEntity
         {
             public class Entitypresentationinfo
             {
-                public string entityScenario { get; set; }
-                public string[] entityTypeHints { get; set; }
-                public object entityTypeDisplayHint { get; set; }
+                public string EntityScenario { get; set; }
+                public string[] EntityTypeHints { get; set; }
+                public object EntityTypeDisplayHint { get; set; }
             }
 
             public class License
             {
-                public string name { get; set; }
-                public string url { get; set; }
+                public string Name { get; set; }
+                public string Url { get; set; }
             }
 
             public class Contractualrule
             {
                 public string _type { get; set; }
-                public string targetPropertyName { get; set; }
-                public bool mustBeCloseToContent { get; set; }
-                public License license { get; set; }
-                public string licenseNotice { get; set; }
-                public string text { get; set; }
-                public string url { get; set; }
+                public string TargetPropertyName { get; set; }
+                public bool MustBeCloseToContent { get; set; }
+                public License License { get; set; }
+                public string LicenseNotice { get; set; }
+                public string Text { get; set; }
+                public string Url { get; set; }
             }
 
             public class Provider
             {
                 public string _type { get; set; }
-                public string url { get; set; }
+                public string Url { get; set; }
             }
 
 
-            public class Image
+            public class ImageClass
             {
-                public string name { get; set; }
-                public string thumbnailUrl { get; set; }
-                public Provider[] provider { get; set; }
-                public string hostPageUrl { get; set; }
-                public int width { get; set; }
-                public int height { get; set; }
+                public string Name { get; set; }
+                public string ThumbnailUrl { get; set; }
+                public Provider[] Provider { get; set; }
+                public string HostPageUrl { get; set; }
+                public int Width { get; set; }
+                public int Height { get; set; }
             }
 
             public Contractualrule[] contractualRules { get; set; }
-            public Image image { get; set; }
-            public string description { get; set; }
-            public string bingId { get; set; }
-            public string webSearchUrl { get; set; }
-            public string name { get; set; }
-            public string url { get; set; }
-            public Entitypresentationinfo entityPresentationInfo { get; set; }
+            public ImageClass Image { get; set; }
+            public string Description { get; set; }
+            public string BingId { get; set; }
+            public string WebSearchUrl { get; set; }
+            public string Name { get; set; }
+            public string Url { get; set; }
+            public Entitypresentationinfo EntityPresentationInfo { get; set; }
         }
         #endregion
 
@@ -221,23 +216,23 @@ namespace SampleSkills
                 if (record == null || record.recordId == null) continue;
 
                 OutputRecord responseRecord = new OutputRecord();
-                responseRecord.recordId = record.recordId;
+                responseRecord.RecordId = record.recordId;
 
                 try
                 {
                     string nameName = record.data.name;
-                    responseRecord.data = GetEntityMetadata(nameName).Result;
+                    responseRecord.Data = GetEntityMetadata(nameName).Result;
                 }
                 catch (Exception e)
                 {
                     // Something bad happened, log the issue.
-                    var error = new OutputRecord.OutputRecordErrors
+                    var error = new OutputRecord.OutputRecordMessage
                     {
-                        message = e.Message
+                        Message = e.Message
                     };
 
-                    responseRecord.errors = new List<OutputRecord.OutputRecordErrors>();
-                    responseRecord.errors.Add(error);
+                    responseRecord.Errors = new List<OutputRecord.OutputRecordMessage>();
+                    responseRecord.Errors.Add(error);
                 }
                 finally
                 {
@@ -321,11 +316,11 @@ namespace SampleSkills
                 result = AddTopEntityMetadata(result);
 
                 // Do some cleanup on the returned result.
-                result.imageUrl = EmptyOrValue(result.imageUrl);
-                result.description = EmptyOrValue(result.description);
-                if (result.name == null) { result.name = EmptyOrValue(nameName); }
-                result.url = EmptyOrValue(result.url);
-                result.licenseAttribution = EmptyOrValue(result.licenseAttribution);
+                result.ImageUrl = EmptyOrValue(result.ImageUrl);
+                result.Description = EmptyOrValue(result.Description);
+                if (result.Name == null) { result.Name = EmptyOrValue(nameName); }
+                result.Url = EmptyOrValue(result.Url);
+                result.LicenseAttribution = EmptyOrValue(result.LicenseAttribution);
             }
 
             return result;
@@ -345,17 +340,17 @@ namespace SampleSkills
 
             CoreData coreData = new CoreData();
 
-            if (rootObject.entities != null)
+            if (rootObject.Entities != null)
             {
-                foreach (BingEntity entity in rootObject.entities.value)
+                foreach (BingEntity entity in rootObject.Entities.value)
                 {
-                    if (entity.entityPresentationInfo != null)
+                    if (entity.EntityPresentationInfo != null)
                     {
-                        if (entity.entityPresentationInfo.entityTypeHints != null)
+                        if (entity.EntityPresentationInfo.EntityTypeHints != null)
                         {
-                            if (entity.entityPresentationInfo.entityTypeHints[0] != "Person" &&
-                                entity.entityPresentationInfo.entityTypeHints[0] != "Organization" &&
-                                entity.entityPresentationInfo.entityTypeHints[0] != "Location"
+                            if (entity.EntityPresentationInfo.EntityTypeHints[0] != "Person" &&
+                                entity.EntityPresentationInfo.EntityTypeHints[0] != "Organization" &&
+                                entity.EntityPresentationInfo.EntityTypeHints[0] != "Location"
                                 )
                             {
                                 continue;
@@ -363,27 +358,27 @@ namespace SampleSkills
                         }
                     }
 
-                    if (entity.description != null && entity.description != "")
+                    if (entity.Description != null && entity.Description != "")
                     {
-                        rootObject.description = entity.description;
-                        rootObject.name = entity.name;
-                        if (entity.image != null)
+                        rootObject.Description = entity.Description;
+                        rootObject.Name = entity.Name;
+                        if (entity.Image != null)
                         {
-                            rootObject.imageUrl = entity.image.thumbnailUrl;
+                            rootObject.ImageUrl = entity.Image.ThumbnailUrl;
                         }
 
                         if (entity.contractualRules != null)
                         {
                             foreach (var rule in entity.contractualRules)
                             {
-                                if (rule.targetPropertyName == "description")
+                                if (rule.TargetPropertyName == "description")
                                 {
-                                    rootObject.url = rule.url;
+                                    rootObject.Url = rule.Url;
                                 }
 
                                 if (rule._type == "ContractualRules/LicenseAttribution")
                                 {
-                                    rootObject.licenseAttribution = rule.licenseNotice;
+                                    rootObject.LicenseAttribution = rule.LicenseNotice;
                                 }
                             }
                         }
