@@ -17,7 +17,7 @@ The code found in this repo will help you build and deploy these restful APIs in
 In general, there are two types of custom skills that will be used:
 
 ### 1.0 Azure Function Custom Skills
-Deploying an Azure Function is the quickest and easiest way to create a custom skill. The [Cognitive Search.Skills](../02%20-%20Web%20UI%20Template/CognitiveSearch.Skills) project provides a template for Azure Functions in C#. Azure Functions are the recommended approach for deploying skills that do not require an ML model.
+Deploying an Azure Function is the quickest and easiest way to create a custom skill. The [Sample Skills](../03%20-%20Data%20Science%20and%20Custom%20Skills/Azure%20Function%20Custom%20Skills) project provides a template for Azure Functions in C# as well as several examples. Azure Functions are the recommended approach for deploying skills that do not require an ML model.
 
 ### 2.0 Azure Machine Learning Custom Skills
 ML models can be used to enhance the Cognitive Search pipeline. In this template, Azure Machine Learning is used to build and deploy the model. The AML Custom Skill Template provides the files needed to quickly deploy a model to be used as a custom skill.
