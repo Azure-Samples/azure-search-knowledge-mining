@@ -51,7 +51,7 @@ This folder contains optional pre-built PowerBI reports that can be used to moni
 This folder contains a small data set in a variety of file formats that can be used to build your solution if you do not have another data set available.
 
 ## Special Thanks
-Special thanks to Derek Legenzoff, Christopher Romero, Lauren Mills, amd Chris Lill who wrote a large majority of the code here.
+Special thanks Microsoft's Early Access innovation Program (EAiP) and to Derek Legenzoff, Christopher Romero, Lauren Mills, amd Chris Lill who wrote a large majority of the code here.
 
 ## License
 Copyright (c) Microsoft Corporation
