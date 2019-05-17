@@ -37,7 +37,7 @@ This folder contains a Postman collection that can be used to create a search in
 We recommend using this collection to create an initial index and then iterrating by editing the postman collection and adding custom skills as needed.
 
 ### [02 - Web UI Template](./02%20-%20Web%20UI%20Template)
-This folder contains a basic Web UI Template, written in .NET Core, which can be configured to query your search index. Simply follow the steps outlined in the [Web UI Template README file](./02_Web_UI_Template/README.md) to integrate your new search index into the web app.
+This folder contains a basic Web UI Template, written in .NET Core, which can be configured to query your search index. Simply follow the steps outlined in the [Web UI Template README file](./02%20-Web%20UI%20Template/README.md) to integrate your new search index into the web app.
 
 ### [03 - Data Science & Custom Skills](./03%20-%20Data%20Science%20and%20Custom%20Skills)
 This folder contains examples and templates to add your own custom skills to your solution. These custom skills help to align the solution to the needs of your particular use case, but is entirely optional and may be skipped if not needed.
