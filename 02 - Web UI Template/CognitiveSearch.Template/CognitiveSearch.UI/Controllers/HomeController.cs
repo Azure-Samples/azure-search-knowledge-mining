@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Auth;
 using CognitiveSearch.UI.Models;
+using Newtonsoft.Json.Linq;
 
 namespace CognitiveSearch.UI.Controllers
 {
@@ -121,6 +122,21 @@ namespace CognitiveSearch.UI.Controllers
 
             sasContainerToken = container.GetSharedAccessSignature(adHocPolicy, null);
             return sasContainerToken;
+        }
+
+        [HttpPost]
+        public JObject GetGraphData(string query)
+        {
+            if (query == null)
+            {
+                query = "*";
+            }
+            FacetGraphGenerator graphGenerator = new FacetGraphGenerator(_docSearch);
+            var graphJson = graphGenerator.GetFacetGraphNodes(query, "keyPhrases");
+
+            //JsonResult json = new JsonResult(graphJson.ToString());
+
+            return graphJson;
         }
     }
 }

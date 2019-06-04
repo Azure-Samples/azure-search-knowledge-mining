@@ -186,5 +186,28 @@ namespace CognitiveSearch.UI
             return string.Empty;
         }
 
+        public DocumentSearchResult GetFacets(string searchText, string facetName, int maxCount = 30)
+        {
+            // Execute search based on query string
+            try
+            {
+                SearchParameters sp = new SearchParameters()
+                {
+                    SearchMode = SearchMode.Any,
+                    Top = 10,
+                    Select = new List<String>() { "id" },
+                    Facets = new List<String>() { $"{facetName}, count:{maxCount}" },
+                    QueryType = QueryType.Full
+                };
+
+                return _searchClient.Indexes.GetClient(IndexName).Documents.Search(searchText, sp);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error querying index: {0}\r\n", ex.Message.ToString());
+            }
+            return null;
+        }
+
     }
 }

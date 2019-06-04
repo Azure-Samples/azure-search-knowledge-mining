@@ -6,6 +6,7 @@
     ViewData["Path"] = "Home / Search Results";
 }
 
+<!-- Pass controller data to view -->
 <script>
     q = @Html.Raw(Json.Serialize(TempData["query"]));
     searchId = @Html.Raw(Json.Serialize(TempData["searchId"]));
@@ -53,8 +54,8 @@
     </div>
 </div>
 
-<div class="row content-results">
-    <!--Search, Filters, and Facets-->
+<!--Search, Filters, and Facets-->
+<div id="results-container" class="row content-results">
     <div class="col-md-2">
         <div id="search-input-group" class="input-group">
             <input type="text" class="form-control" name="q" id="q" placeholder="Search...">
@@ -62,6 +63,9 @@
                 <button class="btn btn-default" onclick="Search();"><span class="ms-Icon ms-Icon--Search"></span></button>
             </span>
         </div>
+        <br />
+        <button style="width:100%" class="btn btn-default" onclick="EntityMapClick()">View Entity Map</button>
+        <br />
         <br />
         <div>
             <div id="filterReset"></div>
@@ -89,3 +93,22 @@
         </div>
     </div>
 </div>
+
+<div id="entity-map" style="display:none">
+    <div id="results-container" class="row content-results">
+        <div class="col-md-2">
+            <div id="search-input-group" class="input-group">
+                <input type="text" class="form-control" name="e" id="e" placeholder="Search entity...">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" onclick="SearchEntities();"><span class="ms-Icon ms-Icon--Search"></span></button>
+                </span>
+
+            </div>
+            <br />
+            <button style="width:100%" class="btn btn-default" onclick="EntityMapClick()">Return to Search Results</button>
+        </div>
+        <svg width="1430" height="600"></svg>
+    </div>
+</div>
+
+

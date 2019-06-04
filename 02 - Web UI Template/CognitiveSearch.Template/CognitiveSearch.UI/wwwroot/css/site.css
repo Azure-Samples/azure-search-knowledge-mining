@@ -543,6 +543,16 @@ ul.breadcrumb li {
     line-height: 1;
 }
 
+.node {
+}
+
+.link {
+    stroke: #999;
+    stroke-opacity: .6;
+    stroke-width: 1px;
+}
+
+
 
 /* Custom page CSS
 -------------------------------------------------- */
