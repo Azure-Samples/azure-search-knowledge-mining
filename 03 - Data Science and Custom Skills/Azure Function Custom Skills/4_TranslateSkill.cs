@@ -14,7 +14,7 @@
 	        [
     	        {
         	        "recordId": "foo1",
-          	        "data": { "text":  "En los dias del cólera no había ninguna hoja de papel."}
+          	        "data": { "text":  "En los dias del cÃ³lera no habÃ­a ninguna hoja de papel."}
                 },
                 {
         	        "recordId": "bar2",
@@ -67,8 +67,12 @@ namespace SampleSkills
     {
         #region Translator Text API Credentials
         static readonly string path = "https://api.cognitive.microsofttranslator.com/translate?api-version=3.0";
+	    
         // NOTE: Replace this example key with a valid subscription key.
         static readonly string translatorApiKey = "";
+	
+	// If using the all in one key, modify with the region of the service (for example "westus"). See https://docs.microsoft.com/en-us/azure/cognitive-services/translator/reference/v3-0-reference  
+	static readonly string translatorRegion = "";  
         #endregion
 
         #region Class used to deserialize the request
@@ -204,6 +208,7 @@ namespace SampleSkills
                 request.RequestUri = new Uri(uri);
                 request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 request.Headers.Add("Ocp-Apim-Subscription-Key", translatorApiKey);
+		request.Headers.Add("Ocp-Apim-Subscription-Region", translatorRegion );    
 
                 var response = await client.SendAsync(request);
                 var responseBody = await response.Content.ReadAsStringAsync();
