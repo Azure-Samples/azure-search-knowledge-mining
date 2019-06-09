@@ -56,7 +56,7 @@
                 "description": "The SKU of the search service you want to create. E.g. free or standard"
             }
         },
-        "searchServiceAndCognitiveServicesLocation": {
+        "location": {
             "type": "string",
             "defaultValue": "South Central US",
             "allowedValues": [
@@ -102,7 +102,7 @@
             "apiVersion": "2016-09-01",
             "name": "[variables('hostingPlanName')]",
             "type": "Microsoft.Web/serverfarms",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "sku": {
                 "name": "[parameters('hostingPlanSku')]"
             },
@@ -114,7 +114,7 @@
             "name": "[variables('storageAccountName')]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2018-07-01",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "kind": "StorageV2",
             "sku": {
                 "name": "[parameters('storageAccountType')]",
@@ -125,7 +125,7 @@
             "apiVersion": "2016-08-01",
             "name": "[variables('websiteName')]",
             "type": "Microsoft.Web/sites",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
             ],
@@ -137,7 +137,7 @@
             "type": "microsoft.insights/components",
             "apiVersion": "2015-05-01",
             "name": "[variables('appInsightsName')]",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "tags": {
                 "applicationType": "web",
                 "applicationName": "[variables('websiteName')]"
@@ -151,7 +151,7 @@
             "apiVersion": "2015-08-19",
             "name": "[variables('searchServiceName')]",
             "type": "Microsoft.Search/searchServices",
-            "location": "[parameters('searchServiceAndCognitiveServicesLocation')]",
+            "location": "[parameters('location')]",
             "sku": {
                 "name": "[parameters('searchServiceSku')]"
             }
@@ -164,14 +164,14 @@
                 "name": "S0"
             },
             "kind": "CognitiveServices",
-            "location": "[parameters('searchServiceAndCognitiveServicesLocation')]",
+            "location": "[parameters('location')]",
             "properties": {}
         },
         {
             "apiVersion": "2016-03-01",
             "type": "Microsoft.Web/sites",
             "name": "[variables('functionAppName')]",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "kind": "functionapp",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
