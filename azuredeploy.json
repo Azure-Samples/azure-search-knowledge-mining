@@ -2,12 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "resourceGroupName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of resource group."
-            }
-        },
         "resourcePrefix": {
             "type": "string",
             "metadata": {
@@ -104,13 +98,6 @@
         "storageAccountId":"[concat(parameters('resourcePrefix'))]"
     },
     "resources": [
-        {
-            "type": "Microsoft.Resources/resourceGroups",
-            "apiVersion": "2018-05-01",
-            "location": "[parameters('location')]",
-            "name": "[parameters('resourceGroupName')]",
-            "properties": {}
-        },
         {
             "apiVersion": "2016-09-01",
             "name": "[variables('hostingPlanName')]",
