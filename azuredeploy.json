@@ -58,7 +58,7 @@
         },
         "location": {
             "type": "string",
-            "defaultValue": "South Central US",
+            "defaultValue": "[resourceGroup().location]",
             "allowedValues": [
                 "East Asia",
                 "Southeast Asia",
