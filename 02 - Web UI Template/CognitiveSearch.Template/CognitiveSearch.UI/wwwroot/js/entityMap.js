@@ -51,7 +51,7 @@ function LoadEntityMap() {
     GetGraph(q);
 }
 
-function UnLoadEntityMap() {
+function UnloadEntityMap() {
     document.getElementById("results-container").style.display = "block";
     document.getElementById("entity-map").style.display = "none";
     Unload();
@@ -59,21 +59,28 @@ function UnLoadEntityMap() {
 
 // Gets DOMRect(angle) value
 // TODO: Limit users dragging of circles
-function GetSvgBox() {
+/*function GetSvgBox() {
     var graphRect = document.querySelector("svg");
     return graphRect.getBoundingClientRect();
-}
+}*/
 
 function EntityMapClick() {
     if (document.getElementById("entity-map").style.display === "none") {
         LoadEntityMap();
     }
     else {
-        UnLoadEntityMap();
+        UnloadEntityMap();
     }
 }
 
-// Graph implementation
+
+function Unload() {
+    svg.selectAll(".link").remove();
+    svg.selectAll(".edgepath").remove();
+    svg.selectAll(".node").remove();
+    svg.selectAll(".edgelabel").remove();
+}
+
 var colors = d3.scaleOrdinal(d3.schemeCategory10);
 var svg = d3.select("svg"),
     width = +svg.attr("width"),
@@ -105,17 +112,42 @@ var simulation = d3.forceSimulation()
         .strength(nodeChargeStrength)
         .theta(nodeChargeAccuracy))
     .force("center", d3.forceCenter(width / 2, height / 2))
-    .force("collide", d3.forceCollide(nodeRadius))
-    ;
+    .force("collide", d3.forceCollide(nodeRadius));
 
-function Unload() {
-    svg.selectAll(".link").remove();
-    svg.selectAll(".edgepath").remove();
-    svg.selectAll(".node").remove();
-    svg.selectAll(".edgelabel").remove();
-}
-
+//var node, link, width, height, simulation;
 function update(links, nodes) {
+    // Graph implementation
+    var colors = d3.scaleOrdinal(d3.schemeCategory10);
+    var svg = d3.select("svg"),
+        width = +svg.attr("width"),
+        height = +svg.attr("height");
+
+    svg.append('defs').append('marker')
+        .attrs({
+            'id': 'arrowhead',
+            'viewBox': '-0 -5 10 10',
+            'refX': 13,
+            'refY': 0,
+            'orient': 'auto',
+            'markerWidth': 10,
+            'markerHeight': 10,
+            'xoverflow': 'visible'
+        })
+        .append('svg:path')
+        .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
+        .attr('fill', '#999')
+        .style('stroke', 'none');
+
+    simulation = d3.forceSimulation()
+        .force("link", d3.forceLink()
+            .id(function (d) { return d.id; })
+            .distance(300).strength(.5))
+        .force("charge", d3.forceManyBody()
+            .strength(nodeChargeStrength)
+            .theta(nodeChargeAccuracy))
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        .force("collide", d3.forceCollide(nodeRadius));
+
 
     link = svg.selectAll(".link")
         .data(links)
@@ -176,13 +208,13 @@ function update(links, nodes) {
     simulation.force("link")
         .links(links);
 
-    var svgRect = GetSvgBox();
-    keepCoordInCanvas(svgRect);
+    //var svgRect = GetSvgBox();
+    //keepCoordInCanvas(svgRect);
 }
 
 
 
-function keepCoordInCanvas(svgRect) {
+/*function keepCoordInCanvas(svgRect) {
     // n = int
     // dim = "dimensions" x and y coordinates
     // margin = int
@@ -197,7 +229,7 @@ function keepCoordInCanvas(svgRect) {
     // margin vs.
     // min value of (
     // (svgRect.height -margin) OR n))
-}
+}*/
 
 function ticked() {
     node
@@ -213,18 +245,32 @@ function ticked() {
         return 'M ' + d.source.x + ' ' + d.source.y + ' L ' + d.target.x + ' ' + d.target.y;
     });
     // TODO: fix labels
-    // edgelabels.attr('transform', function (d) {
-    //     if (d.target.x < d.source.x) {
-    //         var bbox = this.getBBox();
-    //         rx = bbox.x + bbox.width / 2;
-    //         ry = bbox.y + bbox.height / 2;
-    //         return 'rotate(180 ' + rx + ' ' + ry + ')';
-    //     }
-    //     else {
-    //         return 'rotate(0)';
-    //     }
-    // });
+     //edgelabels.attr('transform', function (d) {
+     //    if (d.target.x < d.source.x) {
+     //        var bbox = this.getBBox();
+     //        rx = bbox.x + bbox.width / 2;
+     //        ry = bbox.y + bbox.height / 2;
+     //        return 'rotate(180 ' + rx + ' ' + ry + ')';
+     //    }
+     //    else {
+     //        return 'rotate(0)';
+     //    }
+     //});
 }
+
+//function ticked() {
+//    link
+//        .attr("x1", function (d) { return d.source.x; })
+//        .attr("y1", function (d) { return d.source.y; })
+//        .attr("x2", function (d) { return d.target.x; })
+//        .attr("y2", function (d) { return d.target.y; });
+
+//    node
+//        .attr("transform", function (d) {
+//            return "translate(" + d.x + "," + d.y + ")";
+//        });
+//}
+
 function dragstarted(d) {
     if (!d3.event.active) {
         simulation.alphaTarget(0.3).restart();
