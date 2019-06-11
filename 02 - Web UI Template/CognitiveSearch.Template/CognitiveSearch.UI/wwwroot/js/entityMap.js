@@ -1,4 +1,7 @@
-﻿// Graph Configuration
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+// Graph Configuration
 var nodeRadius = 15;
 var nodeSeparationFactor = 1;
 var nodeChargeStrength = -100;
@@ -49,20 +52,18 @@ function LoadEntityMap() {
     document.getElementById("details-modal").style.display = "none";
     document.getElementById("entity-map").style.display = "block";
     GetGraph(q);
+    q = q;
 }
 
 function UnloadEntityMap() {
     document.getElementById("results-container").style.display = "block";
     document.getElementById("entity-map").style.display = "none";
     Unload();
-}
 
-// Gets DOMRect(angle) value
-// TODO: Limit users dragging of circles
-/*function GetSvgBox() {
-    var graphRect = document.querySelector("svg");
-    return graphRect.getBoundingClientRect();
-}*/
+    document.getElementById("results-container").style = "row content-results";
+    document.getElementById("q").value = q;
+    document.getElementById("search-button").click();
+}
 
 function EntityMapClick() {
     if (document.getElementById("entity-map").style.display === "none") {
@@ -114,7 +115,7 @@ var simulation = d3.forceSimulation()
     .force("center", d3.forceCenter(width / 2, height / 2))
     .force("collide", d3.forceCollide(nodeRadius));
 
-//var node, link, width, height, simulation;
+
 function update(links, nodes) {
     // Graph implementation
     var colors = d3.scaleOrdinal(d3.schemeCategory10);
@@ -196,40 +197,13 @@ function update(links, nodes) {
         })
         .style("pointer-events", "none");
 
-    // TODO: Add curved Text path
-    //node.append("text")
-    //    .append("textPath")
-    //    .attr("xlink:href", (d, i) => `#labelarc${i}`)
-    //    .attr("startOffset", "50%");
 
     simulation
         .nodes(nodes)
         .on("tick", ticked);
     simulation.force("link")
         .links(links);
-
-    //var svgRect = GetSvgBox();
-    //keepCoordInCanvas(svgRect);
 }
-
-
-
-/*function keepCoordInCanvas(svgRect) {
-    // n = int
-    // dim = "dimensions" x and y coordinates
-    // margin = int
-    // all above are in an object which is a number (?)
-
-    // if(dim == "X")
-    // return max value of (
-    // margin vs.
-    // min value of (
-    // (svgRect.width - margin) or n ))
-    // return max value of (
-    // margin vs.
-    // min value of (
-    // (svgRect.height -margin) OR n))
-}*/
 
 function ticked() {
     node
@@ -244,32 +218,9 @@ function ticked() {
     edgepaths.attr('d', function (d) {
         return 'M ' + d.source.x + ' ' + d.source.y + ' L ' + d.target.x + ' ' + d.target.y;
     });
-    // TODO: fix labels
-     //edgelabels.attr('transform', function (d) {
-     //    if (d.target.x < d.source.x) {
-     //        var bbox = this.getBBox();
-     //        rx = bbox.x + bbox.width / 2;
-     //        ry = bbox.y + bbox.height / 2;
-     //        return 'rotate(180 ' + rx + ' ' + ry + ')';
-     //    }
-     //    else {
-     //        return 'rotate(0)';
-     //    }
-     //});
+
 }
 
-//function ticked() {
-//    link
-//        .attr("x1", function (d) { return d.source.x; })
-//        .attr("y1", function (d) { return d.source.y; })
-//        .attr("x2", function (d) { return d.target.x; })
-//        .attr("y2", function (d) { return d.target.y; });
-
-//    node
-//        .attr("transform", function (d) {
-//            return "translate(" + d.x + "," + d.y + ")";
-//        });
-//}
 
 function dragstarted(d) {
     if (!d3.event.active) {
@@ -284,6 +235,7 @@ function dragged(d) {
     d.fx = Math.max(nodeRadius, Math.min(width - nodeRadius, d3.event.x));
     d.fy = Math.max(nodeRadius, Math.min(height - nodeRadius, d3.event.y));
 }
+
 //function dragended(d) {
 //    if (!d3.event.active) simulation.alphaTarget(0);
 //    d.fx = undefined;
