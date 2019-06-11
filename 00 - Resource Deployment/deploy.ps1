@@ -29,7 +29,7 @@ Select-AzureRmSubscription -SubscriptionID $subscriptionId;
 
 
 # Register RPs
-$resourceProviders = @("microsoft.documentdb","microsoft.insights","microsoft.search","microsoft.sql","microsoft.storage");
+$resourceProviders = @("microsoft.cognitiveservices", "microsoft.documentdb","microsoft.insights","microsoft.search","microsoft.sql","microsoft.storage");
 if($resourceProviders.length) {
     Write-Host "Registering resource providers"
     foreach($resourceProvider in $resourceProviders) {
