@@ -38,6 +38,44 @@ Type: docker.exe run -p 8080:80 kpe
 
 ## Test the Docker Container Locally
 
-There are a lot of tools for testing APis, such as [Postman](https://www.getpostman.com/), or CURL.  Here is an example of a CURL request to test the container:
+There are a lot of tools for testing APis, such as [Postman](https://www.getpostman.com/), or CURL.  Here is an example of a request to test the container:
 
+POST: http://localhost:8080/process
 
+Header: 
+<code>Content-Type: application/json</code>
+
+Body (raw): 
+
+```json
+{
+   "values": [
+        {
+        	"recordId": "a5",
+        	"data":
+	        {
+        	   "metadata_storage_path": "a125",
+	           "text":  "The quick brown fox jumped over the lazy dog."
+	        }
+        }
+   ]
+}
+```
+
+You should get a response:
+
+```json
+{
+    "values": [
+        {
+            "data": {
+                "keyphrases": [
+                    "lazy dog",
+                    "quick brown fox"
+                ]
+            },
+            "recordId": "a5"
+        }
+    ]
+}
+```
