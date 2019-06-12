@@ -3,7 +3,6 @@ import nltk
 import pandas as pd
 import io
 import json
-from azure.storage.blob import (BlockBlobService)
 
 import flask
 from flask import Flask, request, jsonify
@@ -13,15 +12,11 @@ app = Flask(__name__)
 def process():
 	content = request.json
 
-	accountName = request.headers['blobServiceName']
-	accountKey = request.headers['blobApiKey']
-	containerName = request.headers['blobContainer']
-
 	nlp = spacy.load('en_core_web_sm')
 	from nltk.corpus import stopwords
 	stopwords = stopwords.words('english')
 
-	# add some custom stopwrods
+	# add some custom stopwords
 	stopwords.append('part')
 	stopwords.append('group')
 
@@ -63,13 +58,6 @@ def process():
 		for index, row in dfPhraseListGrouped.iterrows():
 			print (row.name, row.value)
 
-		# write dataframe to blob as CSV
-		output = io.StringIO()
-		output = dfPhraseListGrouped.to_csv (index_label="phrase", encoding = "utf-8")
-
-		blobService = BlockBlobService(account_name=accountName, account_key=accountKey)
-		blobService.create_blob_from_text(containerName, metadataStoragePath + '.csv', output)	
-
 		document = {}
 		document['recordId'] = recordId
 
@@ -85,4 +73,3 @@ def process():
 
 if __name__ == '__main__':
 	app.run(debug=True, host='0.0.0.0', port=80)
-	#app.run(debug=True, host='0.0.0.0', port=443, ssl_context=('cert.pem', 'privkey.pem'))
