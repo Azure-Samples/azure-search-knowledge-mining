@@ -18,6 +18,7 @@ The first thing you will want to do is to build the Docker container.  To do thi
 * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 * An Azure subscription where we will be hosting the docker container and leveraging Azure Search from
 * The files from this Github directory downloaded locally
+* Azure Blob Storage with some text files (although with some minor changes this could be files like PDF or Office docs)
 
 ## Build the Docker Image
 
@@ -344,5 +345,105 @@ This skill returns an array of phrases, so we will need to make sure the Azure S
     "tokenFilters": [],
     "charFilters": [],
     "encryptionKey": null
+}
+```
+
+You will also need an Azure Search Datasource to point to your files.  I was using a set of text files and my data source looked like this.  Make sure to update the connection string to your storage account.
+
+```json
+{
+    "name": "kpe",
+    "description": null,
+    "type": "azureblob",
+    "subtype": null,
+    "credentials": {
+        "connectionString": "DefaultEndpointsProtocol=https;AccountName=XXX;AccountKey=XXX==;EndpointSuffix=core.windows.net"
+    },
+    "container": {
+        "name": "myfiles",
+        "query": ""
+    },
+    "dataChangeDetectionPolicy": null,
+    "dataDeletionDetectionPolicy": null
+}
+
+```
+
+The skill I created looked as follows.  Make sure to update the uri and the cognitiveServices values:
+```json
+{
+    "name": "kpe-skill",
+    "description": "basic kpe skillset",
+    "skills": [
+		{
+			"@odata.type": "#Microsoft.Skills.Custom.WebApiSkill",
+			"description": "Docker skill",
+			"uri": "[URL of your Azure Web App - don't forget to add /process",
+			"batchSize":1,
+			"context": "/document",
+			"inputs": [
+			  {
+				"name": "text",
+				"source": "/document/content",
+                "sourceContext": null,
+                "inputs": []
+			  }
+			],
+			"outputs": [
+			  {
+				"name": "keyphrases",
+				"targetName": "phrases"
+			  }
+			]
+		}
+    ],
+    
+    "cognitiveServices": {
+        "@odata.type": "#Microsoft.Azure.Search.CognitiveServicesByKey",
+        "description": "/subscriptions/XXXXXX,
+        "key": "XXX"
+    }
+
+}
+```
+
+Finally, you will need an Indexer that will look like:
+
+```json
+{
+    "name": "kpe",
+    "description": null,
+    "dataSourceName": "kpe",
+    "skillsetName": "kpe-skill",
+    "targetIndexName": "kpe",
+    "disabled": null,
+    "schedule": null,
+    "parameters": {
+        "batchSize": null,
+        "maxFailedItems": 100,
+        "maxFailedItemsPerBatch": 100,
+        "base64EncodeKeys": false,
+        "configuration": {
+            "dataToExtract": "contentAndMetadata",
+            "parsingMode": "text"
+        }
+    },
+    "fieldMappings": [
+        {
+            "sourceFieldName": "metadata_storage_path",
+            "targetFieldName": "metadata_storage_path",
+            "mappingFunction": {
+                "name": "base64Encode",
+                "parameters": null
+            }
+        }
+    ],
+    "outputFieldMappings": [
+        {
+            "sourceFieldName": "/document/phrases",
+            "targetFieldName": "phrases",
+            "mappingFunction": null
+        }
+    ]
 }
 ```
