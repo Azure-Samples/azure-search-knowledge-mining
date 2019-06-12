@@ -383,7 +383,11 @@ The skill I created looked as follows.  Make sure to update the uri and the cogn
 			  {
 				"name": "text",
 				"source": "/document/content",
-                "sourceContext": null,
+                "inputs": []
+			  },
+			  {
+				"name": "metadata_storage_path",
+				"source": "/document/metadata_storage_path",
                 "inputs": []
 			  }
 			],
