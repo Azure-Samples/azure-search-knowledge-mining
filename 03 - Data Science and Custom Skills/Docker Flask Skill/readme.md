@@ -34,7 +34,7 @@ Note, this will take a while as there is a lot to download
 
 Next, we will test the image locally to make sure it works as expected.  Assuming you have nothing else running on port 8080, you can start the container:
 
-Type: docker.exe -p 8080:80 kpe
+Type: docker.exe run -p 8080:80 kpe
 
 ## Test the Docker Container Locally
 
