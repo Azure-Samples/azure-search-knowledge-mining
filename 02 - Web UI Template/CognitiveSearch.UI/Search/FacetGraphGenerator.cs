@@ -20,8 +20,8 @@ namespace CognitiveSearch.UI
         {
             // Calculate nodes for 3 levels
             JObject dataset = new JObject();
-            int MaxEdges = 100;
-            int MaxLevels = 5;
+            int MaxEdges = 30;
+            int MaxLevels = 3;
             int CurrentLevel = 1;
             int CurrentNodes = 0;
 
