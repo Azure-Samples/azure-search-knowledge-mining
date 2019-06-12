@@ -1,3 +1,5 @@
+# UNDER CONSTRUCTION - Do not use yet
+
 # Custom Skill Built using Python and Flask 
 
 The purpose of this skill is to show how you can leverage Python code as part of the Cognitive Search ingestion in the form of a custom skill.  Since this is hosted in a Docker container, the service can be easily scaled using Kubernetes.  This readme will walk through how to setup and configure the docker instance to run this skill and then how to hook it up as a Custom Skill.
@@ -20,10 +22,22 @@ The first thing you will want to do is to build the Docker container.  To do thi
 ## Build the Docker Container
 
 From your desktop open "Windows Azure Command Prompt" and go to the directory you downloaded the Github files, of which you should have: 
-* ws.py: Hosting the python code which is run as a Flask service
+* ws.py: Hosting the python code which is run as a Flask service.  
 * requirements.txt: Includes all the python packages used
 * DockerFile: Details on how to build the docker image
 
 Type: docker.exe build -t kpe .
 
-At this point, the Docker image will be built and stored in your local Docker Desktop repository.  
+Note, this will take a while as there is a lot to download
+
+## Run the Docker Container Locally
+
+Next, we will test the image locally to make sure it works as expected.  Assuming you have nothing else running on port 8080, you can start the container:
+
+Type: docker.exe -p 8080:80 kpe
+
+## Test the Docker Container Locally
+
+There are a lot of tools for testing APis, such as [Postman](https://www.getpostman.com/), or CURL.  Here is an example of a CURL request to test the container:
+
+
