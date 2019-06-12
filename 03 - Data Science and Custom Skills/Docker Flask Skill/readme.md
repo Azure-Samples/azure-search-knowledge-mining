@@ -163,9 +163,9 @@ You should get the same response you did when running it locally:
 }
 ```
 
-## Creating the Skill
+## Creating the Azure Search Index
 
-This skill returns an array of phrases, so we will need to make sure the Azure Search index has a field called phrases.  Here is an example of the schema I used:
+This skillset returns an array of phrases, so we will need to make sure the Azure Search index has a field called phrases.  Here is an example of the schema I used:
 
 ```json
 	{
@@ -367,7 +367,7 @@ You will also need an Azure Search Datasource to point to your files.  I was usi
 
 ```
 
-The skill I created looked as follows.  Make sure to update the uri and the cognitiveServices values:
+The skillset I created looked as follows.  Make sure to update the uri and the cognitiveServices values:
 ```json
 {
     "name": "kpe-skill",
@@ -402,7 +402,7 @@ The skill I created looked as follows.  Make sure to update the uri and the cogn
     
     "cognitiveServices": {
         "@odata.type": "#Microsoft.Azure.Search.CognitiveServicesByKey",
-        "description": "/subscriptions/XXXXXX,
+        "description": "/subscriptions/XXXXXX",
         "key": "XXX"
     }
 
