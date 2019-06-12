@@ -17,6 +17,8 @@ function SearchEntities() {
     q = $("#e").val();
 
     Unload();
+    document.getElementById("entity-loading-indicator").style.display = "block";
+
     GetGraph(q);
 
     // Get center of map to use to score the search results
@@ -51,7 +53,9 @@ function LoadEntityMap() {
     document.getElementById("results-container").style.display = "none";
     document.getElementById("details-modal").style.display = "none";
     document.getElementById("entity-map").style.display = "block";
+    document.getElementById("entity-loading-indicator").style.display = "block";
     GetGraph(q);
+    document.getElementById("e").value = q;
     q = q;
 }
 
@@ -203,6 +207,8 @@ function update(links, nodes) {
         .on("tick", ticked);
     simulation.force("link")
         .links(links);
+    document.getElementById("entity-loading-indicator").style.display = "none";
+
 }
 
 function ticked() {

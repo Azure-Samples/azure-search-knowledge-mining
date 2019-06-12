@@ -98,12 +98,15 @@
     <div id="results-container" class="row content-results">
         <div class="col-md-2">
             <div id="search-input-group" class="input-group">
-                <input type="text" class="form-control" name="e" id="e" placeholder="Search entity...">
+                <input type="text" class="form-control" name="e" id="e" placeholder="Search...">
                 <span class="input-group-btn">
                     <button class="btn btn-default" onclick="SearchEntities();"><span class="ms-Icon ms-Icon--Search"></span></button>
                 </span>
-
+                <div style="display:inline;position: relative;top:-10px;left:10px;">
+                    <span id="entity-loading-indicator" class="ms-Spinner ms-Spinner--large" style="display:none;"></span>
+                </div>
             </div>
+
             <br />
             <button style="width:100%" class="btn btn-default" onclick="EntityMapClick()">Return to Search Results</button>
         </div>
