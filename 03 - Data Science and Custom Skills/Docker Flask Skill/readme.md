@@ -87,5 +87,8 @@ We will be uploading the docker image to the Azure Container Registry.  In a sub
 * [Create an Azure Container registry ](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-portal)
 * Once the registry is created, open it "Access Keys" in the Settings and make note of the Login Server, Username and one of the passwords
 * From your desktop in the Azure Command Prompt login to your Azure Subscription by typing: <code>az login</code>
-* Log in to your Azure container registry by typing: <code>docker login [Login Server]</code> where [Login Server] is the value taken from the above step
+* Log in to your Azure container registry by typing: <code>docker login [Login Server]</code> where [Login Server] is the value taken from the above step.  If this is the first time logging in to your container registry, you will need to enter the above username and password.
+* Tag the local container: <code>docker tag kpe [Login Server]/samples/kpe</code>
+* Upload the tagged container: <code>docker push [Login Server]/samples/kpe</code>
+
 
