@@ -79,3 +79,13 @@ You should get a response:
     ]
 }
 ```
+
+## Upload Docker Container to Azure 
+
+We will be uploading the docker image to the Azure Container Registry.  In a subsequent step we will be deploying the docker container to an Azure Web App, however this registry has the nice aspect that it allows us to do contiunous deployment so whenever we add an updated container to the registry it will automatically update the running container.
+
+* [Create an Azure Container registry ](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-portal)
+* Once the registry is created, open it "Access Keys" in the Settings and make note of the Login Server, Username and one of the passwords
+* From your desktop in the Azure Command Prompt login to your Azure Subscription by typing: <code>az login</code>
+* Log in to your Azure container registry by typing: <code>docker login [Login Server]</code> where [Login Server] is the value taken from the above step
+
