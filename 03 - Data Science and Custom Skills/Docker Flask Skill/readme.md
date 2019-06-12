@@ -26,7 +26,7 @@ From your desktop open "Windows Azure Command Prompt" and go to the directory yo
 * requirements.txt: Includes all the python packages used
 * DockerFile: Details on how to build the docker image
 
-Type: docker.exe build -t kpe .
+Type: <code>docker.exe build -t kpe .</code>
 
 Note, this will take a while as there is a lot to download
 
@@ -34,7 +34,7 @@ Note, this will take a while as there is a lot to download
 
 Next, we will test the image locally to make sure it works as expected.  Assuming you have nothing else running on port 8080, you can start the container:
 
-Type: docker.exe run -p 8080:80 kpe
+Type: <code>docker.exe run -p 8080:80 kpe</code>
 
 ## Test the Docker Container Locally
 
