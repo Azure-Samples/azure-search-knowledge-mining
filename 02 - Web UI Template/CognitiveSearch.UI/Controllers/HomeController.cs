@@ -134,8 +134,6 @@ namespace CognitiveSearch.UI.Controllers
             FacetGraphGenerator graphGenerator = new FacetGraphGenerator(_docSearch);
             var graphJson = graphGenerator.GetFacetGraphNodes(query, "keyPhrases");
 
-            //JsonResult json = new JsonResult(graphJson.ToString());
-
             return graphJson;
         }
     }
