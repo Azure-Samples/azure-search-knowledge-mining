@@ -22,7 +22,7 @@ Depending on your custom skill development needs, additional Azure resources may
 ## Deploy via Azure Portal
 As an alternative to running the PowerShell script, you can deploy the resources manually via the Azure Portal or click the button below to deploy the resources:
 
-<a href="https://azuredeploy.net/?repository=https://github.com/dereklegenzoff/azure-search-knowledge-mining/" target="_blank">
+<a href="https://azuredeploy.net/?repository=https://github.com/Azure-Samples/azure-search-knowledge-mining/" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a> 
 
