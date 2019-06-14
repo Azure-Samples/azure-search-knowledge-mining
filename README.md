@@ -9,7 +9,7 @@ In this repository, we've provided you with all of the artifacts needed to quick
 > Note: Cognitive Search is an AI feature in Azure Search rather than a standalone product. See this [doc](https://docs.microsoft.com/en-us/azure/search/cognitive-search-concept-intro) for more information on the subject.
 
 Once finished, you'll have a web app ready to search against your data like in the image below:
-![screenshot](images/ui.png)
+![screenshot](images/ui.PNG)
 
 ## Prerequisites
 In order to successfully complete your solution, you will need to have access to and or provisioned the following:
