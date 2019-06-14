@@ -5,7 +5,20 @@
         "resourcePrefix": {
             "type": "string",
             "metadata": {
-                "description": "Prefix for all resources created by this template (less than 13 characters)" 
+                "description": "provide a 2-13 character prefix for all resources."
+            }
+        },
+        "storageAccountType": {
+            "type": "string",
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_GRS",
+                "Standard_ZRS",
+                "Premium_LRS"
+            ],
+            "metadata": {
+                "description": "Storage Account type"
             }
         },
         "hostingPlanSku": {
@@ -40,10 +53,10 @@
                 "standard3"
             ],
             "metadata": {
-                "description": "The SKU of the search service you want to create"
+                "description": "The SKU of the search service you want to create. E.g. free or standard"
             }
         },
-        "searchServiceAndCognitiveServicesLocation": {
+        "location": {
             "type": "string",
             "defaultValue": "South Central US",
             "allowedValues": [
@@ -72,48 +85,24 @@
             "metadata": {
                 "description": "Location where the Azure Search service and Cognitive Services account will be deployed."
             }
-        },
-        "storageAccountType": {
-            "type": "string",
-            "defaultValue": "Standard_LRS",
-            "allowedValues": [
-                "Standard_LRS",
-                "Standard_GRS",
-                "Standard_ZRS",
-                "Premium_LRS"
-            ],
-            "metadata": {
-                "description": "Storage Account type"
-            }
-        },
-        "repoURL": {
-            "type": "string",
-            "metadata": {
-                "description": "The URL for the GitHub repository that contains the project to deploy."
-            }
-        },
-        "branch": {
-            "type": "string",
-            "defaultValue": "master",
-            "metadata": {
-                "description": "The branch of the GitHub repository to use."
-            }
         }
     },
     "variables": {
+        "hostingPlanName": "[concat(parameters('resourcePrefix'), '-plan')]",
+        "storageAccountName": "[concat(parameters('resourcePrefix'), 'storage')]",
         "websiteName": "[concat(parameters('resourcePrefix'), '-site')]",
         "appInsightsName": "[concat(parameters('resourcePrefix'), '-app-insights')]",
-        "storageAccountName": "[concat(parameters('resourcePrefix'), 'storage')]",
         "searchServiceName": "[concat(parameters('resourcePrefix'), '-search-service')]",
-        "hostingPlanName": "[concat(parameters('resourcePrefix'), '-plan')]",
-        "cognitiveServicesAccountName": "[concat(parameters('resourcePrefix'), '-cognitive-services')]"
+        "cognitiveServicesAccountName": "[concat(parameters('resourcePrefix'), '-cognitive-services')]",
+        "functionAppName":"[concat(parameters('resourcePrefix'), '-function-app')]",
+        "storageAccountId":"[concat(parameters('resourcePrefix'))]"
     },
     "resources": [
         {
             "apiVersion": "2016-09-01",
             "name": "[variables('hostingPlanName')]",
             "type": "Microsoft.Web/serverfarms",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "sku": {
                 "name": "[parameters('hostingPlanSku')]"
             },
@@ -122,20 +111,21 @@
             }
         },
         {
-            "apiVersion": "2017-10-01",
             "name": "[variables('storageAccountName')]",
             "type": "Microsoft.Storage/storageAccounts",
-            "location": "[resourceGroup().location]",
+            "apiVersion": "2018-07-01",
+            "location": "[parameters('location')]",
+            "kind": "StorageV2",
             "sku": {
-                "name": "[parameters('storageAccountType')]"
-            },
-            "kind": "Storage"
+                "name": "[parameters('storageAccountType')]",
+                "tier": "Standard"
+            }
         },
         {
             "apiVersion": "2016-08-01",
             "name": "[variables('websiteName')]",
             "type": "Microsoft.Web/sites",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
             ],
@@ -147,7 +137,7 @@
             "type": "microsoft.insights/components",
             "apiVersion": "2015-05-01",
             "name": "[variables('appInsightsName')]",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "tags": {
                 "applicationType": "web",
                 "applicationName": "[variables('websiteName')]"
@@ -161,7 +151,7 @@
             "apiVersion": "2015-08-19",
             "name": "[variables('searchServiceName')]",
             "type": "Microsoft.Search/searchServices",
-            "location": "[parameters('searchServiceAndCognitiveServicesLocation')]",
+            "location": "[parameters('location')]",
             "sku": {
                 "name": "[parameters('searchServiceSku')]"
             }
@@ -171,41 +161,56 @@
             "type": "Microsoft.CognitiveServices/accounts",
             "apiVersion": "2017-04-18",
             "sku": {
-              "name": "S0"
+                "name": "S0"
             },
             "kind": "CognitiveServices",
-            "location": "[parameters('searchServiceAndCognitiveServicesLocation')]",
+            "location": "[parameters('location')]",
             "properties": {}
+        },
+        {
+            "apiVersion": "2016-03-01",
+            "type": "Microsoft.Web/sites",
+            "name": "[variables('functionAppName')]",
+            "location": "[parameters('location')]",
+            "kind": "functionapp",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+                "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
+            ],
+            "properties": {
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1, ';')]"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('microsoft.insights/components/', variables('appInsightsName')), '2015-05-01').InstrumentationKey]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1, ';')]"
+                        },
+                      {
+                        "name": "WEBSITE_CONTENTSHARE",
+                        "value": "[toLower(variables('functionAppName'))]"
+                      },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "node"
+                        },
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "10.14.1"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~2"
+                        }
+                    ]
+                }
+            }
         }
-    ],
-    "outputs": {
-        "Search Service Name": {
-            "type": "string",
-            "value": "[variables('searchServiceName')]"
-        },
-        "Search Service Api Key": {
-            "type": "string",
-            "value": "[listAdminKeys(resourceId('Microsoft.Search/searchServices', variables('searchServiceName')), '2015-08-19').primaryKey]"
-        },
-        "Cognitive Services Account Key": {
-            "type": "string",
-            "value": "[listkeys(resourceId('Microsoft.CognitiveServices/accounts', variables('cognitiveServicesAccountName')), '2017-04-18').key1]"
-        },
-        "Blob Storage Account Connection String": {
-            "type": "string",
-            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1, ';')]"
-        },
-        "Azure Web App Site Name": {
-            "type": "string",
-            "value": "[variables('websiteName')]"
-        },
-        "Azure Web App Username": {
-            "type": "string",
-            "value": "[list(concat('Microsoft.Web/sites/', variables('websiteName'), '/config/publishingcredentials'), '2016-08-01').properties.publishingUserName]"
-        },
-        "Azure Web App Password": {
-            "type": "string",
-            "value": "[list(concat('Microsoft.Web/sites/', variables('websiteName'), '/config/publishingcredentials'), '2016-08-01').properties.publishingPassword]"
-        }
-    }
+    ]
 }
