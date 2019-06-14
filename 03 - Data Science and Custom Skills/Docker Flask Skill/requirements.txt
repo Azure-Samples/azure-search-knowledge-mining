@@ -1,0 +1,9 @@
+Flask==1.0.2
+click==6.7
+itsdangerous==0.24
+Jinja2==2.10.1
+MarkupSafe==1.0
+Werkzeug==0.14.1
+nltk==3.4.1
+spacy==2.1.4
+pandas==0.24.2
