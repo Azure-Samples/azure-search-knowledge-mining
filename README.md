@@ -6,7 +6,10 @@ Welcome to the Knowledge Mining Solution Accelerator!  This accelerator was buil
 
 In this repository, we've provided you with all of the artifacts needed to quickly create a Cognitive Search Solution including: templates for deploying the appropriate Azure resources, assets for creating your first search index, templates for custom skills, a basic web app, and PowerBI reports to monitor search solution performance. We've infused best practices throughout the documentation to help further guide you.
 
-> Note: Cognitive Search is an AI feature in Azure Search rather than a standalone product. See this [doc](https://docs.microsoft.com/en-us/azure/search/cognitive-search-concept-intro) for more information.
+> Note: Cognitive Search is an AI feature in Azure Search rather than a standalone product. See this [doc](https://docs.microsoft.com/en-us/azure/search/cognitive-search-concept-intro) for more information on the subject.
+
+Once finished, you'll have a web app ready to search against your data like in the image below:
+![screenshot](images/ui.png)
 
 ## Prerequisites
 In order to successfully complete your solution, you will need to have access to and or provisioned the following:
