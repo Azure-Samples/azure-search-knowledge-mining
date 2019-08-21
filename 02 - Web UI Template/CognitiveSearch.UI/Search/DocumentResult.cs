@@ -13,7 +13,7 @@ namespace CognitiveSearch.UI
     {
         public List<object> Facets { get; set; }
         public Document Result { get; set; }
-        public IList<SearchResult> Results { get; set; }
+        public IList<SearchResult<Document>> Results { get; set; }
         public int? Count { get; set; }
         public string Token { get; set; }
         public List<object> Tags { get; set; }

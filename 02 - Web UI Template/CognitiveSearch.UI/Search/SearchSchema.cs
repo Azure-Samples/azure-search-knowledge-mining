@@ -50,6 +50,8 @@ namespace CognitiveSearch.UI
             else if (field.Type == DataType.GeographyPoint) type = typeof(Microsoft.Spatial.GeographyPoint);
             // Azure Search DataType objects don't follow value comparisons, so use overloaded string conversion operator to be a consistent representation
             else if ((string)field.Type == (string)DataType.Collection(DataType.String)) type = typeof(string[]);
+            else if (field.Type == DataType.Complex) type = typeof(string);
+            else if (field.Type == DataType.Collection(DataType.Complex)) type = typeof(string[]);
             else
             {
                 throw new ArgumentException($"Cannot map {field.Type} to a C# type");
@@ -58,12 +60,12 @@ namespace CognitiveSearch.UI
             {
                 Name = field.Name,
                 Type = type,
-                IsFacetable = field.IsFacetable,
-                IsFilterable = field.IsFilterable,
-                IsKey = field.IsKey,
-                IsRetrievable = field.IsRetrievable,
-                IsSearchable = field.IsSearchable,
-                IsSortable = field.IsSortable
+                IsFacetable = field.IsFacetable ?? false,
+                IsFilterable = field.IsFilterable ?? false,
+                IsKey = field.IsKey ?? false,
+                IsRetrievable = field.IsRetrievable ?? false,
+                IsSearchable = field.IsSearchable ?? false,
+                IsSortable = field.IsSortable ?? false
             };
         }
 
