@@ -32,7 +32,7 @@ Clone/download this repo onto your computer and then walk through each of these 
 
 
 ### [00 - Resource Deployment](./00%20-%20Resource%20Deployment)
-The resources in this folder can be used to deploy the required resources into your Azure Subscription. This can be done either via the [Azure Portal](https://portal.azure.com) or by using the [PowerShell script](./00_Resource_Deployment/deploy.ps1) included in the resource deployment folder.  
+The resources in this folder can be used to deploy the required resources into your Azure Subscription. This can be done either via the [Azure Portal](https://portal.azure.com) or by using the [PowerShell script](./00%20-%20Resource%20Deployment/deploy.ps1) included in the resource deployment folder.  
 
 Skip this folder if you have already provisioned the required resources or will be provisioning manually.
 
