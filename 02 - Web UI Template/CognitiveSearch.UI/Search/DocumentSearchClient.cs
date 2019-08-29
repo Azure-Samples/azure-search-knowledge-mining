@@ -53,11 +53,11 @@ namespace CognitiveSearch.UI
             }
             catch (Exception e)
             {
-                errorMessage = e.Message.ToString();
+                throw new ArgumentException(e.Message.ToString());
             }
         }
 
-        public DocumentSearchResult Search(string searchText, SearchFacet[] searchFacets = null, string[] selectFilter = null, int currentPage = 1)
+        public DocumentSearchResult<Document> Search(string searchText, SearchFacet[] searchFacets = null, string[] selectFilter = null, int currentPage = 1)
         {
             try
             {
@@ -132,7 +132,7 @@ namespace CognitiveSearch.UI
             return sp;
         }
 
-        public DocumentSuggestResult Suggest(string searchText, bool fuzzy)
+        public DocumentSuggestResult<Document> Suggest(string searchText, bool fuzzy)
         {
             // Execute search based on query string
             try
@@ -186,7 +186,7 @@ namespace CognitiveSearch.UI
             return string.Empty;
         }
 
-        public DocumentSearchResult GetFacets(string searchText, string facetName, int maxCount = 30)
+        public DocumentSearchResult<Document> GetFacets(string searchText, string facetName, int maxCount = 30)
         {
             // Execute search based on query string
             try

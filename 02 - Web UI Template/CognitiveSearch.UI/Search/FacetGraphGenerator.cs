@@ -48,7 +48,7 @@ namespace CognitiveSearch.UI
                 {
                     CurrentLevel++;
                 }
-                DocumentSearchResult response = _searchHelper.GetFacets(q, facetName, 10);
+                DocumentSearchResult<Document> response = _searchHelper.GetFacets(q, facetName, 10);
                 if (response != null)
                 {
                     IList<FacetResult> facetVals = (response.Facets)[facetName];
