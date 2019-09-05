@@ -19,12 +19,27 @@ In just a few steps, you can configure this template UI to query your search ind
 
 Update the following fields in the *appsettings.json* file to connect the web app to your storage account, search index, and app insights account:
 
-![appsettings](../images/Config.png)
+```json
+  "SearchServiceName": "",
+  "SearchApiKey": "",
+  "SearchIndexName": "",
+  "InstrumentationKey": "",
+  "StorageAccountName": "",
+  "StorageAccountKey": "",
+  "StorageContainerAddress": "https://{storage-account-name}.blob.core.windows.net/{container-name}",
+  "KeyField": "metadata_storage_path",
+  "IsPathBase64Encoded": true,
+  "GraphFacet": "keyPhrases"
+```
 
 ###
 *Notes*
 1. *StorageContainerAddress* should be in the following format: **https://*storageaccountname*.blob.core.windows.net/*containername***
 2. *InstrumentationKey* is an optional field. The instrumentation key connects the web app to Application Inisghts in order to populate the Power BI reports.
+3. Key Field should be set to the field specified as a key document Id in the index.
+4. Sometimes metadata_storage_path is the key, and it gets base64 encoded. In that case set IsPathBase64Encoded to false.
+5. The GraphFacet is used for generating the relationship graph.
+
 
 ## 2. Update SearchModel.cs
 At this point, your web app is configured and is ready to run. By default, all facets, tags, and fields will be used in the UI.
