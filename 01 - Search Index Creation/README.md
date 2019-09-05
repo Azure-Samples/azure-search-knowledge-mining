@@ -51,6 +51,7 @@ If you choose to create your index via the Azure Portal, set your search field p
 |-----------------------|-----------------------------------------------|
 |content				| Used to show the transcript of the files.  Should be **searchable and retrievable**  |
 |metadata_storage_path	| This should be the **key field**. 	 The storage path is used to query the blob indexer for the content so that you can "preview" the file.  Should be **retrievable**.	 If it is **base64 encoded**, make sure to specify it in the [appsettings.json](https://github.com/Azure-Samples/azure-search-knowledge-mining/tree/master/02%20-%20Web%20UI%20Template) file of the front end application.		|
+|metadata_storage_name	| The storage name is used to display the name of the file on the results page.  Should be **retrievable**.	|
 |people					| List of strings with the persons identified in the document.  Should be **facetable, filterable, searchable and retrievable**.  |
 |locations				| List of strings with the locations identified in the document. Should be **facetable, filterable, searchable and retrievable**.  |
 |organizations			| List of strings with the organizations identified in the document. Should be **facetable, filterable, searchable and retrievable**.  |
