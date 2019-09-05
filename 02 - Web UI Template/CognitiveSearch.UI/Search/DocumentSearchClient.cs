@@ -23,7 +23,9 @@ namespace CognitiveSearch.UI
         private ISearchIndexClient _indexClient;
         private string searchServiceName { get; set; }
         private string apiKey { get; set; } 
-        private string IndexName { get; set; } 
+        private string IndexName { get; set; }
+
+        private string idField { get; set; }
 
         // Client logs all searches in Application Insights
         private static TelemetryClient telemetryClient = new TelemetryClient();
@@ -41,6 +43,7 @@ namespace CognitiveSearch.UI
                 searchServiceName = configuration.GetSection("SearchServiceName")?.Value;
                 apiKey = configuration.GetSection("SearchApiKey")?.Value;
                 IndexName = configuration.GetSection("SearchIndexName")?.Value;
+                idField = configuration.GetSection("KeyField")?.Value;
                 telemetryClient.InstrumentationKey = configuration.GetSection("InstrumentationKey")?.Value;
 
                 // Create an HTTP reference to the catalog index
@@ -195,7 +198,7 @@ namespace CognitiveSearch.UI
                 {
                     SearchMode = SearchMode.Any,
                     Top = 10,
-                    Select = new List<String>() { "id" },
+                    Select = new List<String>() { idField },
                     Facets = new List<String>() { $"{facetName}, count:{maxCount}" },
                     QueryType = QueryType.Full
                 };

@@ -18,5 +18,7 @@ namespace CognitiveSearch.UI
         public string Token { get; set; }
         public List<object> Tags { get; set; }
         public string SearchId { get; set; }
+        public string IdField { get; set; }
+        public bool IsPathBase64Encoded { get; set; }
     }
 }

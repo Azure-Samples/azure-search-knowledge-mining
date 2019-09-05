@@ -1,22 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-$('#next-control').click(function () {
-    var idx = parseInt($('#result-id').val());
-
-    if (idx < results.length) {
-        ShowDocument(idx + 1);
-    }
-});
-
-$('#prev-control').click(function () {
-    var idx = parseInt($('#result-id').val());
-
-    if (idx > 0) {
-        ShowDocument(idx - 1);
-    }
-});
-
 // Details
 function ShowDocument(id) {
     $.post('/home/getdocumentbyid',
@@ -35,7 +19,15 @@ function ShowDocument(id) {
 
             $('#result-id').val(id);
 
-            var fileContainerHTML = GetFileHTML(result);
+            var path;
+            if (data.isPathBase64Encoded) {
+                path = Base64Decode(result.metadata_storage_path) + token;
+            }
+            else {
+                path = result.metadata_storage_path + token;
+            }
+
+            var fileContainerHTML = GetFileHTML(path);
             var transcriptContainerHTML = htmlDecode(result.content.trim());
             var fileName = "File";
 
@@ -81,21 +73,15 @@ function GetMatches(string, regex, index) {
     return matches;
 }
 
-function GetFileHTML(result) {
-
-    var path = result.metadata_storage_path + token;
+function GetFileHTML(path) {
 
     if (path !== null) {
-
         var pathLower = path.toLowerCase();
         var fileContainherHTML;
 
         if (pathLower.includes(".pdf")) {
             fileContainerHTML =
                 `<object class="file-container" data="${path}" type="application/pdf">
-                    <iframe class="file-container" src="${path}" type="application/pdf">
-                        This browser does not support PDFs. Please download the XML to view it: <a href="${path}">Download PDF</a>"
-                    </iframe>
                 </object>`;
         }
         else if (pathLower.includes(".jpg") || pathLower.includes(".jpeg") || pathLower.includes(".gif") || pathLower.includes(".png")) {

@@ -18,11 +18,15 @@ namespace CognitiveSearch.UI.Controllers
     {
         private IConfiguration _configuration { get; set; }
         private DocumentSearchClient _docSearch { get; set; }
+        private string _idField { get; set; }
+        bool _isPathBase64Encoded { get; set; }
 
         public HomeController(IConfiguration configuration)
         {
             _configuration = configuration;
             _docSearch = new DocumentSearchClient(configuration);
+            _idField = _configuration.GetSection("KeyField")?.Value;
+            _isPathBase64Encoded = (_configuration.GetSection("IsPathBase64Encoded")?.Value == "True");
         }
 
         public IActionResult Index()
@@ -92,18 +96,33 @@ namespace CognitiveSearch.UI.Controllers
                 }
             }
 
-            return new JsonResult(new DocumentResult { Results = response.Results, Facets = facetResults, Tags = tagsResults, Count = Convert.ToInt32(response.Count), Token = token, SearchId = searchId });
+            return new JsonResult(new DocumentResult
+            {
+                Results = response.Results,
+                Facets = facetResults,
+                Tags = tagsResults,
+                Count = Convert.ToInt32(response.Count),
+                Token = token,
+                SearchId = searchId,
+                IdField = _idField,
+                IsPathBase64Encoded = _isPathBase64Encoded
+            });
         }
 
         [HttpPost]
         public IActionResult GetDocumentById(string id = "")
         {
             var token = GetContainerSasUri();
-
             var response = _docSearch.LookUp(id);
-            var facetResults = new List<object>();
 
-            return new JsonResult(new DocumentResult { Result = response, Token = token });
+            return new JsonResult(
+                new DocumentResult
+                {
+                    Result = response,
+                    Token = token,
+                    IdField = _idField,
+                    IsPathBase64Encoded = _isPathBase64Encoded
+                });
         }
 
         private string GetContainerSasUri()
@@ -127,12 +146,14 @@ namespace CognitiveSearch.UI.Controllers
         [HttpPost]
         public JObject GetGraphData(string query)
         {
+            string facetName = _configuration.GetSection("GraphFacet")?.Value;
+
             if (query == null)
             {
                 query = "*";
             }
             FacetGraphGenerator graphGenerator = new FacetGraphGenerator(_docSearch);
-            var graphJson = graphGenerator.GetFacetGraphNodes(query, "keyPhrases");
+            var graphJson = graphGenerator.GetFacetGraphNodes(query, facetName);
 
             return graphJson;
         }
