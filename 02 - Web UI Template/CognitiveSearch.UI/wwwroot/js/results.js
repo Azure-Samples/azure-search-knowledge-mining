@@ -24,10 +24,13 @@ function UpdateResults(data) {
     for (var i = 0; i < data.results.length; i++) {
 
         var result = data.results[i].document;
+        var name;
+        var title; 
+
         result.idx = i;
 
         var id = result[data.idField]; 
-        var name = result.metadata_storage_name.split(".")[0];
+
         var tags = GetTagsHTML(result);
 
         var path;
@@ -36,6 +39,19 @@ function UpdateResults(data) {
         }
         else {
             path = result.metadata_storage_path + token;
+        }
+
+        if (result["metadata_storage_name"] !== undefined) {
+            name = result.metadata_storage_name.split(".")[0];
+        }
+        
+        if (result["metadata_title"] !== undefined) {
+            title = result.metadata_title;
+        }
+        else {
+            // Bring up the name to the top
+            title = name;
+            name = "";
         }
 
         if (path !== null) {
@@ -118,7 +134,8 @@ function UpdateResults(data) {
                                             </div>
                                         </div>
                                         <div class="results-body col-md-11">
-                                            <h4>${name}</h4>
+                                            <h4>${title}</h4>
+                                            <h5>${name}</h5>
                                             <div style="margin-top:10px;">${tags}</div>
                                         </div>
                                     </div>
