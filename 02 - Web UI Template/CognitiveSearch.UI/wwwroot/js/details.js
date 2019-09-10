@@ -28,11 +28,20 @@ function ShowDocument(id) {
             }
 
             var fileContainerHTML = GetFileHTML(path);
+
             var transcriptContainerHTML = htmlDecode(result.content.trim());
+
+            // If we have merged content, let's use it.
+            if (result.merged_content.length > 0) {
+                transcriptContainerHTML = htmlDecode(result.merged_content.trim());
+            }
+
             var fileName = "File";
 
             $('#details-pivot-content').html(`<div id="file-pivot" class="ms-Pivot-content" data-content="file">
-                                            <div id="file-viewer" style="height: 100%;"></div>
+                                            <div id="file-viewer" style="height: 100%;">
+                                                <pre id="file-viewer-pre"></pre>
+                                            </div>
                                         </div>
                                         <div id="transcript-pivot" class="ms-Pivot-content" data-content="transcript">
                                             <div id="transcript-viewer" style="height: 100%;">
@@ -42,7 +51,7 @@ function ShowDocument(id) {
                                             </div>
                                         </div>`);
 
-            $('#file-viewer').html(fileContainerHTML);
+            $('#file-viewer-pre').html(fileContainerHTML);
             $('#transcript-viewer-pre').html(transcriptContainerHTML);
 
             pivotLinksHTML += `<li id="file-pivot-link" class="ms-Pivot-link is-selected" data-content="file" title="File" tabindex="1">${fileName}</li>
@@ -83,6 +92,9 @@ function GetFileHTML(path) {
             fileContainerHTML =
                 `<object class="file-container" data="${path}" type="application/pdf">
                 </object>`;
+        }
+        else if (pathLower.includes(".txt") || pathLower.includes(".json")  ) {            
+            fileContainerHTML = htmlDecode(result.content.trim());
         }
         else if (pathLower.includes(".jpg") || pathLower.includes(".jpeg") || pathLower.includes(".gif") || pathLower.includes(".png")) {
             fileContainerHTML =
