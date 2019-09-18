@@ -157,5 +157,29 @@ namespace CognitiveSearch.UI.Controllers
 
             return graphJson;
         }
+
+        [HttpPost, HttpGet]
+        public ActionResult Suggest(string term, bool fuzzy = true)
+        {
+            // Call suggest query and return results
+            var response = _docSearch.Suggest(term, fuzzy);
+            List<string> suggestions = new List<string>();
+            if (response != null)
+            {
+                foreach (var result in response.Results)
+                {
+                    suggestions.Add(result.Text);
+                }
+            }
+
+            // Get unique items
+            List<string> uniqueItems = suggestions.Distinct().ToList();
+
+            return new JsonResult
+            (
+                uniqueItems
+            );
+
+        }
     }
 }
