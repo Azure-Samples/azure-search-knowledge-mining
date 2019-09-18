@@ -1,3 +1,16 @@
+---
+page_type: sample
+languages:
+- csharp
+- javascript
+- html
+- powershell
+products:
+- azure
+description: "Welcome to the Knowledge Mining Solution Accelerator!"
+urlFragment: azure-search-knowledge-mining
+---
+
 ![](images/kmheader.png)
 
 # Knowledge Mining Solution Accelerator Guide
