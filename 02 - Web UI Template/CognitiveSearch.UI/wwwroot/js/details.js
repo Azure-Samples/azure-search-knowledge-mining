@@ -32,8 +32,10 @@ function ShowDocument(id) {
             var transcriptContainerHTML = htmlDecode(result.content.trim());
 
             // If we have merged content, let's use it.
-            if (result.merged_content.length > 0) {
-                transcriptContainerHTML = htmlDecode(result.merged_content.trim());
+            if (result.merged_content) {
+                if (result.merged_content.length > 0) {
+                    transcriptContainerHTML = htmlDecode(result.merged_content.trim());
+                }
             }
 
             var fileName = "File";
