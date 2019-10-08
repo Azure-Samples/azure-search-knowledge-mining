@@ -11,6 +11,11 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Auth;
 using CognitiveSearch.UI.Models;
 using Newtonsoft.Json.Linq;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Table;
+using System.Threading.Tasks;
+using Microsoft.Azure;
+using static CognitiveSearch.UI.Models.ClustomerEntity;
 
 namespace CognitiveSearch.UI.Controllers
 {
@@ -18,15 +23,11 @@ namespace CognitiveSearch.UI.Controllers
     {
         private IConfiguration _configuration { get; set; }
         private DocumentSearchClient _docSearch { get; set; }
-        private string _idField { get; set; }
-        bool _isPathBase64Encoded { get; set; }
 
         public HomeController(IConfiguration configuration)
         {
             _configuration = configuration;
             _docSearch = new DocumentSearchClient(configuration);
-            _idField = _configuration.GetSection("KeyField")?.Value;
-            _isPathBase64Encoded = (_configuration.GetSection("IsPathBase64Encoded")?.Value == "True");
         }
 
         public IActionResult Index()
@@ -45,7 +46,7 @@ namespace CognitiveSearch.UI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Search(string q)
+        public IActionResult Search(string q, string selectedtext)
         {
             var searchidId = _docSearch.GetSearchId().ToString();
 
@@ -55,7 +56,56 @@ namespace CognitiveSearch.UI.Controllers
             TempData["query"] = q;
             TempData["applicationInstrumentationKey"] = _configuration.GetSection("InstrumentationKey")?.Value;
 
+
             return View();
+        }
+
+        public ActionResult CreateTable(string sText)
+        {
+
+            // The code in this section goes here.
+            CloudStorageAccount storageAccount = new CloudStorageAccount(
+            new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials(
+            "saramisstorage", "yErhAqOlVgL8VDhkAhsrQdzRnCHjQDx5FacWnPG2KhCEx/d3H/mo503Vbt1SJUCinYSWlXnoKIpXhTUsDusrng=="), true);
+
+            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
+
+            CloudTable table = tableClient.GetTableReference("TestTable");
+
+            ViewBag.TableName = table.Name;
+
+            async void CreateTestTableAsync()
+            {
+                // Create the CloudTable if it does not exist
+                await table.CreateIfNotExistsAsync();
+            }
+
+            CreateTestTableAsync();
+
+            // Create a customer entity and add it to the table.
+            CustomerEntity customer1 = new CustomerEntity("1", "1");
+            customer1.LastName = "Dorroh";
+            customer1.FirstName = "Makayla";
+            customer1.Email = "mbdorroh@crimson.ua.edu";
+
+            if (sText == "")
+            {
+                customer1.HighlightedText = sText;
+            }
+            else
+            {
+                customer1.HighlightedText = "Somethings not right.";
+            }
+
+            TableOperation insertOperation = TableOperation.Insert(customer1);
+
+            async void AddEntities()
+            {
+                await table.ExecuteAsync(insertOperation);
+            }
+            AddEntities();
+
+            return RedirectToAction("CreateTable", "Home");
         }
 
         [HttpPost]
@@ -96,33 +146,18 @@ namespace CognitiveSearch.UI.Controllers
                 }
             }
 
-            return new JsonResult(new DocumentResult
-            {
-                Results = response.Results,
-                Facets = facetResults,
-                Tags = tagsResults,
-                Count = Convert.ToInt32(response.Count),
-                Token = token,
-                SearchId = searchId,
-                IdField = _idField,
-                IsPathBase64Encoded = _isPathBase64Encoded
-            });
+            return new JsonResult(new DocumentResult { Results = response.Results, Facets = facetResults, Tags = tagsResults, Count = Convert.ToInt32(response.Count), Token = token, SearchId = searchId });
         }
 
         [HttpPost]
         public IActionResult GetDocumentById(string id = "")
         {
             var token = GetContainerSasUri();
-            var response = _docSearch.LookUp(id);
 
-            return new JsonResult(
-                new DocumentResult
-                {
-                    Result = response,
-                    Token = token,
-                    IdField = _idField,
-                    IsPathBase64Encoded = _isPathBase64Encoded
-                });
+            var response = _docSearch.LookUp(id);
+            var facetResults = new List<object>();
+
+            return new JsonResult(new DocumentResult { Result = response, Token = token });
         }
 
         private string GetContainerSasUri()
@@ -146,40 +181,14 @@ namespace CognitiveSearch.UI.Controllers
         [HttpPost]
         public JObject GetGraphData(string query)
         {
-            string facetName = _configuration.GetSection("GraphFacet")?.Value;
-
             if (query == null)
             {
                 query = "*";
             }
             FacetGraphGenerator graphGenerator = new FacetGraphGenerator(_docSearch);
-            var graphJson = graphGenerator.GetFacetGraphNodes(query, facetName);
+            var graphJson = graphGenerator.GetFacetGraphNodes(query, "keyPhrases");
 
             return graphJson;
-        }
-
-        [HttpPost, HttpGet]
-        public ActionResult Suggest(string term, bool fuzzy = true)
-        {
-            // Call suggest query and return results
-            var response = _docSearch.Suggest(term, fuzzy);
-            List<string> suggestions = new List<string>();
-            if (response != null)
-            {
-                foreach (var result in response.Results)
-                {
-                    suggestions.Add(result.Text);
-                }
-            }
-
-            // Get unique items
-            List<string> uniqueItems = suggestions.Distinct().ToList();
-
-            return new JsonResult
-            (
-                uniqueItems
-            );
-
         }
     }
 }

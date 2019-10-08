@@ -20,6 +20,8 @@
             <div id="details-modal-body" class="modal-body">
                 <div class="row" style="height: 100%;">
                     <div class="modal-control-group">
+                        <span id="prev-control" class="modal-control"><i class="ms-Icon ms-Icon--ChevronLeftMed"></i></span>
+                        <span id="next-control" class="modal-control"><i class="ms-Icon ms-Icon--ChevronRightMed"></i></span>
                         <span id="close-control" class="modal-control" data-dismiss="modal"><i class="ms-Icon ms-Icon--Clear"></i></span>
                     </div>
                     <div id="details-pivot" class="ms-Pivot col-md-8">
@@ -45,7 +47,21 @@
                         <hr />
                         <div id="reference-viewer"></div>
                     </div>
-                    <input id="result-id" type="hidden" />
+
+                    @*UA MIS ADDED HTML*@
+                    <div class="col-lg-offset-5">
+                        <button onclick="getSelectedText()">Annotate</button>
+                    </div>
+                    <br />
+                    <div class="col-lg-offset-5">
+
+                        <form id="testform" name="testform">
+                            <textarea name="selectedtext"
+                                      rows="5"
+                                      cols="20"></textarea>
+                        </form>
+                        <button onclick="saveSelectedText()">Save</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -56,7 +72,7 @@
 <div id="results-container" class="row content-results">
     <div class="col-md-2">
         <div id="search-input-group" class="input-group">
-            <input type="text" class="form-control advancedAutoComplete" name="q" id="q" placeholder="Search..." autocomplete="off">
+            <input type="text" class="form-control" name="q" id="q" placeholder="Search...">
             <span class="input-group-btn">
                 <button id="search-button" class="btn btn-default" onclick="Search();"><span class="ms-Icon ms-Icon--Search"></span></button>
             </span>
@@ -113,3 +129,74 @@
 </div>
 
 
+@*UA MIS CAPSTONE ADDED SCRIPT*@
+
+<script>
+    // Function to get the Selected Text
+    function getSelectedText() {
+        var selectedText = '';
+
+        // window.getSelection
+        if (window.getSelection) {
+            selectedText = window.getSelection();
+        }
+        // document.getSelection
+        else if (document.getSelection) {
+            selectedText = document.getSelection();
+        }
+        // document.selection
+        else if (document.selection) {
+            selectedText =
+                document.selection.createRange().text;
+        } else return;
+        // To write the selected text into the textarea
+        document.testform.selectedtext.value = selectedText;
+    }
+</script>
+
+<script>
+    function saveSelectedText() {
+        var sText = '';
+
+        // window.getSelection
+        if (window.getSelection) {
+            sText = window.getSelection();
+        }
+        // document.getSelection
+        else if (document.getSelection) {
+            sText = document.getSelection();
+        }
+        // document.selection
+        else if (document.selection) {
+            sText =
+                document.selection.createRange().text;
+        } else return;
+
+        jQuery.ajax({
+            type: 'POST',
+            url: @Url.Action("Home", "CreateTable", new { sText = sText }),
+            data: { sText: sText },
+            success: function(response) {
+        response ? alert("It worked!") : alert("It didn't work.");
+        });
+    }
+</script>
+
+<script>
+
+    var sText = '';
+
+    // window.getSelection
+    if (window.getSelection) {
+        sText = window.getSelection();
+    }
+    // document.getSelection
+    else if (document.getSelection) {
+        sText = document.getSelection();
+    }
+    // document.selection
+    else if (document.selection) {
+        sText =
+            document.selection.createRange().text;
+    } else return;
+</script>
