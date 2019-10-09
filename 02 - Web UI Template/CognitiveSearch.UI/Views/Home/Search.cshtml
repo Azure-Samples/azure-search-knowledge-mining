@@ -49,6 +49,23 @@
                     </div>
 
                     @*UA MIS ADDED HTML*@
+
+                    <div style="text-align:center;"> 
+                        @*<select style="width:25%">
+                            <option value="Entity Classification">Entity Classification</option>
+                            <option value="Person">Person</option>
+                            <option value="Organization">Organization</option>
+                            <option value="location">Location</option>
+                        </select>*@
+                    </div>
+                    <div style="text-align:center;">
+                        <button style="color: white; background-color: #1e6ce4; margin: 30px; width: 10%;" onClick="getSelectedText"> Text Class </button>
+
+                        <button style="color: white; background-color: #1e6ce4; margin: 30px; width: 10%;" onClick="getSelectedText"> Entity Class</button>
+                    </div>
+
+                    <div style="text-align: center;">Classification dropdown placeholder</div>
+
                     <div class="col-lg-offset-5">
                         <button onclick="getSelectedText()">Annotate</button>
                     </div>
@@ -58,9 +75,10 @@
                         <form id="testform" name="testform">
                             <textarea name="selectedtext"
                                       rows="5"
-                                      cols="20"></textarea>
+                                      cols="20"
+                                      style=" border-color:#1e6ce4"></textarea>
                         </form>
-                            <button onclick="saveSelectedText()">Save</button>
+                        <button onclick="saveSelectedText()">Save</button>
                     </div>
                 </div>
             </div>
@@ -120,6 +138,9 @@
                     <span id="entity-loading-indicator" class="ms-Spinner ms-Spinner--large" style="display:none;"></span>
                 </div>
             </div>
+
+            
+
 
             <br />
             <button style="width:100%" class="btn btn-default" onclick="EntityMapClick()">Return to Search Results</button>
