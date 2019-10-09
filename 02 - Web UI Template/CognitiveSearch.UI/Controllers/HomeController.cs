@@ -15,7 +15,14 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using System.Threading.Tasks;
 using Microsoft.Azure;
-using static CognitiveSearch.UI.Models.ClustomerEntity;
+using static CognitiveSearch.UI.Models.Annotations;
+using static CognitiveSearch.UI.Models.Comments;
+using static CognitiveSearch.UI.Models.DeletedAnnotations;
+using static CognitiveSearch.UI.Models.DeletedComments;
+using static CognitiveSearch.UI.Models.DocClassifications;
+using static CognitiveSearch.UI.Models.Documents;
+using static CognitiveSearch.UI.Models.EntityClassifications;
+using static CognitiveSearch.UI.Models.TextClassifications;
 
 namespace CognitiveSearch.UI.Controllers
 {
@@ -60,7 +67,7 @@ namespace CognitiveSearch.UI.Controllers
             return View();
         }
 
-        public ActionResult CreateTable(string sText)
+        public IActionResult CreateTable(string sText)
         {
 
             // The code in this section goes here.
@@ -70,42 +77,108 @@ namespace CognitiveSearch.UI.Controllers
 
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
 
-            CloudTable table = tableClient.GetTableReference("TestTable");
+            CloudTable Documents = tableClient.GetTableReference("Documents");
+            CloudTable Annotations = tableClient.GetTableReference("Annotations");
+            CloudTable Comments = tableClient.GetTableReference("Comments");
+            CloudTable TextClassifications = tableClient.GetTableReference("TextClassifications");
+            CloudTable EntityClassifications = tableClient.GetTableReference("EntityClassifications");
+            CloudTable DocClassifications = tableClient.GetTableReference("DocClassifications");
+            CloudTable DeletedAnnotations = tableClient.GetTableReference("DeletedAnnotations");
+            CloudTable DeletedComments = tableClient.GetTableReference("DeletedComments");
 
-            ViewBag.TableName = table.Name;
+            ViewBag.DocumentTable = Documents.Name;
+            ViewBag.AnnotationTable = Annotations.Name;
+            ViewBag.CommentTable = Comments.Name;
+            ViewBag.TextClassificationTable = TextClassifications.Name;
+            ViewBag.EntityClassificationTable = EntityClassifications.Name;
+            ViewBag.DocClassificationTable = DocClassifications.Name;
+            ViewBag.DeletedAnnotationTable = DeletedAnnotations.Name;
+            ViewBag.DeletedCommentTable = DeletedAnnotations.Name;
 
-            async void CreateTestTableAsync()
+            async void CreateDocumentTableAsync()
             {
                 // Create the CloudTable if it does not exist
-                await table.CreateIfNotExistsAsync();
+                await Documents.CreateIfNotExistsAsync();
             }
+            CreateDocumentTableAsync();
 
-            CreateTestTableAsync();
+            async void CreateAnnotationTableAsync()
+            {
+                // Create the CloudTable if it does not exist
+                await Annotations.CreateIfNotExistsAsync();
+            }
+            CreateAnnotationTableAsync();
+
+            async void CreateCommentTableAsync()
+            {
+                // Create the CloudTable if it does not exist
+                await Comments.CreateIfNotExistsAsync();
+            }
+            CreateCommentTableAsync();
+
+            async void CreateTextClassificationTableAsync()
+            {
+                // Create the CloudTable if it does not exist
+                await TextClassifications.CreateIfNotExistsAsync();
+            }
+            CreateTextClassificationTableAsync();
+
+            async void CreateEntityClassificationTableAsync()
+            {
+                // Create the CloudTable if it does not exist
+                await EntityClassifications.CreateIfNotExistsAsync();
+            }
+            CreateEntityClassificationTableAsync();
+
+            async void CreateDocClassificationTableAsync()
+            {
+                // Create the CloudTable if it does not exist
+                await DocClassifications.CreateIfNotExistsAsync();
+            }
+            CreateDocClassificationTableAsync();
+
+            async void CreateDeletedAnnotationTableAsync()
+            {
+                // Create the CloudTable if it does not exist
+                await DeletedAnnotations.CreateIfNotExistsAsync();
+            }
+            CreateDeletedAnnotationTableAsync();
+
+            async void CreateDeletedCommentTableAsync()
+            {
+                // Create the CloudTable if it does not exist
+                await DeletedComments.CreateIfNotExistsAsync();
+            }
+            CreateDeletedCommentTableAsync();
 
             // Create a customer entity and add it to the table.
-            CustomerEntity customer1 = new CustomerEntity("1", "1");
-            customer1.LastName = "Dorroh";
-            customer1.FirstName = "Makayla";
-            customer1.Email = "mbdorroh@crimson.ua.edu";
+            Annotation Annotation1 = new Annotation("1", "1");
+            Annotation1.AnnotationID = "A1";
+            Annotation1.ClassificationID = "T1";
+            Annotation1.DocumentID = "D1";
+            Annotation1.StartCharLocation = "253";
+            Annotation1.EndCharLocation = "300";
+            Annotation1.Accept = 0;
+            Annotation1.Deny = 0;
 
             if (sText == "")
             {
-                customer1.HighlightedText = sText;
+                Annotation1.HighlightedText = sText;
             }
             else
             {
-                customer1.HighlightedText = "Somethings not right.";
+                Annotation1.HighlightedText = "Somethings not right.";
             }
 
-            TableOperation insertOperation = TableOperation.Insert(customer1);
+            TableOperation insertOperation = TableOperation.Insert(Annotation1);
 
             async void AddEntities()
             {
-                await table.ExecuteAsync(insertOperation);
+                await Annotations.ExecuteAsync(insertOperation);
             }
             AddEntities();
 
-            return RedirectToAction("CreateTable", "Home");
+            return View();
         }
 
         [HttpPost]
