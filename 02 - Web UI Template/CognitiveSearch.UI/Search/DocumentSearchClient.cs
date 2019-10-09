@@ -23,9 +23,7 @@ namespace CognitiveSearch.UI
         private ISearchIndexClient _indexClient;
         private string searchServiceName { get; set; }
         private string apiKey { get; set; } 
-        private string IndexName { get; set; }
-
-        private string idField { get; set; }
+        private string IndexName { get; set; } 
 
         // Client logs all searches in Application Insights
         private static TelemetryClient telemetryClient = new TelemetryClient();
@@ -43,7 +41,6 @@ namespace CognitiveSearch.UI
                 searchServiceName = configuration.GetSection("SearchServiceName")?.Value;
                 apiKey = configuration.GetSection("SearchApiKey")?.Value;
                 IndexName = configuration.GetSection("SearchIndexName")?.Value;
-                idField = configuration.GetSection("KeyField")?.Value;
                 telemetryClient.InstrumentationKey = configuration.GetSection("InstrumentationKey")?.Value;
 
                 // Create an HTTP reference to the catalog index
@@ -56,11 +53,11 @@ namespace CognitiveSearch.UI
             }
             catch (Exception e)
             {
-                throw new ArgumentException(e.Message.ToString());
+                errorMessage = e.Message.ToString();
             }
         }
 
-        public DocumentSearchResult<Document> Search(string searchText, SearchFacet[] searchFacets = null, string[] selectFilter = null, int currentPage = 1)
+        public DocumentSearchResult Search(string searchText, SearchFacet[] searchFacets = null, string[] selectFilter = null, int currentPage = 1)
         {
             try
             {
@@ -135,7 +132,7 @@ namespace CognitiveSearch.UI
             return sp;
         }
 
-        public DocumentSuggestResult<Document> Suggest(string searchText, bool fuzzy)
+        public DocumentSuggestResult Suggest(string searchText, bool fuzzy)
         {
             // Execute search based on query string
             try
@@ -189,7 +186,7 @@ namespace CognitiveSearch.UI
             return string.Empty;
         }
 
-        public DocumentSearchResult<Document> GetFacets(string searchText, string facetName, int maxCount = 30)
+        public DocumentSearchResult GetFacets(string searchText, string facetName, int maxCount = 30)
         {
             // Execute search based on query string
             try
@@ -198,7 +195,7 @@ namespace CognitiveSearch.UI
                 {
                     SearchMode = SearchMode.Any,
                     Top = 10,
-                    Select = new List<String>() { idField },
+                    Select = new List<String>() { "id" },
                     Facets = new List<String>() { $"{facetName}, count:{maxCount}" },
                     QueryType = QueryType.Full
                 };

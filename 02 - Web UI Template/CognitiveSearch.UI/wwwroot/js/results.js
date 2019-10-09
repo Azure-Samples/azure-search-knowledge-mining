@@ -1,58 +1,34 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-function Base64Decode(token) {
-    if (token.length === 0) return null;
-    // The last character in the token is the number of padding characters.
-    var numberOfPaddingCharacters = token.slice(-1);
-    // The Base64 string is the token without the last character.
-    token = token.slice(0, -1);
-    // '-'s are '+'s and '_'s are '/'s.
-    token = token.replace(/-/g, '+');
-    token = token.replace(/_/g, '/');
-    // Pad the Base64 string out with '='s
-    for (var i = 0; i < numberOfPaddingCharacters; i++)
-        token += "=";
-    return atob(token);
-}
-
 function UpdateResults(data) {
     var resultsHtml = '';
+    var imgCounter = 0;
+    var startDocCount = 0;
+
+    if (data.count != 0) {
+        startDocCount = 1;
+    }
+    var currentDocCount = currentPage * 10;
+
+    if (currentPage > 1) {
+        startDocCount = ((currentPage - 1) * 10) + 1;
+    }
+    if (currentDocCount > data.count) {
+        currentDocCount = data.count;
+    }
 
     $("#doc-count").html(` Available Results: ${data.count}`);
 
     for (var i = 0; i < data.results.length; i++) {
 
         var result = data.results[i].document;
-        var name;
-        var title; 
-
         result.idx = i;
 
-        var id = result[data.idField]; 
-
+        var id = result.id;
+        var name = result.metadata_storage_name.split(".")[0];
+        var path = result.metadata_storage_path + token;
         var tags = GetTagsHTML(result);
-
-        var path;
-        if (data.isPathBase64Encoded) {
-            path = Base64Decode(result.metadata_storage_path) + token;
-        }
-        else {
-            path = result.metadata_storage_path + token;
-        }
-
-        if (result["metadata_storage_name"] !== undefined) {
-            name = result.metadata_storage_name.split(".")[0];
-        }
-        
-        if (result["metadata_title"] !== undefined) {
-            title = result.metadata_title;
-        }
-        else {
-            // Bring up the name to the top
-            title = name;
-            name = "";
-        }
 
         if (path !== null) {
             var classList = "results-div ";
@@ -134,8 +110,7 @@ function UpdateResults(data) {
                                             </div>
                                         </div>
                                         <div class="results-body col-md-11">
-                                            <h4>${title}</h4>
-                                            <h5>${name}</h5>
+                                            <h4>${name}</h4>
                                             <div style="margin-top:10px;">${tags}</div>
                                         </div>
                                     </div>
@@ -143,13 +118,7 @@ function UpdateResults(data) {
             }
         }
         else {
-            resultsHtml += `<div class="${classList}" );">
-                                    <div class="search-result">
-                                        <div class="results-header">
-                                            <h4>Could not get metadata_storage_path for this result.</h4>
-                                        </div>
-                                    </div>
-                                </div>`; 
+            // TODO: Handle errors showing result.
         }
     }
 

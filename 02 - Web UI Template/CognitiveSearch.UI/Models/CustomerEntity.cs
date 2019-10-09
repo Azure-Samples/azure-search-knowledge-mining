@@ -12,11 +12,11 @@ namespace CognitiveSearch.UI.Models
         {
             public CustomerEntity(string PKey, string RKey)
             {
-                this.PartitionKey = PKey;
+                this.PartitionKey =  PKey;
                 this.RowKey = "C" + RKey;
             }
 
-            public CustomerEntity() { }
+            public CustomerEntity() {}
 
             public string LastName { get; set; }
             public string FirstName { get; set; }

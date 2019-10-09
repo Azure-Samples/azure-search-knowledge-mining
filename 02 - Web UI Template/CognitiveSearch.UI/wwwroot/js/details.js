@@ -1,6 +1,22 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+$('#next-control').click(function () {
+    var idx = parseInt($('#result-id').val());
+
+    if (idx < results.length) {
+        ShowDocument(idx + 1);
+    }
+});
+
+$('#prev-control').click(function () {
+    var idx = parseInt($('#result-id').val());
+
+    if (idx > 0) {
+        ShowDocument(idx - 1);
+    }
+});
+
 // Details
 function ShowDocument(id) {
     $.post('/home/getdocumentbyid',
@@ -19,30 +35,12 @@ function ShowDocument(id) {
 
             $('#result-id').val(id);
 
-            var path;
-            if (data.isPathBase64Encoded) {
-                path = Base64Decode(result.metadata_storage_path) + token;
-            }
-            else {
-                path = result.metadata_storage_path + token;
-            }
-
-            var fileContainerHTML = GetFileHTML(path);
-
+            var fileContainerHTML = GetFileHTML(result);
             var transcriptContainerHTML = htmlDecode(result.content.trim());
-
-            // If we have merged content, let's use it.
-            if (result.merged_content) {
-                if (result.merged_content.length > 0) {
-                    transcriptContainerHTML = htmlDecode(result.merged_content.trim());
-                }
-            }
-
             var fileName = "File";
 
             $('#details-pivot-content').html(`<div id="file-pivot" class="ms-Pivot-content" data-content="file">
-                                            <div id="file-viewer" style="height: 100%;">
-                                            </div>
+                                            <div id="file-viewer" style="height: 100%;"></div>
                                         </div>
                                         <div id="transcript-pivot" class="ms-Pivot-content" data-content="transcript">
                                             <div id="transcript-viewer" style="height: 100%;">
@@ -50,6 +48,7 @@ function ShowDocument(id) {
                                                     <pre id="transcript-viewer-pre"></pre>
                                                 </div>
                                             </div>
+                                        </div>
                                         </div>`);
 
             $('#file-viewer').html(fileContainerHTML);
@@ -83,20 +82,22 @@ function GetMatches(string, regex, index) {
     return matches;
 }
 
-function GetFileHTML(path) {
+function GetFileHTML(result) {
+
+    var path = result.metadata_storage_path + token;
 
     if (path !== null) {
+
         var pathLower = path.toLowerCase();
         var fileContainherHTML;
 
         if (pathLower.includes(".pdf")) {
             fileContainerHTML =
                 `<object class="file-container" data="${path}" type="application/pdf">
+                    <iframe class="file-container" src="${path}" type="application/pdf">
+                        This browser does not support PDFs. Please download the XML to view it: <a href="${path}">Download PDF</a>"
+                    </iframe>
                 </object>`;
-        }
-        else if (pathLower.includes(".txt") || pathLower.includes(".json")) {
-            var txtHtml = htmlDecode(result.content.trim());
-            fileContainerHTML = `<pre id="file-viewer-pre"> ${txtHtml} </pre>`;
         }
         else if (pathLower.includes(".jpg") || pathLower.includes(".jpeg") || pathLower.includes(".gif") || pathLower.includes(".png")) {
             fileContainerHTML =
@@ -172,3 +173,4 @@ function SearchTranscript(searchText) {
         GetReferences(searchText, false);
     }
 }
+

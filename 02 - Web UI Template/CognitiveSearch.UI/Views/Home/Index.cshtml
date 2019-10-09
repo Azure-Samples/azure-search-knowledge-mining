@@ -5,8 +5,6 @@
     ViewData["Title"] = "Home";
 }
 
-
-
 <div class="home-page-background">
     <div class="content">
         @using (Html.BeginForm("Search", "Home", FormMethod.Post))
@@ -14,7 +12,7 @@
             <div class="form-group">
                 <label id="search-label">Search</label>
                 <div id="search-input-group" class="input-group">
-                    <input type="text" class="form-control advancedAutoComplete" name="q" id="index-search-input" placeholder="What are you searching for today?" autocomplete="off">
+                    <input type="text" class="form-control" name="q" id="index-search-input" placeholder="What are you searching for today?">
                     <span class="input-group-btn">
                         <button id="index-search-submit" class="btn btn-default" type="submit"><span class="ms-Icon ms-Icon--Search"></span></button>
                     </span>
@@ -22,6 +20,9 @@
             </div>
         }
     </div>
+</div>
+<div class="ms-lgOffset5">
+    <a href="/TestTable/Index">Test Table</a>
 </div>
 <div class="content row">
     <div class="col-md-4">
