@@ -48,62 +48,38 @@
                         <div id="reference-viewer"></div>
                     </div>
 
-                    <html>
-                    <head>
-                        <script type="text/javascript">
-                            function entityType() {
-                                var eID = document.getElementById("classOptions");
-                                var dayVal = eID.options[eID.selectedIndex].value;
-                                var daytxt = eID.options[eID.selectedIndex].text;
-                                alert("Selected Item  " + daytxt + ", Value " + dayVal);
-                            }
-                        </script>
-                    </head>
-                    <body>
+                    @*UA MIS ADDED HTML*@
+                    <div style="text-align:center;">
+                        <button style="color: white; background-color: #1e6ce4; margin: 30px; width: 10%;" onClick="getSelectedText"> Text Class </button>
+
+                        <button style="color: white; background-color: #1e6ce4; margin: 30px; width: 10%;" onClick="getSelectedText"> Entity Class</button>
+                    </div>
+
+                    <div style="text-align: center;">
                         <select id="classOptions">
 
-                            <option value="1" selected="selected">Entity Type</option>
-                            <option value="2">Person</option>
-                            <option value="3">Place</option>
-                            <option value="4">Thing</option>
+                        <option value="1" selected="selected">Entity Type</option>
+                        <option value="2">Person</option>
+                        <option value="3">Place</option>
+                        <option value="4">Thing</option>
+                            </select>
+                    </div>
 
-                            <br>
-                            <br>
-                            <button onclick="entityType()">Get Selected Day</button>
-                    </body>
-                </html>
+                    <br />
 
-                <div style="text-align:center;">
-                    <select style="width:25%">
-                 <option value="Entity Classification">Entity Classification</option>
-                 <option value="Person">Person</option>
-                 <option value="Organization">Organization</option>
-                 <option value="location">Location</option>
-                 </select>
-                </div>
-                <div style="text-align:center;">
-                    <button style="color: white; background-color: #1e6ce4; margin: 30px; width: 10%;" onClick="getSelectedText"> Text Class </button>
+                        <div class="col-lg-offset-5">
+                            <button onclick="getSelectedText()">Annotate</button>
+                        </div>
+                        <br />
+                        <div class="col-lg-offset-5">
 
-                    <button style="color: white; background-color: #1e6ce4; margin: 30px; width: 10%;" onClick="getSelectedText"> Entity Class</button>
-                </div>
-
-                <div style="text-align: center;">Classification dropdown placeholder</div>
-
-
-                @*UA MIS ADDED HTML*@
-                <div class="col-lg-offset-5">
-                    <button onclick="getSelectedText()">Annotate</button>
-                </div>
-                <br />
-                <div class="col-lg-offset-5">
-
-                    <form id="testform" name="testform">
-                        <textarea name="selectedtext"
-                                  rows="5"
-                                  cols="20"></textarea>
-                    </form>
-                    <a href="/Home/CreateTable">Save</a>
-                </div>
+                            <form id="testform" name="testform">
+                                <textarea name="selectedtext"
+                                          rows="5"
+                                          cols="20"></textarea>
+                            </form>
+                            <a href="/Home/CreateTable">Save</a>
+                        </div>
                 </div>
             </div>
         </div>
@@ -172,30 +148,7 @@
 
 
 @*UA MIS CAPSTONE ADDED SCRIPT*@
-<html>
-<head>
 
-	<script type="text/javascript">
-		function findDay() {
-			var eID = document.getElementById("classOptions");
-			var dayVal = eID.options[eID.selectedIndex].value;
-			var daytxt = eID.options[eID.selectedIndex].text;
-			alert("Selected Item  " + daytxt + ", Value " + dayVal);
-		}
-	</script>
-</head>
-<body>
-	<select id="classOptions">
-
-		<option value="1" selected="selected">Choose Classification</option>
-		<option value="2">Entity Classification</option>
-		<option value="3">Text Classification</option>
-
-		<br>
-		<br>
-		<button onclick="findDay()">Get Selected Classification</button>
-</body>
-</html>
 <script>
     // Function to get the Selected Text
     function getSelectedText() {
@@ -265,4 +218,3 @@
                 document.selection.createRange().text;
         } else return;
 </script>
-    

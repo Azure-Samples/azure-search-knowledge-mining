@@ -152,31 +152,31 @@ namespace CognitiveSearch.UI.Controllers
             CreateDeletedCommentTableAsync();
 
             // Create a customer entity and add it to the table.
-            Annotation Annotation1 = new Annotation("1", "1");
-            Annotation1.AnnotationID = "A1";
-            Annotation1.ClassificationID = "T1";
-            Annotation1.DocumentID = "D1";
-            Annotation1.StartCharLocation = "253";
-            Annotation1.EndCharLocation = "300";
-            Annotation1.Accept = 0;
-            Annotation1.Deny = 0;
+            //Annotation Annotation1 = new Annotation("1", "1");
+            //Annotation1.AnnotationID = "A1";
+            //Annotation1.ClassificationID = "T1";
+            //Annotation1.DocumentID = "D1";
+            //Annotation1.StartCharLocation = "253";
+            //Annotation1.EndCharLocation = "300";
+            //Annotation1.Accept = 0;
+            //Annotation1.Deny = 0;
 
-            if (sText == "")
-            {
-                Annotation1.HighlightedText = sText;
-            }
-            else
-            {
-                Annotation1.HighlightedText = "Somethings not right.";
-            }
+            //if (sText == "")
+            //{
+            //    Annotation1.HighlightedText = sText;
+            //}
+            //else
+            //{
+            //    Annotation1.HighlightedText = "Somethings not right.";
+            //}
 
-            TableOperation insertOperation = TableOperation.Insert(Annotation1);
+            //TableOperation insertOperation = TableOperation.Insert(Annotation1);
 
-            async void AddEntities()
-            {
-                await Annotations.ExecuteAsync(insertOperation);
-            }
-            AddEntities();
+            //async void AddEntities()
+            //{
+            //    await Annotations.ExecuteAsync(insertOperation);
+            //}
+            //AddEntities();
 
             return View();
         }
