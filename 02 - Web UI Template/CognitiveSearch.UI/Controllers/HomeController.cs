@@ -46,7 +46,7 @@ namespace CognitiveSearch.UI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Search(string q, string selectedtext)
+        public IActionResult Search(string q)
         {
             var searchidId = _docSearch.GetSearchId().ToString();
 

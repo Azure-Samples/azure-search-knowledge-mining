@@ -172,13 +172,13 @@
                 document.selection.createRange().text;
         } else return;
 
-        jQuery.ajax({
+        @*jQuery.ajax({
             type: 'POST',
             url: @Url.Action("Home", "CreateTable", new { sText = sText }),
             data: { sText: sText },
             success: function(response) {
         response ? alert("It worked!") : alert("It didn't work.");
-        });
+        });*@
     }
 </script>
 
@@ -186,17 +186,18 @@
 
     var sText = '';
 
-    // window.getSelection
-    if (window.getSelection) {
-        sText = window.getSelection();
-    }
-    // document.getSelection
-    else if (document.getSelection) {
-        sText = document.getSelection();
-    }
-    // document.selection
-    else if (document.selection) {
-        sText =
-            document.selection.createRange().text;
-    } else return;
+        // window.getSelection
+        if (window.getSelection) {
+            sText = window.getSelection();
+        }
+        // document.getSelection
+        else if (document.getSelection) {
+            sText = document.getSelection();
+        }
+        // document.selection
+        else if (document.selection) {
+            sText =
+                document.selection.createRange().text;
+        } else return;
 </script>
+    
