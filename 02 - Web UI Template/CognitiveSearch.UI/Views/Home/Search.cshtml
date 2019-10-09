@@ -48,20 +48,44 @@
                         <div id="reference-viewer"></div>
                     </div>
 
-                    @*UA MIS ADDED HTML*@
-                    <div class="col-lg-offset-5">
-                        <button onclick="getSelectedText()">Annotate</button>
-                    </div>
-                    <br />
-                    <div class="col-lg-offset-5">
+                    <html>
+                    <head>
+                        <script type="text/javascript">
+                            function entityType() {
+                                var eID = document.getElementById("classOptions");
+                                var dayVal = eID.options[eID.selectedIndex].value;
+                                var daytxt = eID.options[eID.selectedIndex].text;
+                                alert("Selected Item  " + daytxt + ", Value " + dayVal);
+                            }
+                        </script>
+                    </head>
+                    <body>
+                        <select id="classOptions">
 
-                        <form id="testform" name="testform">
-                            <textarea name="selectedtext"
-                                      rows="5"
-                                      cols="20"></textarea>
-                        </form>
-                            <button onclick="saveSelectedText()">Save</button>
-                    </div>
+                            <option value="1" selected="selected">Entity Type</option>
+                            <option value="2">Person</option>
+                            <option value="3">Place</option>
+                            <option value="4">Thing</option>
+                          
+                        <br><br>
+                        <button onclick="entityType()">Get Selected Day</button>
+                    </body>
+                </html>
+
+                @*UA MIS ADDED HTML*@
+                <div class="col-lg-offset-5">
+                    <button onclick="getSelectedText()">Annotate</button>
+                </div>
+                <br />
+                <div class="col-lg-offset-5">
+
+                    <form id="testform" name="testform">
+                        <textarea name="selectedtext"
+                                  rows="5"
+                                  cols="20"></textarea>
+                    </form>
+                    <button onclick="saveSelectedText()">Save</button>
+                </div>
                 </div>
             </div>
         </div>
