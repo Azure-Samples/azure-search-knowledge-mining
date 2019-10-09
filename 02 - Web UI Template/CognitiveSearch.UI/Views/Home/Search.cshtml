@@ -49,37 +49,47 @@
                     </div>
 
                     @*UA MIS ADDED HTML*@
-                    <div style="text-align:center;">
+                    <div style="text-align:center; ">
                         <button style="color: white; background-color: #1e6ce4; margin: 30px; width: 10%;" onClick="getSelectedText"> Text Class </button>
 
                         <button style="color: white; background-color: #1e6ce4; margin: 30px; width: 10%;" onClick="getSelectedText"> Entity Class</button>
                     </div>
 
                     <div style="text-align: center;">
-                        <select id="classOptions">
+                        <select id="entityType">
 
-                        <option value="1" selected="selected">Entity Type</option>
-                        <option value="2">Person</option>
-                        <option value="3">Place</option>
-                        <option value="4">Thing</option>
-                            </select>
+                            <option value="1" selected="selected">Entity Type</option>
+                            <option value="2">Person</option>
+                            <option value="3">Place</option>
+                            <option value="4">Thing</option>
+                        </select>
+                  
+                    </div>
+                    <div style="text-align: center;">
+                        <select id="textType">
+
+                            <option value="1" selected="selected">Text Type</option>
+                            <option value="2">Introduction</option>
+                            <option value="3">Body</option>
+                            <option value="4">Conclusion</option>
+                        </select>
                     </div>
 
                     <br />
 
-                        <div class="col-lg-offset-5">
-                            <button onclick="getSelectedText()">Annotate</button>
-                        </div>
-                        <br />
-                        <div class="col-lg-offset-5">
+                    <div class="col-lg-offset-5">
+                        <button onclick="getSelectedText()">Annotate</button>
+                    </div>
+                    <br />
+                    <div class="col-lg-offset-5">
 
-                            <form id="testform" name="testform">
-                                <textarea name="selectedtext"
-                                          rows="5"
-                                          cols="20"></textarea>
-                            </form>
-                            <a href="/Home/CreateTable">Save</a>
-                        </div>
+                        <form id="testform" name="testform">
+                            <textarea name="selectedtext"
+                                      rows="5"
+                                      cols="20"></textarea>
+                        </form>
+                        <a href="/Home/CreateTable">Save</a>
+                    </div>
                 </div>
             </div>
         </div>
