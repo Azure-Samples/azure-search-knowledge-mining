@@ -50,12 +50,12 @@
 
                     @*UA MIS ADDED HTML*@
                     <div style="text-align:center; ">
-                        <button style="color: white; background-color: #1e6ce4; margin: 30px; width: 10%;" onClick="getSelectedText"> Text Class </button>
+                        <button style="color: white; background-color: #1e6ce4; margin: 30px; width: 10%;" onClick="togglediv('item')"> Text Class </button>
 
-                        <button style="color: white; background-color: #1e6ce4; margin: 30px; width: 10%;" onClick="getSelectedText"> Entity Class</button>
+                        <button style="color: white; background-color: #1e6ce4; margin: 30px; width: 10%;" onClick="togglediv2('item2')"> Entity Class</button>
                     </div>
 
-                    <div style="text-align: center;">
+                    <div hidden id="item2" style="text-align: center;">
                         <select id="entityType" style="width: 455px">
 
                             <option value="1" selected="selected">Entity Type</option>
@@ -65,7 +65,7 @@
                         </select>
                     </div>
                     <br />
-                    <div style="text-align: center;">
+                    <div hidden id="item" style="text-align: center;">
                         <select id="textType" style="width: 455px">
 
                             <option value="1" selected="selected">Text Type</option>
@@ -177,4 +177,18 @@
             }
         });
     }
+</script>
+<script>
+
+	function togglediv(id) {
+    var div = document.getElementById(id);
+    div.style.display = div.style.display == "none" ? "block" : "none";
+}
+</script>
+<script>
+
+	function togglediv2(id) {
+		var div = document.getElementById(id);
+		div.style.display = div.style.display == "none" ? "block" : "none";
+	}
 </script>
