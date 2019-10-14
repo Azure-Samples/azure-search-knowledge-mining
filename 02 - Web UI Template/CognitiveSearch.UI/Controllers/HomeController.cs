@@ -76,8 +76,11 @@ namespace CognitiveSearch.UI.Controllers
             //get document ID
             string docID = id;
 
-            //used for partition key, row key, and ID
-            int counter = 1;
+            //used for annotation partition key, row key, and ID
+            int annotationCounter = 1;
+
+            //used for comment partition key, row key, and ID
+            int commentCounter = 1;
 
             // connect to storage account
             CloudStorageAccount storageAccount = new CloudStorageAccount(
@@ -160,25 +163,41 @@ namespace CognitiveSearch.UI.Controllers
             }
             CreateDeletedCommentTableAsync();
 
+            //creating document classification list for dropdown list
+            List<string> docClassificationList = new List<string>();
+            TableContinuationToken token = null;
+            do
+            {
+                var q = new TableQuery<DocClassification>();
+                var queryResult = Task.Run(() => DocClassifications.ExecuteQuerySegmentedAsync(q, token)).GetAwaiter().GetResult();
+                foreach (var item in queryResult.Results)
+                {
+                    docClassificationList.Add(item.Classification);
+                }
+                token = queryResult.ContinuationToken;
+            } while (token != null);
+
+            ViewBag.docClassList = docClassificationList;
+
             //add entity to existing annotation table
             async void createEntity()
             {
-                //retrieves entity where partitionKey = counter in table
-                TableOperation retrieveOperation = TableOperation.Retrieve<Annotation>(counter.ToString(), "A" + counter.ToString());
+                //retrieves annotation entity where partitionKey = counter in table
+                TableOperation retrieveOperation = TableOperation.Retrieve<Annotation>(annotationCounter.ToString(), "A" + annotationCounter.ToString());
                 TableResult query = await Annotations.ExecuteAsync(retrieveOperation);
 
-                //if entity exists add to counter
+                //if entity annotation exists add to counter
                 while (query.Result != null)
                 {
-                    counter++;
-                    retrieveOperation = TableOperation.Retrieve<Annotation>(counter.ToString(), "A" + counter.ToString());
+                    annotationCounter++;
+                    retrieveOperation = TableOperation.Retrieve<Annotation>(annotationCounter.ToString(), "A" + annotationCounter.ToString());
 
                     query = await Annotations.ExecuteAsync(retrieveOperation);
                 }
 
-                // Create a customer entity and add it to the table.
-                Annotation Annotation = new Annotation(counter.ToString(), counter.ToString());
-                Annotation.AnnotationID = "A" + counter.ToString();
+                // Create an annotation entity and add it to the table.
+                Annotation Annotation = new Annotation(annotationCounter.ToString(), annotationCounter.ToString());
+                Annotation.AnnotationID = "A" + annotationCounter.ToString();
                 Annotation.ClassificationID = "T1"; //get this value from dropdown list
                 Annotation.DocumentID = docID;
                 Annotation.StartCharLocation = "253"; 
@@ -189,12 +208,41 @@ namespace CognitiveSearch.UI.Controllers
 
                 TableOperation insertOperation = TableOperation.Insert(Annotation);
 
-                async void AddEntities()
+                async void AddAnnotationEntities()
                 {
                     await Annotations.ExecuteAsync(insertOperation);
                 }
-                AddEntities();
-                
+                AddAnnotationEntities();
+
+                //the below comment logic will only be executed if there is actually a comment
+
+                //retrieves comment entity where partitionKey = counter in table
+                TableOperation retrieveOperation2 = TableOperation.Retrieve<Comment>(commentCounter.ToString(), "C" + commentCounter.ToString());
+                TableResult query2 = await Annotations.ExecuteAsync(retrieveOperation2);
+
+                //if comment entity exists add to counter
+                while (query2.Result != null)
+                {
+                    commentCounter++;
+                    retrieveOperation2 = TableOperation.Retrieve<Comment>(commentCounter.ToString(), "C" + commentCounter.ToString());
+
+                    query2 = await Annotations.ExecuteAsync(retrieveOperation2);
+                }
+
+                // Create a comment entity and add it to the table.
+                Comment Comment = new Comment(commentCounter.ToString(), commentCounter.ToString());
+                Comment.CommentID = "C" + commentCounter.ToString();
+                Comment.CommentText = "This is a comment"; //get from text box in view
+                Comment.Date = DateTime.Now;
+                Comment.AnnotationID = Annotation.AnnotationID;
+
+                TableOperation insertOperation2 = TableOperation.Insert(Comment);
+
+                async void AddCommentEntities()
+                {
+                    await Annotations.ExecuteAsync(insertOperation);
+                }
+                AddCommentEntities();
             }
             createEntity();
 
