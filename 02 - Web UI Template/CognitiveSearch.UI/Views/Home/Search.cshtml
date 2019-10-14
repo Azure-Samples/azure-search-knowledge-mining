@@ -49,6 +49,7 @@
                     </div>
 
                     @*UA MIS ADDED HTML*@
+                <div>
                     <div style="text-align:center;">
                         <button style="color: white; background-color: #1e6ce4; margin: 30px; width: 10%;" onClick="getSelectedText"> Text Class </button>
 
@@ -58,28 +59,19 @@
                     <div style="text-align: center;">
                         <select id="classOptions">
 
-                        <option value="1" selected="selected">Entity Type</option>
-                        <option value="2">Person</option>
-                        <option value="3">Place</option>
-                        <option value="4">Thing</option>
-                            </select>
+                            <option value="1" selected="selected">Entity Type</option>
+                            <option value="2">Person</option>
+                            <option value="3">Place</option>
+                            <option value="4">Thing</option>
+                        </select>
                     </div>
 
                     <br />
 
-                        <div class="col-lg-offset-5">
-                            <button onclick="getSelectedText()">Annotate</button>
-                        </div>
-                        <br />
-                        <div class="col-lg-offset-5">
-
-                            <form id="testform" name="testform">
-                                <textarea name="selectedtext"
-                                          rows="5"
-                                          cols="20"></textarea>
-                            </form>
-                            <a href="/Home/CreateTable">Save</a>
-                        </div>
+                    <div>
+                        <button onclick="getSelectedText()">Save</button>
+                    </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -166,55 +158,15 @@
         else if (document.selection) {
             selectedText =
                 document.selection.createRange().text;
-        } else return;
-        // To write the selected text into the textarea
-        document.testform.selectedtext.value = selectedText;
+        }
+
+        $.ajax({
+        type: "POST",
+        url: "/Home/CreateTable",
+        data: { sText: selectedText.toString() },
+        success: function (data) {
+            // Do something interesting here.
+        }
+    });
     }
-</script>
-
-<script>
-    function saveSelectedText() {
-        var sText = '';
-
-        // window.getSelection
-        if (window.getSelection) {
-            sText = window.getSelection();
-        }
-        // document.getSelection
-        else if (document.getSelection) {
-            sText = document.getSelection();
-        }
-        // document.selection
-        else if (document.selection) {
-            sText =
-                document.selection.createRange().text;
-        } else return;
-
-        @*jQuery.ajax({
-            type: 'POST',
-            url: @Url.Action("Home", "CreateTable", new { sText = sText }),
-            data: { sText: sText },
-            success: function(response) {
-        response ? alert("It worked!") : alert("It didn't work.");
-        });*@
-    }
-</script>
-
-<script>
-
-    var sText = '';
-
-        // window.getSelection
-        if (window.getSelection) {
-            sText = window.getSelection();
-        }
-        // document.getSelection
-        else if (document.getSelection) {
-            sText = document.getSelection();
-        }
-        // document.selection
-        else if (document.selection) {
-            sText =
-                document.selection.createRange().text;
-        } else return;
 </script>

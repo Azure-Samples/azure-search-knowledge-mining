@@ -23,6 +23,7 @@ using static CognitiveSearch.UI.Models.DocClassifications;
 using static CognitiveSearch.UI.Models.Documents;
 using static CognitiveSearch.UI.Models.EntityClassifications;
 using static CognitiveSearch.UI.Models.TextClassifications;
+using Microsoft.AspNetCore.Http;
 
 namespace CognitiveSearch.UI.Controllers
 {
@@ -69,8 +70,13 @@ namespace CognitiveSearch.UI.Controllers
 
         public IActionResult CreateTable(string sText)
         {
+            //get highlighted text from user
+            string highlightedText = sText;
 
-            // The code in this section goes here.
+            //used for partition key, row key, and ID
+            int counter = 1;
+
+            // connect to storage account
             CloudStorageAccount storageAccount = new CloudStorageAccount(
             new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials(
             "saramisstorage", "yErhAqOlVgL8VDhkAhsrQdzRnCHjQDx5FacWnPG2KhCEx/d3H/mo503Vbt1SJUCinYSWlXnoKIpXhTUsDusrng=="), true);
@@ -151,34 +157,45 @@ namespace CognitiveSearch.UI.Controllers
             }
             CreateDeletedCommentTableAsync();
 
-            // Create a customer entity and add it to the table.
-            //Annotation Annotation1 = new Annotation("1", "1");
-            //Annotation1.AnnotationID = "A1";
-            //Annotation1.ClassificationID = "T1";
-            //Annotation1.DocumentID = "D1";
-            //Annotation1.StartCharLocation = "253";
-            //Annotation1.EndCharLocation = "300";
-            //Annotation1.Accept = 0;
-            //Annotation1.Deny = 0;
+            //add entity to existing annotation table
+            async void createEntity()
+            {
+                //retrieves entity where partitionKey = counter in table
+                TableOperation retrieveOperation = TableOperation.Retrieve<Annotation>(counter.ToString(), "A" + counter.ToString());
+                TableResult query = await Annotations.ExecuteAsync(retrieveOperation);
 
-            //if (sText == "")
-            //{
-            //    Annotation1.HighlightedText = sText;
-            //}
-            //else
-            //{
-            //    Annotation1.HighlightedText = "Somethings not right.";
-            //}
+                //if entity exists add to counter
+                while (query.Result != null)
+                {
+                    counter++;
+                    retrieveOperation = TableOperation.Retrieve<Annotation>(counter.ToString(), "A" + counter.ToString());
 
-            //TableOperation insertOperation = TableOperation.Insert(Annotation1);
+                    query = await Annotations.ExecuteAsync(retrieveOperation);
+                }
 
-            //async void AddEntities()
-            //{
-            //    await Annotations.ExecuteAsync(insertOperation);
-            //}
-            //AddEntities();
+                // Create a customer entity and add it to the table.
+                Annotation Annotation = new Annotation(counter.ToString(), counter.ToString());
+                Annotation.AnnotationID = "A" + counter.ToString();
+                Annotation.ClassificationID = "T1"; //get this value from dropdown list
+                Annotation.DocumentID = "D1";
+                Annotation.StartCharLocation = "253"; 
+                Annotation.EndCharLocation = "300";
+                Annotation.Accept = 0;
+                Annotation.Deny = 0;
+                Annotation.HighlightedText = highlightedText;
 
-            return View();
+                TableOperation insertOperation = TableOperation.Insert(Annotation);
+
+                async void AddEntities()
+                {
+                    await Annotations.ExecuteAsync(insertOperation);
+                }
+                AddEntities();
+                
+            }
+            createEntity();
+
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]
