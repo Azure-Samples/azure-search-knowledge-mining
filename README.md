@@ -48,6 +48,7 @@ Clone/download this repo onto your computer and then walk through each of these 
 The resources in this folder can be used to deploy the required resources into your Azure Subscription. This can be done either via the [Azure Portal](https://portal.azure.com) or by using the [PowerShell script](./00%20-%20Resource%20Deployment/deploy.ps1) included in the resource deployment folder.  
 
 Alternatively, you can deploy the resources using this button:
+
 <a href="https://azuredeploy.net/?repository=https://github.com/Azure-Samples/azure-search-knowledge-mining/" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a> 
