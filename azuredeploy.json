@@ -211,6 +211,19 @@
                     ]
                 }
             }
+        },
+        { 
+            "apiVersion": "2018-02-01",
+            "name": "pid-205d0e47-324f-5b9e-8dde-f9fc4a92c091",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": []
+                }
+            }
         }
     ]
 }
