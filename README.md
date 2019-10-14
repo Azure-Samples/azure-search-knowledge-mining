@@ -49,7 +49,7 @@ The resources in this folder can be used to deploy the required resources into y
 
 Alternatively, you can deploy the resources using this button:
 
-<a href="https://azuredeploy.net/?repository=https://github.com/Azure-Samples/azure-search-knowledge-mining/" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure-Samples%2Fazure-search-knowledge-mining%2Fmaster%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a> 
 
