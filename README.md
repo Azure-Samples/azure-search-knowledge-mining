@@ -47,7 +47,11 @@ Clone/download this repo onto your computer and then walk through each of these 
 ### [00 - Resource Deployment](./00%20-%20Resource%20Deployment)
 The resources in this folder can be used to deploy the required resources into your Azure Subscription. This can be done either via the [Azure Portal](https://portal.azure.com) or by using the [PowerShell script](./00%20-%20Resource%20Deployment/deploy.ps1) included in the resource deployment folder.  
 
-Skip this folder if you have already provisioned the required resources or will be provisioning manually.
+Alternatively, you can deploy the resources using this button:
+
+<a href="https://azuredeploy.net/?repository=https://github.com/Azure-Samples/azure-search-knowledge-mining/" target="_blank">
+    <img src="http://azuredeploy.net/deploybutton.png"/>
+</a> 
 
 ### [01 - Search Index Creation](./01%20-%20Search%20Index%20Creation)
 This folder contains a Postman collection that can be used to create a search index. The collection is pre-configured to take advantage of a majority of the out of the box Cognitive Search functionality.
