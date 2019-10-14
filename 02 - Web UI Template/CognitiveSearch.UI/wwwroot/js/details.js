@@ -42,6 +42,7 @@ function ShowDocument(id) {
             $('#details-pivot-content').html(`<div id="file-pivot" class="ms-Pivot-content" data-content="file">
                                             <div id="file-viewer" style="height: 100%;"></div>
                                         </div>
+                                        <div><input type="hidden" id="docID" name="docID" value= ${id}></div>
                                         <div id="transcript-pivot" class="ms-Pivot-content" data-content="transcript">
                                             <div id="transcript-viewer" style="height: 100%;">
                                                 <div id='transcript-div'>

@@ -68,10 +68,13 @@ namespace CognitiveSearch.UI.Controllers
             return View();
         }
 
-        public IActionResult CreateTable(string sText)
+        public IActionResult CreateTable(string sText, string id)
         {
             //get highlighted text from user
             string highlightedText = sText;
+
+            //get document ID
+            string docID = id;
 
             //used for partition key, row key, and ID
             int counter = 1;
@@ -177,7 +180,7 @@ namespace CognitiveSearch.UI.Controllers
                 Annotation Annotation = new Annotation(counter.ToString(), counter.ToString());
                 Annotation.AnnotationID = "A" + counter.ToString();
                 Annotation.ClassificationID = "T1"; //get this value from dropdown list
-                Annotation.DocumentID = "D1";
+                Annotation.DocumentID = docID;
                 Annotation.StartCharLocation = "253"; 
                 Annotation.EndCharLocation = "300";
                 Annotation.Accept = 0;

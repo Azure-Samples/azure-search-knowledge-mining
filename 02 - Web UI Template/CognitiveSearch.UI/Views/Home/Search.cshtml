@@ -168,10 +168,12 @@
                 document.selection.createRange().text;
         }
 
+        var id = document.getElementById('docID').value;
+
         $.ajax({
             type: "POST",
             url: "/Home/CreateTable",
-            data: { sText: selectedText.toString() },
+            data: { sText: selectedText.toString(), id: id.toString() },
             success: function (data) {
                 // Do something interesting here.
             }
