@@ -50,12 +50,12 @@
 
                     @*UA MIS ADDED HTML*@
                     <div style="text-align:center; ">
-                        <button style="color: white; background-color: #1e6ce4; margin: 30px; width: 10%;" onClick="togglediv('item')"> Text Class </button>
+                        <button style="color: white; background-color: #1e6ce4; margin: 30px; width: 10%;" id="btn1" onclick="togglediv('item'); document.getElementById('btn2').disabled=true;document.getElementById('btn1').disabled=false;"> Text Class </button>
 
-                        <button style="color: white; background-color: #1e6ce4; margin: 30px; width: 10%;" onClick="togglediv2('item2')"> Entity Class</button>
+                        <button style="color: white; background-color: #1e6ce4; margin: 30px; width: 10%;" id="btn2" onclick="togglediv2('item2');  document.getElementById('btn1').disabled=true;document.getElementById('btn2').disabled=false;"> Entity Class</button>
                     </div>
 
-                    <div hidden id="item2" style="text-align: center;">
+                    <div hidden id="item2" style="text-align: center; display:none;">
                         <select id="entityType" style="width: 455px">
 
                             <option value="1" selected="selected">Entity Type</option>
@@ -65,7 +65,7 @@
                         </select>
                     </div>
                     <br />
-                    <div hidden id="item" style="text-align: center;">
+                    <div hidden id="item" style="text-align: center; display:none;">
                         <select id="textType" style="width: 455px">
 
                             <option value="1" selected="selected">Text Type</option>
@@ -182,15 +182,20 @@
 </script>
 <script>
 
-	function togglediv(id) {
+    function togglediv(id) {
     var div = document.getElementById(id);
     div.style.display = div.style.display == "none" ? "block" : "none";
 }
 </script>
 <script>
 
-	function togglediv2(id) {
+        function togglediv2(id) {
 		var div = document.getElementById(id);
 		div.style.display = div.style.display == "none" ? "block" : "none";
 	}
+</script>
+<script>
+    function disableButton(btn) {
+        document.getElementById(btn.id).disabled = true;
+    }
 </script>
