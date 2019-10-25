@@ -119,39 +119,50 @@ Try sending various different words and phrases to see how they get encoded.
 
 There are a lot of other intersecting custom analyzers and tokenizers that can be used such [Regular Expression](https://docs.microsoft.com/en-us/azure/search/index-add-custom-analyzers#property-reference) (RegEx) that allows you to leverage patters to find distinct tokens.  
 
-## Ranking using Scoring Profiles 
+## Ranking using Scoring Profiles
 
-Azure Search uses a number of textual based factors to determine what is the most relevant document to send back, and this is primarily based on an algorithm called TF/IDF which basically looks at the Term Frequency, or how often a term that is queried matches in the document and then uses Inverse Document Frequency to help move words that are extremely frequently found across many documents (such as is or the). 
+Azure Search uses a number of textual based factors to determine what are the most relevant documents to send back. This is primarily based on an algorithm called TF/IDF. Term Frequency (TF) looks at how often a query term matches in a single document. Inverse Document Frequency (IDF) looks at how often a query term matches in many documents (common examples include "is" "or" "the").
 
-In some cases, the ranking of results that Azure Search provided by default is not optimal for a user.  Let's take a variant to the example we used above which is to allow people who search for "Gowcher" to find a match of "Gaucher's" in the diseasesPhonetic field.  But what if there was a disease called "Gowchirs" which also got tokenized to the same value of KXRS.  That means that if someone actually searches for "Gaucher's", the search engine would potentially give similar scoring to hits of "Gaucher's" or "Gowchirs" resulting in a potentially confused user.
+In some cases, the ranking of results that Azure Search provides by default are not optimal. For example, what if in the past year there have been recent developments in treating the morquio disease so a user wants to search for clinical trials that discuss the "morquio" disease and they are mostly interested in clinical trials that have been updated in the past year? The default ranking of results does not take into account each clinical trial's lastUpdatePosted field.
 
-Luckily you have a lot of control over this in Azure Search.  One of the easiest ways to handle this is to create what is called a [scoring profile](https://docs.microsoft.com/en-us/azure/search/index-add-scoring-profiles).  You can have one or more scoring profiles created for a search index and each scoring profiles has a set of weights and functions that can be used to adjust the default scoring (and resulting ordering) of the search results.  For our example, we might want to create a scoring profile that gives more weighting to the diseases field than the diseasesPhonetic field.  That way if someone searched for "Gaucher's" and there was a match in the diseases field, it would be boosted higher than that of one found in the diseasesPhonetic field.  However, if someone searched for "Gowchirs" and it was not found in the diseases field, the lower boosting from a hit in the diseasesPhonetic field would still return a result.
+Luckily you have a lot of control over this in Azure Search. One way to handle this scenario might be to order results in descending order by the lastUpdatePosted field since we've made that field Sortable in the index. While sorting by a particular field is useful in some scenarios, this might give us clinical trials at the top of the list that aren't as relevant as results lower down the list even though they were recently updated.
 
-Let's create a scoring profile for this.  
+Another way to handle this is to create what is called a [scoring profile](https://docs.microsoft.com/en-us/azure/search/index-add-scoring-profiles). You can have one or more scoring profiles created for a search index and each scoring profiles has a set of weights and functions that can be used to adjust the default scoring (and resulting ordering) of the search results. For our example, we might want to use a scoring profile with the freshness function. By using the freshness function, we can boost the score of clinical trials that have a lastUpdatePosted date within the last year.
+
+Let's create a scoring profile for this.
 
 * Open the Azure Portal and choose your Index
 * Choose Scoring Profiles and choose "Add Scoring Profile"
-* Name it "diseaseBoost" and choose "Add Scoring Profile" to save it
+* Name it "recentlyUpdatedBoost" and choose "Add Scoring Profile" to save it
 
- ![](images/scoring_profile.png)
+  ![](images/add_scoring_profile.png)
  
-* In the resulting scoring profile, choose "Add Weights"
-* Set diseases to get a boosting of 3
-* Set diseasesPhonetic to get a boosting of 1 (which is actually not needed since the default is 1)
-* Click OK
-* Click Save, to save this updated scoring profiles
+* In the resulting scoring profile, choose "Add functions"
+* Select "Add scoring function"
+* Set the Function type to "Freshness"
+* Set the Field name to "lastUpdatePosted"
+* Set the Interpolation to "Linear"
+* Set a Boost value of 3
+* Set the Boosting duration to "P365D"
+* Click OK, then click OK again
+* Click Save to save this updated scoring profile
 
- ![](images/field_boosting.png)
+ ![](images/freshness_function.png)
  
-Next, open the Search Explorer and we will try a few queries that with and without this scoring profile:
+### Notes
+1. The "Freshness" function is used when you want to boost based on a datetime field in the index.
+1. Interpolations allow you to set the shape of the slope used for scoring.
+1. The boost value is a positive number used as multiplier for raw score.
+1. The boosting duration sets an expiration period after which boosting will stop for a particular document. In this example we've set it to 365 days.
+
+Next, open the Search Explorer and try a few queries with and without this scoring profile:
 
 ```
-&scoringProfile=diseaseBoost
+&scoringProfile=recentlyUpdatedBoost
 ```
 
-There are a number of other functions that can be used to adjust the scoring of search results which we will not be covering including:
+There are a number of additional functions that can be used to adjust the scoring of search results which we will not be covering including:
 
-- freshness should be used when you want to boost by how new or old an item is. This function can only be used with datetime fields (edm.DataTimeOffset). Notice the boostingDuration attribute is used only with the freshness function.
 - magnitude should be used when you want to boost based on how high or low a numeric value is. Scenarios that call for this function include boosting by profit margin, highest price, lowest price, or a count of downloads. This function can only be used with double and integer fields.
 For the magnitude function, you can reverse the range, high to low, if you want the inverse pattern (for example, to boost lower-priced items more than higher-priced items). Given a range of prices from $100 to $1, you would set boostingRangeStart at 100 and boostingRangeEnd at 1 to boost the lower-priced items.
 - distance should be used when you want to boost by proximity or geographic location. This function can only be used with Edm.GeographyPoint fields.

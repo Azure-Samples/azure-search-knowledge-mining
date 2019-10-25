@@ -2,7 +2,7 @@
 
 **Welcome to the Knowledge Mining workshop!** 
 
-During this lab, we will be exploring a data set that is comprised of clinical trials in PDF format.  This demo data set contains over 200 records and contains complex medical terms and disease information in an unstructured format - meaning that there is no easy way to search the data set for information or records pertains to a specific disease, like cirrhosis,  And worse yet, if (like the authors of this lab) you don't always accurately spell cirrhosis, you may have no way of ever finding the information you're looking for - structured or otherwise.
+During this lab, we will be exploring a data set that is comprised of clinical trials in PDF format.  This demo data set contains over 100 records and contains complex medical terms and disease information in an unstructured format - meaning that there is no easy way to search the data set for information or records pertains to a specific disease, like cirrhosis,  And worse yet, if (like the authors of this lab) you don't always accurately spell cirrhosis, you may have no way of ever finding the information you're looking for - structured or otherwise.
 
 The challenge is, how can you take a vast amount of unstructured content and all of the latent data that it contains and provide an easy and effective way for a human to find the information that is most meaningful and relevant to them in the most efficient means possible?  Metaphorically, we are going to be finding meaning in information that starts out looking like this:
 

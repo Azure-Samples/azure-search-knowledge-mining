@@ -105,7 +105,7 @@ We’ll modify the skills list, and also add the diseases to our table projectio
 
 Paste the response we got from the GET request, and add the additional skill. 
 
-To get the URI, you will need to get it from the published skill you tested in module 2, but this is what it looked like for my skill…
+To get the URI, you will need to get it from the published skill you tested in module 3, but this is what it looked like for my skill…
 
 ```
          {
@@ -227,7 +227,7 @@ Let's add one more table to the list for our new diseases member.
 ```
 When we do this, each disease extracted will be given a unique identifier (*Diseaseid*). Since "/document/tableprojection/diseases/\*" is a child of "/document/tableprojection", the diseases table will automatically also get column called "Documentid".
 
-After you have made both changes, complete the PUT request.
+After you have made these changes, complete the PUT request.
 
 ```
 PUT https://{your-service-name-goes-here}.search.windows.net/skillsets/clinical-trials-small?api-version=2019-05-06-Preview
@@ -279,6 +279,17 @@ This tells the search engine to search all documents (*) and group the results b
 Let's also use this new field to allow us to do a strict filter to any documents that talk about the disease "morquio"
 search=*&$filter=diseases/any(disease: disease eq 'morquio')&$select=metadata_title,diseases
 
-Try adjusting this query to only include documents that talk about 'morquio' and do not talk about 'hunter's disease'
+Try adjusting this query to only include documents that talk about 'morquio' and do not talk about 'chest pain'
+
+<details>
+  <summary>Click for the answer</summary>
+  <p>
+
+  ```
+  search=*&$filter=diseases/any(disease: disease eq 'morquio') and diseases/all(disease: disease ne 'chest pain')&$select=metadata_title,diseases
+```
+
+  </p>
+</details>
 
 ### Next: [Module 5: Advanced Search](Module&#32;5.md)
