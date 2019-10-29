@@ -1,0 +1,100 @@
+{
+  "Api": {
+    "BaseUrl": ""
+  },
+  "AiModelFunction": {
+    "BaseUrl": "",
+    "AiModelContainer": "ai-models"
+  },
+  "Auth": {
+    "Providers": "[\"aad\", \"microsoftaccount\",\"google\", \"facebook\",\"twitter\"]"
+  },
+  "AzureMaps": {
+    "Endpoint": "https://atlas.microsoft.com/search/fuzzy/json",
+    "SubscriptionKey": ""
+  },
+  "ComputerVision": {
+    "ApiKey": "",
+    "Endpoint": ""
+  },
+  "Config": {
+    "CompanyName": "",
+    "Logo": "",
+    "PrimaryColor": "#3498db",
+    "SecondaryColor": "#58ACE3"
+  },
+  "ConnectionStrings": {
+    "AzureStorage": "",
+    "IdaCoreDbContext": ""
+  },
+  "CoreFunctions": {
+    "LogToDatabase": "False",
+    "ServiceAccountId": "",
+    "ServiceAccountPassword": ""
+  },
+  "Dataset": {
+    "BlobStorageContainer": {
+      "CoverPhoto": "dataset-cover-photos",
+      "Default": "artifacts/ImagePDFs"
+    }
+  },
+  "EventGrid": {
+    "HostName": "",
+    "Key": "",
+    "Topics": {
+      "Artifact": "artifacts",
+      "BlobStorage": "blobstorage",
+      "Dataset": "datasets",
+      "Guest": "guest",
+      "ImportBatch": "importbatches",
+      "Invitation": "invitations",
+      "Portfolio": "portfolios",
+      "PortfolioArtifact": "portfolioartifacts",
+      "Search": "search",
+      "ServiceAccount": "serviceaccounts",
+      "Team": "teams",
+      "User": "users"
+    }
+  },
+  "Guest": {
+    "ServiceAccountId": "",
+    "ServiceAccountPassword": ""
+  },
+  "Portfolio": {
+    "BlobStorageContainer": {
+      "CoverPhoto": "portfolio-cover-photos"
+    }
+  },
+  "PowerBI": {
+    "AuthResourceUrl": "https://analysis.windows.net/powerbi/api",
+    "BaseUrl": "https://api.powerbi.com",
+    "ClientId": "",
+    "MasterUserName": "",
+    "MicrosoftAuthUrl": "https://login.microsoftonline.com/common/oauth2/token",
+    "WorkspaceId": ""
+  },
+  "Search": {
+    "ApiKey": "",
+    "Index": "default",
+    "Indexer": "default",
+    "ServiceName": "ida-search-service-kmdz",
+    "VideoIndexer": "video"
+  },
+  "Security": {
+    "JwtSigningKey": ""
+  },
+  "UnlockCode": "",
+  "User": {
+    "BlobStorageContainer": {
+      "Avatar": "user-avatars"
+    }
+  },
+  "VideoIndexer": {
+    "AccountId": "",
+    "ApiBaseUrl": "https://api.videoindexer.ai",
+    "ApiKey": "",
+    "Location": "",
+    "ServiceAccountId": "",
+    "ServiceAccountPassword": ""
+  }
+}

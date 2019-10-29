@@ -1,0 +1,16 @@
+﻿{
+  "name": "[DataSourceName]",
+  "type": "azureblob",
+  "credentials": {
+    "connectionString": "[ConnectionString]"
+  },
+  "container": {
+    "name": "[ContainerName]",
+    "query": "[Path]"
+  },
+  "dataDeletionDetectionPolicy": {
+    "@odata.type": "#Microsoft.Azure.Search.SoftDeleteColumnDeletionDetectionPolicy",
+    "softDeleteColumnName": "[SoftDeleteColumnName]",
+    "softDeleteMarkerValue": "[SoftDeleteValueMarker]"
+  }
+}  
