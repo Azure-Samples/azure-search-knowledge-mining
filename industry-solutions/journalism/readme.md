@@ -1,1 +1,1 @@
-# Content Insight and Discovery
+# Insight and Discovery Accelerator
