@@ -53,8 +53,6 @@ Name your skillset: *clinical-trials-small*
 
 + Now we can apply an enrichment to the merged_content field to extract the locations. Do this by checking **Extract location names**.
 
-+ **Change the name of the generated field to be locations with a lowercase 'l'.**
- 
 + Leave all of the other enrichment boxes blank at this time as we will add in additional skills later in the lab.
 
    ![](images/enrichments.png)
