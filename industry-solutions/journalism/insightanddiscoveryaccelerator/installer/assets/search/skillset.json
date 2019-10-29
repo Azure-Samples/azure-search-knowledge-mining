@@ -1,0 +1,814 @@
+﻿{
+  "name": "[SkillsetName]",
+  "skills": [
+    {
+      "@odata.type": "#Microsoft.Skills.Vision.OcrSkill",
+      "context": "/document/normalized_images/*",
+      "textExtractionAlgorithm": "printed",
+      "defaultLanguageCode": "en",
+      "detectOrientation": false,
+      "inputs": [
+        {
+          "name": "image",
+          "source": "/document/normalized_images/*"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "text"
+        },
+        {
+          "name": "layoutText"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Vision.OcrSkill",
+      "context": "/document/normalized_images/*",
+      "textExtractionAlgorithm": "handwritten",
+      "defaultLanguageCode": "en",
+      "detectOrientation": false,
+      "inputs": [
+        {
+          "name": "image",
+          "source": "/document/normalized_images/*"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "text",
+          "targetName": "handwrittenText"
+        },
+        {
+          "name": "layoutText",
+          "targetName": "handwrittenLayoutText"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Vision.ImageAnalysisSkill",
+      "visualFeatures": [
+        "Tags",
+        "Description"
+      ],
+      "details": [ "Celebrities" ],
+      "context": "/document/normalized_images/*",
+      "defaultLanguageCode": "en",
+      "inputs": [
+        {
+          "name": "image",
+          "source": "/document/normalized_images/*"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "tags",
+          "targetName": "Tags"
+        },
+        {
+          "name": "description",
+          "targetName": "Description"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.MergeSkill",
+      "description": "Create merged_text, which includes all the textual representation of each image inserted at the right location in the content field.",
+      "context": "/document",
+      "insertPreTag": " ",
+      "insertPostTag": " ",
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/content"
+        },
+        {
+          "name": "itemsToInsert",
+          "source": "/document/normalized_images/*/text"
+        },
+        {
+          "name": "offsets",
+          "source": "/document/normalized_images/*/contentOffset"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mergedText",
+          "targetName": "nativeTextAndOcr"
+        },
+        {
+          "name": "mergedOffsets",
+          "targetName": "mergedOffsetsAfterOcr"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.MergeSkill",
+      "description": "Merge native text content and inline OCR content where images were present",
+      "context": "/document",
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/nativeTextAndOcr"
+        },
+        {
+          "name": "itemsToInsert",
+          "source": "/document/normalized_images/*/handwrittenText"
+        },
+        {
+          "name": "offsets",
+          "source": "/document/mergedOffsetsAfterOcr"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mergedText",
+          "targetName": "nativeTextAndOcrAndHandwriting"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.MergeSkill",
+      "description": "Merge text content with image captions",
+      "context": "/document",
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/nativeTextAndOcrAndHandwriting"
+        },
+        {
+          "name": "itemsToInsert",
+          "source": "/document/normalized_images/*/Description/captions/*/text"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mergedText",
+          "targetName": "fullTextAndCaptions"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.MergeSkill",
+      "description": "Merge text content with image tags",
+      "insertPreTag": " ",
+      "context": "/document",
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/fullTextAndCaptions"
+        },
+        {
+          "name": "itemsToInsert",
+          "source": "/document/normalized_images/*/Tags/*/name"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mergedText",
+          "targetName": "finalText"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.SplitSkill",
+      "description": "Split text into pages for subsequent skill processing",
+      "textSplitMode": "pages",
+      "maximumPageLength": 5000,
+      "context": "/document/finalText",
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/finalText"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "textItems",
+          "targetName": "pages"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.LanguageDetectionSkill",
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/finalText"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "languageCode",
+          "targetName": "languageCode"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.EntityRecognitionSkill",
+      "categories": [
+        "Person",
+        "Location",
+        "Organization",
+        "Quantity",
+        "Datetime",
+        "URL",
+        "Email"
+      ],
+      "includeTypelessEntities": "true",
+      "context": "/document/finalText/pages/*",
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/finalText/pages/*"
+        },
+        {
+          "name": "languageCode",
+          "source": "/document/languageCode"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "entities",
+          "targetName": "entities"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Util.ShaperSkill",
+      "description": "Create a custom OCR image metadata object used to generate an HOCR document",
+      "context": "/document/normalized_images/*",
+      "inputs": [
+        {
+          "name": "handwrittenLayoutText",
+          "source": "/document/normalized_images/*/handwrittenLayoutText"
+        },
+        {
+          "name": "layoutText",
+          "source": "/document/normalized_images/*/layoutText"
+        },
+        {
+          "name": "imageStoreUri",
+          "source": "/document/normalized_images/*/imageStoreUri"
+        },
+        {
+          "name": "width",
+          "source": "/document/normalized_images/*/width"
+        },
+        {
+          "name": "height",
+          "source": "/document/normalized_images/*/height"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "targetName": "ocrImageMetadata"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Util.ShaperSkill",
+      "description": "Object for KnowledgeStore",
+      "context": "/document",
+      "inputs": [
+        {
+          "name": "dataset",
+          "source": "/document/dataset"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "targetName": "knowledgestore"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Custom.WebApiSkill",
+      "description": "Upload image data to the annotation store",
+      "uri": "[AzureFunctionEndpointUrl]/api/ParseCustomIndex?code=[AzureFunctionDefaultHostKey]",
+      "batchSize": 1,
+      "timeout": "PT90S",
+      "context": "/document",
+      "inputs": [
+        {
+          "name": "fileName",
+          "source": "/document/storagePath"
+        },
+        {
+          "name": "datasetid",
+          "source": "/document/datasetId"
+        },
+        {
+          "name": "importbatchid",
+          "source": "/document/importBatchId"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "tags",
+          "targetName": "tags"
+        },
+        {
+          "name": "orginalfile",
+          "targetName": "orginalFile"
+        },
+        {
+          "name": "dataset",
+          "targetName": "dataset"
+        },
+        {
+          "name": "Volume",
+          "targetName": "volumeList"
+        },
+        {
+          "name": "AuthorValue",
+          "targetName": "authorValue"
+        },
+        {
+          "name": "ISSNNoDash",
+          "targetName": "issnNoDashList"
+        },
+        {
+          "name": "Issue",
+          "targetName": "issueList"
+        },
+        {
+          "name": "PagesStart",
+          "targetName": "pagesStartList"
+        },
+        {
+          "name": "AffiliationAuthor",
+          "targetName": "affiliationAuthor"
+        },
+        {
+          "name": "TypeDocument",
+          "targetName": "typeDocument"
+        },
+        {
+          "name": "DatePubCYMD",
+          "targetName": "datePubCYMDList"
+        },
+        {
+          "name": "DatePubCY",
+          "targetName": "pubYearList"
+        },
+        {
+          "name": "PagesEnd",
+          "targetName": "pagesEndList"
+        },
+        {
+          "name": "Subject",
+          "targetName": "subject"
+        },
+        {
+          "name": "SourceInfo",
+          "targetName": "sourceInfoList"
+        },
+        {
+          "name": "TitlePre1987",
+          "targetName": "titlePre1987List"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Custom.WebApiSkill",
+      "description": "Upload image data to the annotation store",
+      "uri": "[AzureFunctionEndpointUrl]/api/CustomAtlantic?code=[AzureFunctionDefaultHostKey]",
+      "batchSize": 1,
+      "timeout": "PT90S",
+      "context": "/document",
+      "inputs": [
+        {
+          "name": "pagenumber",
+          "source": "/document/pagenumber"
+        },
+        {
+          "name": "datasetid",
+          "source": "/document/datasetId"
+        },
+        {
+          "name": "importbatchid",
+          "source": "/document/importBatchId"
+        },
+        {
+          "name": "volume",
+          "source": "/document/volumeList"
+        },
+        {
+          "name": "issnNoDash",
+          "source": "/document/issnNoDashList"
+        },
+        {
+          "name": "issue",
+          "source": "/document/issueList"
+        },
+        {
+          "name": "pagesStart",
+          "source": "/document/pagesStartList"
+        },
+        {
+          "name": "datePubCYMD",
+          "source": "/document/datePubCYMDList"
+        },
+        {
+          "name": "pubYear",
+          "source": "/document/pubYearList"
+        },
+        {
+          "name": "pagesEnd",
+          "source": "/document/pagesEndList"
+        },
+        {
+          "name": "sourceInfo",
+          "source": "/document/sourceInfoList"
+        },
+        {
+          "name": "titlePre1987",
+          "source": "/document/titlePre1987List"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "volume",
+          "targetName": "volume"
+        },
+        {
+          "name": "issnNoDash",
+          "targetName": "issnNoDash"
+        },
+        {
+          "name": "issue",
+          "targetName": "issue"
+        },
+        {
+          "name": "pagesStart",
+          "targetName": "pagesStart"
+        },
+        {
+          "name": "datePubCYMD",
+          "targetName": "datePubCYMD"
+        },
+        {
+          "name": "pubYear",
+          "targetName": "pubYear"
+        },
+        {
+          "name": "publishDate",
+          "targetName": "publishDate"
+        },
+        {
+          "name": "pagesEnd",
+          "targetName": "pagesEnd"
+        },
+        {
+          "name": "sourceInfo",
+          "targetName": "sourceInfo"
+        },
+        {
+          "name": "titlePre1987",
+          "targetName": "titlePre1987"
+        },
+        {
+          "name": "magazinePage",
+          "targetName": "magazinePage"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Custom.WebApiSkill",
+      "description": "Upload image data to the annotation store",
+      "uri": "[AzureFunctionEndpointUrl]/api/AddImagesToStore?code=[AzureFunctionDefaultHostKey]",
+      "batchSize": 1,
+      "timeout": "PT90S",
+      "context": "/document/normalized_images/*",
+      "inputs": [
+        {
+          "name": "imageData",
+          "source": "/document/normalized_images/*/data"
+        },
+        {
+          "name": "datasetid",
+          "source": "/document/datasetId"
+        },
+        {
+          "name": "importbatchid",
+          "source": "/document/importBatchId"
+        },
+        {
+          "name": "orginalfile",
+          "source": "/document/orginalFile"
+        },
+        {
+          "name": "metadata_storage_content_md5",
+          "source": "/document/metadata_storage_content_md5"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "imageStoreUri",
+          "targetName": "imageStoreUri"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Custom.WebApiSkill",
+      "description": "Upload image data to the annotation store",
+      "uri": "[AzureFunctionEndpointUrl]/api/GenerateThumbnails?code=[AzureFunctionDefaultHostKey]",
+      "batchSize": 1,
+      "timeout": "PT90S",
+      "context": "/document/normalized_images/*",
+      "inputs": [
+        {
+          "name": "imageStoreUri",
+          "source": "/document/normalized_images/*/imageStoreUri"
+        },
+        {
+          "name": "datasetid",
+          "source": "/document/datasetId"
+        },
+        {
+          "name": "importbatchid",
+          "source": "/document/importBatchId"
+        },
+        {
+          "name": "orginalfile",
+          "source": "/document/orginalFile"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "imageStoreUriThumbnail",
+          "targetName": "imageStoreUriThumbnail"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Custom.WebApiSkill",
+      "description": "Upload image data to the annotation store",
+      "uri": "[AzureFunctionEndpointUrl]/api/CallAiModelClassification?code=[AzureFunctionDefaultHostKey]",
+      "batchSize": 1,
+      "timeout": "PT90S",
+      "context": "/document/normalized_images/*",
+      "inputs": [
+        {
+          "name": "imageStoreUri",
+          "source": "/document/normalized_images/*/imageStoreUri"
+        },
+        {
+          "name": "datasetid",
+          "source": "/document/datasetId"
+        },
+        {
+          "name": "importbatchid",
+          "source": "/document/importBatchId"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "classification",
+          "targetName": "classification"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Custom.WebApiSkill",
+      "description": "Upload image data to the annotation store",
+      "uri": "[AzureFunctionEndpointUrl]/api/ProcessEntities?code=[AzureFunctionDefaultHostKey]",
+      "batchSize": 1,
+      "timeout": "PT90S",
+      "context": "/document",
+      "inputs": [
+        {
+          "name": "entities",
+          "source": "/document/finalText/pages/*/entities/*"
+        },
+        {
+          "name": "datasetid",
+          "source": "/document/datasetId"
+        },
+        {
+          "name": "importbatchid",
+          "source": "/document/importBatchId"
+        },
+        {
+          "name": "fileName",
+          "source": "/document/storagePath"
+        },
+        {
+          "name": "id",
+          "source": "/document/id"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Person",
+          "targetName": "people"
+        },
+        {
+          "name": "Location",
+          "targetName": "locations"
+        },
+        {
+          "name": "Organization",
+          "targetName": "organizations"
+        },
+        {
+          "name": "Quantity",
+          "targetName": "quantities"
+        },
+        {
+          "name": "DateTime",
+          "targetName": "datetimes"
+        },
+        {
+          "name": "URL",
+          "targetName": "urls"
+        },
+        {
+          "name": "Email",
+          "targetName": "emails"
+        },
+        {
+          "name": "Other",
+          "targetName": "others"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Custom.WebApiSkill",
+      "description": "Fix the OCR text",
+      "uri": "[AzureFunctionEndpointUrl]/api/ProcessOcrText?code=[AzureFunctionDefaultHostKey]",
+      "batchSize": 1,
+      "timeout": "PT90S",
+      "context": "/document",
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/finalText"
+        },
+        {
+          "name": "ocrImageMetadataList",
+          "source": "/document/normalized_images/*/ocrImageMetadata"
+        },
+        {
+          "name": "imageStoreUri",
+          "source": "/document/normalized_images/*/imageStoreUri"
+        },
+        {
+          "name": "rotationFromOriginal",
+          "source": "/document/normalized_images/*/rotationFromOriginal"
+        },
+        {
+          "name": "datasetid",
+          "source": "/document/datasetId"
+        },
+        {
+          "name": "importbatchid",
+          "source": "/document/importBatchId"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "processedText",
+          "targetName": "processedText"
+        },
+        {
+          "name": "processedOcr",
+          "targetName": "processedOcr"
+        },
+        {
+          "name": "regions",
+          "targetName": "regions"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Custom.WebApiSkill",
+      "description": "Fix base fields for Video",
+      "uri": "[AzureFunctionEndpointUrl]/api/ProcessBaseFields?code=[AzureFunctionDefaultHostKey]",
+      "batchSize": 1,
+      "timeout": "PT90S",
+      "context": "/document",
+      "inputs": [
+        {
+          "name": "datasetid",
+          "source": "/document/datasetId"
+        },
+        {
+          "name": "importbatchid",
+          "source": "/document/importBatchId"
+        },
+        {
+          "name": "artifactid",
+          "source": "/document/artifactId"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mediaType",
+          "targetName": "mediaType"
+        },
+        {
+          "name": "contentTypeProcessed",
+          "targetName": "contentTypeProcessed"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Custom.WebApiSkill",
+      "description": "Fix base fields for Video",
+      "uri": "[AzureFunctionEndpointUrl]/api/CallAiModelObjectDetection?code=[AzureFunctionDefaultHostKey]",
+      "batchSize": 1,
+      "timeout": "PT90S",
+      "context": "/document",
+      "inputs": [
+        {
+          "name": "datasetid",
+          "source": "/document/datasetId"
+        },
+        {
+          "name": "importbatchid",
+          "source": "/document/importBatchId"
+        },
+        {
+          "name": "artifactid",
+          "source": "/document/artifactId"
+        },
+        {
+          "name": "ocrImageMetadataList",
+          "source": "/document/normalized_images/*/ocrImageMetadata"
+        },
+        {
+          "name": "imageStoreUri",
+          "source": "/document/normalized_images/*/imageStoreUri"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Ad",
+          "targetName": "processedAd"
+        },
+        {
+          "name": "Author",
+          "targetName": "processedAuthor"
+        },
+        {
+          "name": "Footer",
+          "targetName": "processedFooter"
+        },
+        {
+          "name": "Header",
+          "targetName": "processedHeader"
+        },
+        {
+          "name": "Image",
+          "targetName": "processedImage"
+        },
+        {
+          "name": "Paragraph",
+          "targetName": "processedParagraph"
+        },
+        {
+          "name": "Title",
+          "targetName": "processedTitle"
+        }
+      ]
+    }
+  ],
+  "cognitiveServices": {
+    "@odata.type": "#Microsoft.Azure.Search.CognitiveServicesByKey",
+    "description": "CognitiveServices account for Ida",
+    "key": "[CognitiveServicesKey]"
+  },
+  "knowledgeStore": {
+    "storageConnectionString": "[KnowledgeStoreConnectionString]",
+    "projections": [
+      {
+        "tables": [
+          {
+            "tableName": "Entities",
+            "generatedKeyName": "EntityId",
+            "source": "/document/finalText/pages/*/entities/*"
+          },
+          {
+            "tableName": "Normalized",
+            "generatedKeyName": "NormalizedId",
+            "source": "/document/normalized_images/*"
+          },
+          {
+            "tableName": "KnowledgeStore",
+            "generatedKeyName": "KnowledgeStoreId",
+            "source": "/document/knowledgestore"
+          },
+          {
+            "tableName": "Document",
+            "generatedKeyName": "DocumentId",
+            "source": "/document"
+          }
+        ]
+      }
+    ]
+  }
+}
