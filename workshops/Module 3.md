@@ -26,34 +26,32 @@ In the Solution Explorer, locate the project "CustomEntitySearch" under the **Te
 
 We are going to place our own dictionary of disease names into this file.    
 
-Open [words.csv](./data) in your browser. It is located in the /data folder of this project. Copy the contents of that csv. Open the **words.csv** in your Visual Studio project and replace the existing content with the content that you just copied.
+Open [words.csv](./data) in your browser. It is located in the [/data](https://github.com/Azure-Samples/azure-search-knowledge-mining/tree/master/workshops/data) folder of this project. Copy the contents of that csv. Open the **words.csv** in your Visual Studio project and replace the existing content with the content that you just copied.
 
   *NOTE: [words.csv](./data) is a small dictionary that is not fully vetted but it is more than adequate for the purposes of this lab*.
 
 ## Walking through the Azure Function code
 
-The main code for this function can be found in the following two files
+The main code for this function can be found in the following file
 
-### WordLinker.cs
+### CustomEntityLookup.cs
 
-If you open this file, you will find a function called *WordLinker* which receives a file type of json or csv.  In the above step we applied the dictionary to a CSV file and as such this function will be loading this file into memory to be used by the function.
+CustomEntityLookup is one of the Power Skill functions mentioned earlier.  Given a user-defined list of entities, this function will find all occurences of that entity in some input text.  
 
-### CustomEntitySearch.cs
+Spend a bit of time walking through the code as there are a few interesting things to see in this file: 
 
-CustomEntitySearch is one of the Power Skill functions mentioned earlier.  Spend a bit of time walking through the code as there are a few interesting things to see in this file: 
+![](images/lookup2.png)
 
-![](images/customentity.png)
-
-1) First you will notice that the above WordLinker function is used to populate a List called *preLoadedWords*.
-2) Next, in the *RunCustomEntitySearch* function, we can see that the user can actually supply the set of words they want to use in the API call (inRecord.Data.ContainsKey("words")).  If there is not a supplied list, the *preLoadedWords* will be used.
+1) First you will notice a set of global variables used for configuration which can be updated prior to deploying the function, one of which is words.csv.
+2) Next, you will notice that you can set parameters to determine 'fuzziness' of matches, case sensitvity and default accent senstivity.
 3) A Regular Expression based mechanism is used to iterate through the text sent by the users to find phrases that match those of the dictionary.  
-4) The function returns a JSON document that contains both a set of unique EntitiesFound as well as the individual Entities with their text location.
+4) The function returns a JSON document that contains both a set of found Entities as entities.
 
 ## Testing the Azure Function
 
 We will first test the application locally.  
 
-1) Right click on CustomEntitySearch in the Solution Explorer and choose "Set as StartUp Project"
+1) Right click on CustomEntityLookup in the Solution Explorer and choose "Set as StartUp Project"
 2) Press F5 - NOTE: You may need to allow the function to run
 3) Once the function is running it should supply you with the URL to use for POST calls.  Copy this URL.
 
@@ -90,34 +88,51 @@ We will first test the application locally.
         {
             "recordId": "1",
             "data": {
-                "Entities": [
+                "entities": [
                     {
                         "name": "cirrhosis",
-                        "matchIndex": 74
+                        "matches": [
+                            {
+                                "text": "cirrhosis",
+                                "offset": 74,
+                                "length": 9,
+                                "matchDistance": 0.0
+                            }
+                        ]
                     },
                     {
                         "name": "diabetes",
-                        "matchIndex": 31
+                        "matches": [
+                            {
+                                "text": "diabetes",
+                                "offset": 31,
+                                "length": 8,
+                                "matchDistance": 0.0
+                            }
+                        ]
                     },
                     {
                         "name": "hepatitis",
-                        "matchIndex": 57
-                    },
-                    {
-                        "name": "hepatitis C",
-                        "matchIndex": 57
+                        "matches": [
+                            {
+                                "text": "hepatitis",
+                                "offset": 57,
+                                "length": 9,
+                                "matchDistance": 0.0
+                            }
+                        ]
                     },
                     {
                         "name": "obesity",
-                        "matchIndex": 48
+                        "matches": [
+                            {
+                                "text": "obesity",
+                                "offset": 48,
+                                "length": 7,
+                                "matchDistance": 0.0
+                            }
+                        ]
                     }
-                ],
-                "EntitiesFound": [
-                    "cirrhosis",
-                    "diabetes",
-                    "hepatitis",
-                    "hepatitis c",
-                    "obesity"
                 ]
             },
             "errors": [],
@@ -133,7 +148,7 @@ We will first test the application locally.
 
 Now that we have a working Azure Function, we will deploy it to Azure.  
 
-  *NOTE: If you prefer not to create your own resource (and resulting costs), you can skip this section and simply use a pre-deployed function located at https://diseaseextraction.azurewebsites.net/api/custom-search?code=HXS0y4rEoQZ9p55A7wqybSeYFmYP6Lruna8y8HoAGu3kNSoLf80XWw==
+  *NOTE: If you prefer not to create your own resource (and resulting costs), you can skip this section and simply use a pre-deployed function located at TBD
 
 To create your own Azure Function:
 1) In Solution Explorer, right click on the CustomEntitySearch project and choose: Publish
