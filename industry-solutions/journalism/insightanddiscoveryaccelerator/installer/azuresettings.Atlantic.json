@@ -1,0 +1,96 @@
+{
+  "Api": {
+    "BaseUrl": "https://ida-site-xhgw.azurewebsites.net/api"
+  },
+  "AiModelFunction": {
+    "BaseUrl": "https://ida-ai-functions-xhgw.azurewebsites.net/api",
+    "AiModelContainer": "ai-models"
+  },
+  "Auth": {
+    "Providers": "[\"aad\", \"microsoftaccount\",\"google\", \"facebook\",\"twitter\"]"
+  },
+  "AzureMaps": {
+    "Endpoint": "https://atlas.microsoft.com/search/fuzzy/json",
+    "SubscriptionKey": "j4gw-CjMKZkxwaE-plv472Iq46sObvg6S8xZ_-67evs"
+  },
+  "ComputerVision": {
+    "ApiKey": "9591b2a31b494bc2b0b143b8731d78a1",
+    "Endpoint": "https://eastus.api.cognitive.microsoft.com/"
+  },
+  "ConnectionStrings": {
+    "AzureStorage": "DefaultEndpointsProtocol=https;AccountName=idastoragexhgw;AccountKey=f0Vu0JgFSS0lz4+urzwjuhSO7ATU9zVTV8WlTByX5W3TQFm2RFK2UYQqNk4MUaXi+rkJup9svq9C3tXY7AzZnQ==;EndpointSuffix=core.windows.net",
+    "IdaCoreDbContext": "Server=ida-sql-server-xhgw.database.windows.net; Database=ida-core; User ID=idasqladmin; Password='NzTE66@qgWc;4L4%'; Encrypt=True"
+  },
+  "CoreFunctions": {
+    "LogToDatabase": "False",
+    "ServiceAccountId": "81834b77-058a-cd8c-e5eb-39f0335cbcd2",
+    "ServiceAccountPassword": "1EYX0QZJA0BFA9ASHP6J5WOP"
+  },
+  "CustomVision": {
+    "Prediction": {
+      "ApiKey": "389d41b3cc58456783b20b7094dfbb80",
+      "Endpoint": "https://eastus.api.cognitive.microsoft.com/customvision/Prediction/v1.0",
+      "ProjectId": "",
+      "PublishedName": ""
+    }
+  },
+  "Dataset": {
+    "BlobStorageContainer": {
+      "CoverPhoto": "dataset-cover-photos",
+      "Default": "artifacts/ImagePDFs"
+    }
+  },
+  "EventGrid": {
+    "HostName": "ida-grid-domain-xhgw.eastus-1.eventgrid.azure.net",
+    "Key": "UddbPT8S/n5FgqBqHyG4XPvMmOMt5NRBOfrFEoK4n/w=",
+    "Topics": {
+      "Artifact": "artifacts",
+      "BlobStorage": "blobstorage",
+      "Dataset": "datasets",
+      "ImportBatch": "importbatches",
+      "Invitation": "invitations",
+      "Portfolio": "portfolios",
+      "PortfolioArtifact": "portfolioartifacts",
+      "Search": "search",
+      "ServiceAccount": "serviceaccounts",
+      "Team": "teams",
+      "User": "users"
+    }
+  },
+  "Portfolio": {
+    "BlobStorageContainer": {
+      "CoverPhoto": "portfolio-cover-photos"
+    }
+  },
+  "PowerBI": {
+    "AuthResourceUrl": "https://analysis.windows.net/powerbi/api",
+    "BaseUrl": "https://api.powerbi.com",
+    "ClientId": "",
+    "MasterUserName": "",
+    "MicrosoftAuthUrl": "https://login.microsoftonline.com/common/oauth2/token",
+    "WorkspaceId": ""
+  },
+  "Search": {
+    "ApiKey": "218A83A71C6E6410F74F9EA98BA5EE22",
+    "Index": "default",
+    "Indexer": "default",
+    "ServiceName": "ida-search-service-xhgw",
+    "VideoIndexer": "video"
+  },
+  "Security": {
+    "JwtSigningKey": "XGR7PEQE1K1L5EN0BXQALCJFWTOBNSU5257Y31AWUVFALSS0RT4HUXQU8LL60O2K"
+  },
+  "User": {
+    "BlobStorageContainer": {
+      "Avatar": "user-avatars"
+    }
+  },
+  "VideoIndexer": {
+    "AccountId": "26f3d182-d351-455b-ab74-105fb0d722af",
+    "ApiBaseUrl": "https://api.videoindexer.ai",
+    "ApiKey": "a109e0f236ee452ebd93c0a961c260ff",
+    "Location": "trial",
+    "ServiceAccountId": "f65b6dc1-d96b-22e8-7338-39f0335cbd18",
+    "ServiceAccountPassword": "5PVU5LZP09Z7KC2N43K54AX0"
+  }
+}
