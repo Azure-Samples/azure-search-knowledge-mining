@@ -69,7 +69,7 @@ PUT  https://{name of your service}.search.windows.net/indexes/clinical-trials-s
 
 If the PUT request is successful you will be returned a status code of 204. This indicates that the index updated successfully. There will be no content in the Body of the response.
 
-Now let’s modify the skillset to incorporate the disease extractor we built in Module 2.
+Now let’s modify the skillset to incorporate the disease extractor we built in Module 3.
 
 First, let’s inspect what our skillset definition looks like. Bring up POSTMAN, and issue this request:
 
@@ -126,7 +126,7 @@ To get the URI, you will need to get it from the published skill you tested in m
             ],
             "outputs": [
                 {
-                    "name": "EntitiesFound",
+                    "name": "entities",
                     "targetName": "diseases"
                 }
             ]
@@ -149,7 +149,7 @@ To get the URI, you will need to get it from the published skill you tested in m
                     "inputs": [
                         {
                             "name": "disease",
-                            "source": "/document/diseases/*"
+                            "source": "/document/diseases/*/name"
                         }
                     ]
                 },
