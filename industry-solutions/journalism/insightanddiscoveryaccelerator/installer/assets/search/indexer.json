@@ -1,0 +1,229 @@
+﻿{
+  "name": "[IndexerName]",
+  "targetIndexName": "[IndexName]",
+  "dataSourceName": "[DataSourceName]",
+  "skillsetName": "[SkillsetName]",
+  "parameters": {
+    "batchSize": 500,
+    "maxFailedItems": 10,
+    "maxFailedItemsPerBatch": 10,
+    "configuration": {
+      "dataToExtract": "contentAndMetadata",
+      "imageAction": "generateNormalizedImagePerPage",
+      "normalizedImageMaxWidth": 2000,
+      "normalizedImageMaxHeight": 2000
+    }
+  },
+  "fieldMappings": [
+    {
+      "sourceFieldName": "metadata_storage_name",
+      "targetFieldName": "fileName"
+    },
+    {
+      "sourceFieldName": "metadata_storage_content_type",
+      "targetFieldName": "contenttype"
+    },
+    {
+      "sourceFieldName": "metadata_storage_size",
+      "targetFieldName": "storagesize"
+    },
+    {
+      "sourceFieldName": "metadata_storage_last_modified",
+      "targetFieldName": "lastmodified"
+    },
+    {
+      "sourceFieldName": "metadata_storage_path",
+      "targetFieldName": "storagepath"
+    }
+  ],
+  "outputFieldMappings": [
+    {
+      "sourceFieldName": "/document/finalText",
+      "targetFieldName": "text"
+    },
+    {
+      "sourceFieldName": "/document/people",
+      "targetFieldName": "people"
+    },
+    {
+      "sourceFieldName": "/document/locations",
+      "targetFieldName": "locations"
+    },
+    {
+      "sourceFieldName": "/document/organizations",
+      "targetFieldName": "organizations"
+    },
+    {
+      "sourceFieldName": "/document/quantities",
+      "targetFieldName": "quantities"
+    },
+    {
+      "sourceFieldName": "/document/datetimes",
+      "targetFieldName": "datetimes"
+    },
+    {
+      "sourceFieldName": "/document/urls",
+      "targetFieldName": "urls"
+    },
+    {
+      "sourceFieldName": "/document/emails",
+      "targetFieldName": "emails"
+    },
+    {
+      "sourceFieldName": "/document/tags",
+      "targetFieldName": "tags"
+    },
+    {
+      "sourceFieldName": "/document/others",
+      "targetFieldName": "others"
+    },
+    {
+      "sourceFieldName": "/document/orginalFile",
+      "targetFieldName": "orginalFile"
+    },
+    {
+      "sourceFieldName": "/document/dataset",
+      "targetFieldName": "dataset"
+    },
+    {
+      "sourceFieldName": "/document/normalized_images/*/imageStoreUri",
+      "targetFieldName": "imageStoreUri"
+    },
+    {
+      "sourceFieldName": "/document/normalized_images/*/imageStoreUriThumbnail",
+      "targetFieldName": "imageStoreUriThumbnail"
+    },
+    {
+      "sourceFieldName": "/document/normalized_images/*/classification",
+      "targetFieldName": "classification"
+    },
+    {
+      "sourceFieldName": "/document/importBatchId",
+      "targetFieldName": "importBatchId"
+    },
+    {
+      "sourceFieldName": "/document/datasetId",
+      "targetFieldName": "datasetId"
+    },
+    {
+      "sourceFieldName": "/document/totalpages",
+      "targetFieldName": "totalpages"
+    },
+    {
+      "sourceFieldName": "/document/pagenumber",
+      "targetFieldName": "pagenumber"
+    },
+    {
+      "sourceFieldName": "/document/regions",
+      "targetFieldName": "regions"
+    },
+    {
+      "sourceFieldName": "/document/processedText",
+      "targetFieldName": "processedText"
+    },
+    {
+      "sourceFieldName": "/document/artifactId",
+      "targetFieldName": "artifactId"
+    },
+    {
+      "sourceFieldName": "/document/mediaType",
+      "targetFieldName": "mediaType"
+    },
+    {
+      "sourceFieldName": "/document/contentTypeProcessed",
+      "targetFieldName": "contentType"
+    },
+    {
+      "sourceFieldName": "/document/processedOcr",
+      "targetFieldName": "processedOcr"
+    },
+    {
+      "sourceFieldName": "/document/processedAd",
+      "targetFieldName": "processedAd"
+    },
+    {
+      "sourceFieldName": "/document/processedAuthor",
+      "targetFieldName": "processedAuthor"
+    },
+    {
+      "sourceFieldName": "/document/processedFooter",
+      "targetFieldName": "processedFooter"
+    },
+    {
+      "sourceFieldName": "/document/processedHeader",
+      "targetFieldName": "processedHeader"
+    },
+    {
+      "sourceFieldName": "/document/processedImage",
+      "targetFieldName": "processedImage"
+    },
+    {
+      "sourceFieldName": "/document/processedParagraph",
+      "targetFieldName": "processedParagraph"
+    },
+    {
+      "sourceFieldName": "/document/processedTitle",
+      "targetFieldName": "processedTitle"
+    },
+    {
+      "sourceFieldName": "/document/volume",
+      "targetFieldName": "volume"
+    },
+    {
+      "sourceFieldName": "/document/authorValue",
+      "targetFieldName": "authorValue"
+    },
+    {
+      "sourceFieldName": "/document/issnNoDash",
+      "targetFieldName": "issnNoDash"
+    },
+    {
+      "sourceFieldName": "/document/issue",
+      "targetFieldName": "issue"
+    },
+    {
+      "sourceFieldName": "/document/pagesStart",
+      "targetFieldName": "pagesStart"
+    },
+    {
+      "sourceFieldName": "/document/affiliationAuthor",
+      "targetFieldName": "affiliationAuthor"
+    },
+    {
+      "sourceFieldName": "/document/typeDocument",
+      "targetFieldName": "typeDocument"
+    },
+    {
+      "sourceFieldName": "/document/datePubCYMD",
+      "targetFieldName": "datePubCYMD"
+    },
+    {
+      "sourceFieldName": "/document/publishDate",
+      "targetFieldName": "publishDate"
+    },
+    {
+      "sourceFieldName": "/document/pubYear",
+      "targetFieldName": "pubYear"
+    },
+    {
+      "sourceFieldName": "/document/pagesEnd",
+      "targetFieldName": "pagesEnd"
+    },
+    {
+      "sourceFieldName": "/document/subject",
+      "targetFieldName": "subject"
+    },
+    {
+      "sourceFieldName": "/document/sourceInfo",
+      "targetFieldName": "sourceInfo"
+    },
+    {
+      "sourceFieldName": "/document/titlePre1987",
+      "targetFieldName": "titlePre1987"
+    },
+    {
+      "sourceFieldName": "/document/magazinePage",
+      "targetFieldName": "magazinePage"
+    }
+  ]
+}

@@ -1,1 +1,1 @@
-# Project Ida
+# Insight and Discovery Accelerator
