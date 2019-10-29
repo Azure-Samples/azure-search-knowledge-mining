@@ -69,14 +69,14 @@
     },
     "functionsPackageUrl": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/DerekHackett/azure-search-knowledge-mining/Setup/industry-solutions/journalism/insightanddiscoveryaccelerator/idapackages/Ida.Core.Functions.zip",
+      "defaultValue": "https://raw.githubusercontent.com/Azure-Samples/azure-search-knowledge-mining/master/industry-solutions/journalism/insightanddiscoveryaccelerator/idapackages/Ida.Core.Functions.zip",
       "metadata": {
         "description": "The URL to the functions package as a zip"
       }
     },
     "skillsFunctionsPackageUrl": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/DerekHackett/azure-search-knowledge-mining/Setup/industry-solutions/journalism/insightanddiscoveryaccelerator/idapackages/IdaSkills.zip",
+      "defaultValue": "https://raw.githubusercontent.com/Azure-Samples/azure-search-knowledge-mining/master/industry-solutions/journalism/insightanddiscoveryaccelerator/idapackages/IdaSkills.zip",
       "metadata": {
         "description": "The URL to the skills functions package as a zip"
       }
