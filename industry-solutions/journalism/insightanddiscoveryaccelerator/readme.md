@@ -55,13 +55,14 @@
     ```
 
 10. The NewInstall process will run through a series of steps including:
-   - Deploying the Azure Search Resources
-   - Deploying the SQL Database
-   - Seeding the SQL Database
-   - Update App Configurations
-   - Deploying the API
-   - Deploying the UI
-   - Setup blob storage
-   - Invite administrator
+
+    1. Deploying the Azure Search Resources
+    2. Deploying the SQL Database
+    3. Seeding the SQL Database
+    4. Update App Configurations
+    5. Deploying the API
+    6. Deploying the UI
+    7. Setup blob storage
+    8. Invite administrator
 
 11. The authorization must be setup before the administrator can register using the invitation that was sent during the install. This system uses authentication and authorization in Azure App Service. We support all providers supported by this service. Follow this link to add Azure Active Directory authentication. (https://docs.microsoft.com/en-us/azure/app-service/configure-authentication-provider-aad) There are similar guides for each of the authentication providers.
