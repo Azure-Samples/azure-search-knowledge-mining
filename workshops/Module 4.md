@@ -161,7 +161,7 @@ To get the URI, you will need to get it from the published skill you tested in m
                 },
 ...
 ```
-Remember that *document/diseases* refers to an array of strings, something like this:
+Remember that *document/diseases/** refers to an array of strings, something like this:
 ```
 "document/diseases": ["heart failure", "morquio", ...]
 ```
@@ -251,7 +251,7 @@ https://{your-service-name-goes-here}.search.windows.net/indexers/clinical-trial
     "outputFieldMappings": [
        ...,
        {
-            "sourceFieldName": "/document/diseases",
+            "sourceFieldName": "/document/diseases/*/name",
             "targetFieldName": "diseases",
             "mappingFunction": null
         },
