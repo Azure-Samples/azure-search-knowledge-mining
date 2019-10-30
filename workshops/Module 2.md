@@ -3,7 +3,7 @@ Now that you've built your Search index, we'll take a moment to build and deploy
 
 To get started with this exercise, we will be using and getting familiar with the [Knowledge Mining solution accelerator](https://github.com/Azure-Samples/azure-search-knowledge-mining) to create our front-end experience.  This accelerator was published to provide developers with all of the steps and tools required to build a working minimally viable knowledge mining solution.  Take a few moments to note that it contains modules to: deploy the required Azure resources; build custom skills; and present the results in a simple, but elegant front-end.  At the end of this lab, your results will look similar to this:
 
-![](images/results.png)
+![](images/intresults.png)
 
 ## 1. Clone the repository
 ```
@@ -53,7 +53,7 @@ While this tutorial is optimizing for efficiency of allowing you to see results,
  
 ## 4. Run the project and see the results
  
-![](images/results.png)
+![](images/intresults.png)
 
 ## 5. Inspect the code
 
