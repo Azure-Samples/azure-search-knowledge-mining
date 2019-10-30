@@ -41,7 +41,7 @@ In the next three steps, you will be working through the three drop-down arrows 
 
 ### Attach the Cognitive Services 
 
-This is the resource you created earlier as part of your intial lab set up and is used to power your pre-built AI models.
+This is the resource you created earlier as part of your initial lab set up and is used to power your pre-built AI models.
 
 ![](images/skillset.png)
 
@@ -49,10 +49,11 @@ This is the resource you created earlier as part of your intial lab set up and i
 
 Name your skillset: *clinical-trials-small*
 
-+ Make sure to select the **OCR enrichment** to extract **merged_content** field.  
++ Make sure to select the **OCR enrichment** to extract **merged_content** field.
 
-+ Now we can apply an enrichment to the merged_content field to extract the locations.
-Change the name of the generated field to be **locations** with a lowercase 'l'.  For consistency’s sake, let’s leave the field name locations. 
++ Now we can apply an enrichment to the merged_content field to extract the locations. Do this by checking **Extract location names**.
+
++ **Change the name of the generated field to be locations with a lowercase 'l'.**
  
 + Leave all of the other enrichment boxes blank at this time as we will add in additional skills later in the lab.
 
@@ -95,6 +96,7 @@ In this step, you are designing your Azure Search index.  This is an important a
 4.	In the index definition fields:
       + Make sure all the fields are **retrievable**. 
       + Make sure that the locations field is **retrievable / facetable / filterable / searchable**.
+      + Make sure that the lastUpdatePosted field is **retrievable / filterable / sortable**.
       + Set **English-Microsoft** as the *Analyzer* for all searchable fields since the content is in English.
       + Select **Suggester** for trials, metadata_author, metadata_title and locations
       + You can make layoutText not searchable/retrievable since we won’t need it for this workshop.
@@ -127,13 +129,13 @@ Let's try a few additional queries:
 
 Search for references to "Gaucher's" disease and do hit highlighting of the content where there is a reference to it:
 ```
-gauchers&highlight=content
+gaucher&highlight=content
 ```
 Notice as you scroll through the results that the English-Microsoft Analyzer was able to pick up variations to this phrase such as "Gaucher" and "Gaucher's" and highlights them using default <em> </em> tags.
 
 Add a parameter &$count=true to determine that there are 8 documents that refer to "Gaucher's" disease:
 ```
-gauchers&highlight=content&$count=true
+gaucher&highlight=content&$count=true
 ```
 
 ### Searching the Content using Postman
