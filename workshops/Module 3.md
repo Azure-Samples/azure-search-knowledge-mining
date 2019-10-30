@@ -148,7 +148,7 @@ We will first test the application locally.
 
 Now that we have a working Azure Function, we will deploy it to Azure.  
 
-  *NOTE: If you prefer not to create your own resource (and resulting costs), you can skip this section and simply use a pre-deployed function located at TBD
+  *NOTE: If you prefer not to create your own resource (and resulting costs), you can skip this section and simply use a pre-deployed function with the following URL https://customentitylookup.azurewebsites.net/api/custom-entity-lookup?code=lJ69aIy1xmIauJgyowP5R8aHbD4GRUGGmVIUZVADk0OlKULHBawrhQ==
 
 To create your own Azure Function:
 1) In Solution Explorer, right click on the CustomEntitySearch project and choose: Publish
