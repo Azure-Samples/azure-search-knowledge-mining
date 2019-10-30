@@ -75,10 +75,11 @@ For this case, we are going to use Azure table projections
 
 We're going to go ahead and create the Knowledge Store now through the Azure Portal and will come back to the visualizations in a later module.
 
-1. Click choose an existing connection and select your storage account.
-2. Click on **+ Container** to create a new container called *clinical-trials-small-ks*.
-3. **Select** the container created in the above step.
-4. Under **Azure table projections**, make sure *Documents* and *Entities* have been selected.
+1. Under **Azure table projections**, make sure *Documents* and *Entities* have been selected. 
+2. Click choose an existing connection and select your storage account.
+3. Click on **+ Container** to create a new container called *clinical-trials-small-ks*.
+4. **Select** the container created in the above step.
+
 2. Click **Next: Customize the target index**.
 
 
