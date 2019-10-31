@@ -64,7 +64,7 @@ This folder contains a basic Web UI Template, written in .NET Core, which can be
 ### [03 - Data Science & Custom Skills](./03%20-%20Data%20Science%20and%20Custom%20Skills)
 This folder contains examples and templates to add your own custom skills to your solution. These custom skills help to align the solution to the needs of your particular use case, but is entirely optional and may be skipped if not needed.
 
-Additional samples and information on custom skill development can be found [here](https://docs.microsoft.com/en-us/azure/search/cognitive-search-create-custom-skill-example)
+Additional samples and information on custom skill development can be found [here](https://docs.microsoft.com/en-us/azure/search/cognitive-search-create-custom-skill-example). .NET Azure Function Custom Skills have moved to [the Power Skills repository](https://github.com/Azure-Samples/azure-search-power-skills).
 
 ### [04 - Reporting](./04%20-%20Reporting)
 This folder contains optional pre-built PowerBI reports that can be used to monitor your solution and to understand user search behavior.  They leverage data captured via [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview) and can be modified to meet your particular business objectives.
