@@ -26,14 +26,14 @@ Let’s change the index definition. Please be very careful because you can only
 
 Sometimes the portal makes it easy to make an edit. Or we could do it programmatically, which we will do below.
 
-The first change we will make is to add two new fields.  The first one, called "diseases" will simply hold a collection of diseases extracted from the text.  The second field, called "diseasesPhonetic" will also hold the diseases extracted, however, it will use something called a Phonetic analyzer.  This is one of the many Custom Analyzers that Azure Search makes available, to allow you to search for words that sounds phonetically similar.  We will talk about this in much more detail later.
+The first change we will make is to add two new fields.  The first one, called "diseases" will simply hold a collection of diseases extracted from the text.  The second field, called "diseasesPhonetic" will also hold the diseases extracted, however, it will use something called a Phonetic analyzer.  This is one of the many Custom Analyzers that Azure Cognitive Search makes available, to allow you to search for words that sounds phonetically similar.  We will talk about this in much more detail later.
 
 We can first retrieve the current index schema by opening Postman and making the following GET request:
 ```
 GET https://{name of your service}.search.windows.net/indexes/clinical-trials-small?api-version=2019-05-06
 ```
 For all of the subsequent requests, you will need to set the following two headers values:
-* api-key: [Enter Admin API Key from Azure Search portal]
+* api-key: [Enter Admin API Key from Azure Cognitive Search portal]
 * Content-Type: application/json
 
 ![](images/get-index-schema.png)
@@ -88,7 +88,7 @@ First let’s inspect the JSON.  You will notice many skills were automatically 
  ![](images/4skills.png)
  
 ###	Add a new custom skill.
-We’ll add a step to the enrichment pipeline that extracts diseases, we’ll define where that fields get saved in the index and modify the indexer as well.
+We’ll add a step to the enrichment pipeline that extracts diseases, we’ll define where that field get saved in the index and modify the indexer as well.
 
 ![](images/diseaseextractor.png)
 
@@ -105,7 +105,7 @@ We’ll modify the skills list, and also add the diseases to our table projectio
 
 Paste the response we got from the GET request, and add the additional skill. 
 
-To get the URI, you will need to get it from the published skill you tested in module 3, but this is what it looked like for my skill…
+To get the URI, you will need to get it from the published skill you tested in module 3, but this is what it looked like for our test skill…
 
 ```
          {
@@ -268,7 +268,7 @@ Now, let’s reprocess documents. Go to the portal to **RESET** your Indexer and
  
 It will take a little time to index the resulting content, however we can go to the "Search Explorer" from the portal and start looking at the resulting data.  
 
-From your Azure Search service, choose Indexes and then click on the index you have been working with in this module.
+From your Azure Cognitive Search service, choose Indexes and then click on the index you have been working with in this module.
 In the query string, enter: 
 
 ```
