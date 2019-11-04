@@ -292,4 +292,4 @@ Try adjusting this query to only include documents that talk about 'morquio' and
   </p>
 </details>
 
-### Next: [Module 5: Advanced Search](Module&#32;5.md)
+### Next: [Module 5: Advanced Cognitive Search](Module&#32;5.md)
