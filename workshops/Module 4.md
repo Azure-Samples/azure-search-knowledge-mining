@@ -24,9 +24,11 @@ Let’s change the index definition. Please be very careful because you can only
 
 ![](images/jsonportal.png)
 
-Sometimes the portal makes it easy to make an edit. Or we could do it programmatically, which we will do below.
+Sometimes the portal makes it easy to make an edit. However we can also do it programmatically, which we will be doing by adding two new fields to the search index.
 
-The first change we will make is to add two new fields.  The first one, called "diseases" will simply hold a collection of diseases extracted from the text.  The second field, called "diseasesPhonetic" will also hold the diseases extracted, however, it will use something called a Phonetic analyzer.  This is one of the many Custom Analyzers that Azure Cognitive Search makes available, to allow you to search for words that sounds phonetically similar.  We will talk about this in much more detail later.
+The first field we will add will be called "diseases" and it will simply hold a collection of diseases extracted from the text.  That is the focus of the remainder of this module.  
+
+The second field, called "diseasesPhonetic" will also hold the diseases extracted, however, it will use something called a Phonetic analyzer, which is one of the many Custom Analyzers that Azure Cognitive Search makes available to users.  As you might guess, the Phonetic analyzer allows you to search for words that sounds phonetically similar - we will be adding this field and exploring the phonetic analyzer further in Module 5.  
 
 We can first retrieve the current index schema by opening Postman and making the following GET request:
 ```
