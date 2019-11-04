@@ -1,12 +1,12 @@
 # Module 3: Introduction to Azure Functions and Custom Skills
-Objective: Introduce the tools and provide concepts key to building [custom skills](https://docs.microsoft.com/en-us/azure/search/cognitive-search-custom-skill-interface). Building a custom skill gives you a way to insert transformations unique to your content. A custom skill executes independently, applying whatever enrichment step you require and allowing you to develop extremely powerful and domain specific knowledge mining solutions.  
+**Objective:** Introduce the tools and provide concepts key to building [custom skills](https://docs.microsoft.com/en-us/azure/search/cognitive-search-custom-skill-interface). Building a custom skill gives you a way to insert transformations unique to your content. A custom skill executes independently, applying whatever enrichment step you require and allowing you to develop extremely powerful and domain specific knowledge mining solutions.  
 
 In this module we will develop a custom skill to extend the data that was indexed in the previous module.  Your new skill will identify and extract disease names from the data set and store them as entities in a separate field attached to the document.  By doing this, it will allow us to leverage capabilities such as:
 
 1) Leveraging [facets](https://docs.microsoft.com/en-us/azure/search/search-filters-facets) to show the diseases and their counts that are mentioned in the corpus of search results
 2) [Filtering](https://docs.microsoft.com/en-us/azure/search/search-filters) documents that refer to a specific disease
 
-To do this, we will leverage a "[Custom Skill](https://docs.microsoft.com/en-us/azure/search/cognitive-search-custom-skill-web-api)" built using Azure Functions that will be called by Cognitive Search with the text from the underlying document. The function will process this text and respond with the entities found in that text.  These entities will then be stored in a separate Azure Search Collection field.
+To do this, we will leverage a "[Custom Skill](https://docs.microsoft.com/en-us/azure/search/cognitive-search-custom-skill-web-api)" built using Azure Functions that will be called by Azure Cognitive Search with the text from the underlying document. The function will process this text and respond with the entities found in that text.  These entities will then be stored in a separate Azure Cognitive Search Collection field.
 
 We will also be using some of the released [Power Skills](https://azure.microsoft.com/en-us/resources/samples/azure-search-power-skills/).  Power Skills are simply a collection of useful functions to be deployed as custom skills for Azure Cognitive Search that we have made available to accelerate development.  Check this repository frequently as new updates to the Power Skill set will be released.
 
@@ -20,7 +20,7 @@ To get started, we will clone the [Azure Search Power Skill](https://github.com/
 ```
 Once you have downloaded this repository, open up the solution in Visual Studio.  
 
-In the Solution Explorer, locate the project "CustomEntitySearch" under the **Text** folder and open the **words.csv** file.
+In the Solution Explorer, locate the project "CustomEntityLookup" under the **Text** folder and open the **words.csv** file.
 
 ![](images/wordscsv.png)
 
@@ -151,7 +151,7 @@ Now that we have a working Azure Function, we will deploy it to Azure.
   *NOTE: If you prefer not to create your own resource (and resulting costs), you can skip this section and simply use a pre-deployed function with the following URL https://customentitylookup.azurewebsites.net/api/custom-entity-lookup?code=lJ69aIy1xmIauJgyowP5R8aHbD4GRUGGmVIUZVADk0OlKULHBawrhQ==
 
 To create your own Azure Function:
-1) In Solution Explorer, right click on the CustomEntitySearch project and choose: Publish
+1) In Solution Explorer, right click on the CustomEntityLookup project and choose: Publish
 2) Choose "Azure Functions Consumption Plan"
 3) Choose "Create New" and click "Publish"
 4) This will launch a page to load your subscription (or request you log in to your subscription)
