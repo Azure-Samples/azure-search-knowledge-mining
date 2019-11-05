@@ -15,11 +15,11 @@ urlFragment: azure-search-knowledge-mining
 
 # Knowledge Mining Solution Accelerator guide
 ## About this repository
-Welcome to the Knowledge Mining Solution Accelerator! This accelerator provides developers with all of the resources they need to quickly build an initial Knowledge Mining prototype with [Azure Cognitive Search](https://docs.microsoft.com/en-us/azure/search/cognitive-search-concept-intro). Use this accelerator to jump-start your development efforts with your own data or as a learning tool to better understand how you can use Cognitive Search to meet the unique needs of your business.
+Welcome to the Knowledge Mining Solution Accelerator! This accelerator provides developers with all of the resources they need to quickly build an initial Knowledge Mining prototype with [Azure Cognitive Search](https://docs.microsoft.com/azure/search/cognitive-search-concept-intro). Use this accelerator to jump-start your development efforts with your own data or as a learning tool to better understand how you can use Cognitive Search to meet the unique needs of your business.
 
 In this repository, we've provided you with all of the artifacts you need to quickly create a Cognitive Search Solution including: templates for deploying the appropriate Azure resources, assets for creating your first search index, templates for using custom skills, a basic web app, and PowerBI reports to monitor search solution performance. We've infused best practices throughout the documentation to help guide you. With Cognitive Search, you can easily index both digital data (such as documents and text files) and analog data (such as images and scanned documents).
 
-> Note: Cognitive Search is an AI feature in Azure Search, not a standalone product. See the  [AI in Cognitive Search](https://docs.microsoft.com/en-us/azure/search/cognitive-search-concept-intro) doc for more information on the subject. Cognitive Search allows you to ingest many kinds of data (documents, text files, images, scanned docs, and more), extract their contents, enrich and transform it, and then index it for exploration purposes.
+> Note: Cognitive Search is an AI feature in Azure Search, not a standalone product. See the  [AI in Cognitive Search](https://docs.microsoft.com/azure/search/cognitive-search-concept-intro) doc for more information on the subject. Cognitive Search allows you to ingest many kinds of data (documents, text files, images, scanned docs, and more), extract their contents, enrich and transform it, and then index it for exploration purposes.
 
 Once you're finished, you'll have a web app ready to search your data.
 
@@ -37,7 +37,7 @@ In order to successfully complete your solution, you'll need to gain access and 
 The directions provided in this guide assume you have a fundamental working knowledge of the Azure portal, Azure Functions, Azure Search, Visual Studio and Postman. For additional training and support, please see:
 
 * [Knowledge Mining Bootcamp](https://github.com/Azure/LearnAI-KnowledgeMiningBootcamp)
-* [AI in Cognitive Search documentation](https://docs.microsoft.com/en-us/azure/search/cognitive-search-resources-documentation)
+* [AI in Cognitive Search documentation](https://docs.microsoft.com/azure/search/cognitive-search-resources-documentation)
 
 ## Process overview
 
@@ -68,7 +68,7 @@ This folder contains examples and templates to add your own custom skills to you
 For additional samples and information on custom skill development, see the [Custom skill documentation](https://docs.microsoft.com/azure/search/cognitive-search-custom-skill-interface). .NET Azure Function Custom Skills have moved to the[Power Skills repository](https://github.com/Azure-Samples/azure-search-power-skills).
 
 ### [04 - Reporting](./04%20-%20Reporting)
-This folder contains pre-built PowerBI reports that you can use to monitor your solution and to understand user search behavior. They leverage data captured through [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview) and can be modified to meet your particular business objectives. This step is entirely optional and may be skipped if not needed.
+This folder contains pre-built PowerBI reports that you can use to monitor your solution and to understand user search behavior. They leverage data captured through [Application Insights](https://docs.microsoft.com/azure/azure-monitor/app/app-insights-overview) and can be modified to meet your particular business objectives. This step is entirely optional and may be skipped if not needed.
 
 ### [Sample Documents](./sample_documents)
 This folder contains a small data set in a variety of file formats that you can use to build your solution if you don't have another data set available.
