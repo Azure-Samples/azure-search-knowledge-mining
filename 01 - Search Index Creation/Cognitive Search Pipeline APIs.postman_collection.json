@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "1af59876-0856-40c1-b988-48ae2dae5521",
+		"_postman_id": "2e4e0fe8-d551-400a-bcfe-585d8289b11f",
 		"name": "Cognitive Search Pipeline APIs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -62,7 +62,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"fields\": [\r\n    {\r\n      \"name\": \"id\",\r\n      \"type\": \"Edm.String\",\r\n      \"key\": true,\r\n      \"searchable\": true,\r\n      \"filterable\": true,\r\n      \"facetable\": false,\r\n      \"sortable\": true\r\n    },\r\n    {\r\n      \"name\": \"content\",\r\n      \"type\": \"Edm.String\",\r\n      \"sortable\": false,\r\n      \"searchable\": true,\r\n      \"filterable\": false,\r\n      \"facetable\": false\r\n    },\r\n    {\r\n      \"name\": \"keyPhrases\",\r\n      \"type\": \"Collection(Edm.String)\",\r\n      \"searchable\": true,\r\n      \"sortable\": false,\r\n      \"filterable\": true,\r\n      \"facetable\": true\r\n    },\r\n    {\r\n      \"name\": \"organizations\",\r\n      \"type\": \"Collection(Edm.String)\",\r\n      \"searchable\": true,\r\n      \"sortable\": false,\r\n      \"filterable\": true,\r\n      \"facetable\": true\r\n    },\r\n        {\r\n      \"name\": \"persons\",\r\n      \"type\": \"Collection(Edm.String)\",\r\n      \"searchable\": true,\r\n      \"sortable\": false,\r\n      \"filterable\": true,\r\n      \"facetable\": true\r\n    },\r\n        {\r\n      \"name\": \"locations\",\r\n      \"type\": \"Collection(Edm.String)\",\r\n      \"searchable\": true,\r\n      \"sortable\": false,\r\n      \"filterable\": true,\r\n      \"facetable\": true\r\n    },\r\n    {\r\n      \"name\": \"metadata_storage_path\",\r\n      \"type\": \"Edm.String\",\r\n      \"searchable\": true,\r\n      \"sortable\": false,\r\n      \"filterable\": false,\r\n      \"facetable\": false\r\n    },\r\n    {\r\n      \"name\": \"metadata_storage_name\",\r\n      \"type\": \"Edm.String\",\r\n      \"searchable\": true,\r\n      \"sortable\": false,\r\n      \"filterable\": false,\r\n      \"facetable\": false\r\n    }\r\n  ]\r\n}"
+					"raw": "{\r\n  \"fields\": [\r\n    {\r\n      \"name\": \"content\",\r\n      \"type\": \"Edm.String\",\r\n      \"sortable\": false,\r\n      \"searchable\": true,\r\n      \"filterable\": false,\r\n      \"facetable\": false\r\n    },\r\n    {\r\n      \"name\": \"keyPhrases\",\r\n      \"type\": \"Collection(Edm.String)\",\r\n      \"searchable\": true,\r\n      \"sortable\": false,\r\n      \"filterable\": true,\r\n      \"facetable\": true\r\n    },\r\n    {\r\n      \"name\": \"organizations\",\r\n      \"type\": \"Collection(Edm.String)\",\r\n      \"searchable\": true,\r\n      \"sortable\": false,\r\n      \"filterable\": true,\r\n      \"facetable\": true\r\n    },\r\n        {\r\n      \"name\": \"persons\",\r\n      \"type\": \"Collection(Edm.String)\",\r\n      \"searchable\": true,\r\n      \"sortable\": false,\r\n      \"filterable\": true,\r\n      \"facetable\": true\r\n    },\r\n        {\r\n      \"name\": \"locations\",\r\n      \"type\": \"Collection(Edm.String)\",\r\n      \"searchable\": true,\r\n      \"sortable\": false,\r\n      \"filterable\": true,\r\n      \"facetable\": true\r\n    },\r\n    {\r\n      \"name\": \"metadata_storage_path\",\r\n      \"type\": \"Edm.String\",\r\n      \"key\": true,\r\n      \"searchable\": true,\r\n      \"sortable\": false,\r\n      \"filterable\": false,\r\n      \"facetable\": false\r\n    },\r\n    {\r\n      \"name\": \"metadata_storage_name\",\r\n      \"type\": \"Edm.String\",\r\n      \"searchable\": true,\r\n      \"sortable\": false,\r\n      \"filterable\": false,\r\n      \"facetable\": false\r\n    }\r\n  ]\r\n}"
 				},
 				"url": {
 					"raw": "https://{{search_service}}.search.windows.net/indexes/{{index_name}}?api-version=2019-05-06",
@@ -352,5 +352,6 @@
 			"value": "cogsearchdemo",
 			"type": "string"
 		}
-	]
+	],
+	"protocolProfileBehavior": {}
 }
