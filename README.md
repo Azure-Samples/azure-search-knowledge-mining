@@ -76,3 +76,6 @@ This folder contains a small data set in a variety of file formats that you can 
 ## Special Thanks
 Special thanks to Microsoft's Early Access innovation Program (EAiP) and to Derek Legenzoff, Christopher Romero, Lauren Mills, and Chris Lill who wrote a large majority of the code here.
 
+## License
+
+Please refer to [LICENSE](./LICENSE.md) for all licensing information.
