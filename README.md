@@ -11,69 +11,70 @@ description: "Welcome to the Knowledge Mining Solution Accelerator!"
 urlFragment: azure-search-knowledge-mining
 ---
 
-![](images/kmheader.png)
+![Knowledge Mining Solution Accelerator](images/kmheader.png)
 
-# Knowledge Mining Solution Accelerator Guide
+# Knowledge Mining Solution Accelerator guide
 ## About this repository
-Welcome to the Knowledge Mining Solution Accelerator!  This accelerator was built to provide developers with all of the resources needed to quickly build an initial Knowledge Mining prototype with [Azure Cognitive Search](https://docs.microsoft.com/en-us/azure/search/cognitive-search-concept-intro).  Use this accelerator to jump start your development efforts with your own data or as a learning tool to better understand how Cognitive Search can be leveraged for the unique needs of your business.
+Welcome to the Knowledge Mining Solution Accelerator! This accelerator provides developers with all of the resources they need to quickly build an initial Knowledge Mining prototype with [Azure Cognitive Search](https://docs.microsoft.com/en-us/azure/search/cognitive-search-concept-intro). Use this accelerator to jump-start your development efforts with your own data or as a learning tool to better understand how you can use Cognitive Search to meet the unique needs of your business.
 
-In this repository, we've provided you with all of the artifacts needed to quickly create a Cognitive Search Solution including: templates for deploying the appropriate Azure resources, assets for creating your first search index, templates for custom skills, a basic web app, and PowerBI reports to monitor search solution performance. We've infused best practices throughout the documentation to help further guide you. With Cognitive Search, both digital data (i.e. documents and text files) and analog data (i.e. images and scanned documents) can be easily indexed. 
+In this repository, we've provided you with all of the artifacts you need to quickly create a Cognitive Search Solution including: templates for deploying the appropriate Azure resources, assets for creating your first search index, templates for using custom skills, a basic web app, and PowerBI reports to monitor search solution performance. We've infused best practices throughout the documentation to help guide you. With Cognitive Search, you can easily index both digital data (such as documents and text files) and analog data (such as images and scanned documents).
 
-> Note: Cognitive Search is an AI feature in Azure Search rather than a standalone product. See this [doc](https://docs.microsoft.com/en-us/azure/search/cognitive-search-concept-intro) for more information on the subject. Cognitive Search allows you to ingest all kinds of data (documents, text files, images, scanned docs, etc.), extract the content out of your data, enrich and transform it, and then index it for exploration purposes.
+> Note: Cognitive Search is an AI feature in Azure Search, not a standalone product. See the  [AI in Cognitive Search](https://docs.microsoft.com/en-us/azure/search/cognitive-search-concept-intro) doc for more information on the subject. Cognitive Search allows you to ingest many kinds of data (documents, text files, images, scanned docs, and more), extract their contents, enrich and transform it, and then index it for exploration purposes.
 
-Once finished, you'll have a web app ready to search against your data like in the image below:
-![screenshot](images/ui.PNG)
+Once you're finished, you'll have a web app ready to search your data.
+
+![A web app showing several resources and their lists of searchable tags](images/ui.PNG)
 
 ## Prerequisites
-In order to successfully complete your solution, you will need to have access to and or provisioned the following:
-1. Access to an Azure subscription
-2. Visual Studio 2017 or newer
-3. [Postman](https://www.getpostman.com/) for making API calls
-4. Documents uploaded to any data source [supported by Azure Search Indexers](https://docs.microsoft.com/en-us/azure/search/search-indexer-overview).  This solution accelerator uses Azure Blob Storage as a container for source data files. Sample documents are provided in the *sample_documents* folder.
 
-## Training
-The directions provided for this repository assume fundemental working knowledge of Azure Portal, Azure Functions, Azure Search, Visual Studio and Postman.  
+In order to successfully complete your solution, you'll need to gain access and provision the following resources:
 
-For additional training and support, please see:
- 1. [Knowledge Mining Bootcamp](https://github.com/Azure/LearnAI-KnowledgeMiningBootcamp)
- 2. [Full Cognitive Search Documentation](https://docs.microsoft.com/en-us/azure/search/cognitive-search-resources-documentation)
+* Azure subscription - [Create one for free](https://azure.microsoft.com/free/)
+* [Visual Studio 2017 or later](https://visualstudio.microsoft.com/downloads/)
+* [Postman](https://www.getpostman.com/) for making API calls
+* Documents uploaded to any data source supported by Azure Search Indexers. For a list of these, see [Indexers in Azure Cognitive Search](https://docs.microsoft.com/azure/search/search-indexer-overview). This solution accelerator uses Azure Blob Storage as a container for source data files. You can find sample documents in the **sample_documents/** folder.
 
-## Getting Started and Process Overview
-Clone/download this repo onto your computer and then walk through each of these folders in order, following the steps outlined in each of the README files.  After completion of all steps, you will have a working end-to-end solution with the following architecture:
+The directions provided in this guide assume you have a fundamental working knowledge of the Azure portal, Azure Functions, Azure Search, Visual Studio and Postman. For additional training and support, please see:
+
+* [Knowledge Mining Bootcamp](https://github.com/Azure/LearnAI-KnowledgeMiningBootcamp)
+* [AI in Cognitive Search documentation](https://docs.microsoft.com/en-us/azure/search/cognitive-search-resources-documentation)
+
+## Process overview
+
+Clone or download this repository and then navigate through each of these folders in order, following the steps outlined in each of the README files. When you complete all of the steps, you'll have a working end-to-end solution that combines data sources with data enrichment skills, a web app powered by Azure Search, and intelligent reporting on user search activity.
 
 ![the cognitive indexing pipelines used for processing unstructured data in Azure Search](images/architecture.jpg)
 
-
 ### [00 - Resource Deployment](./00%20-%20Resource%20Deployment)
-The resources in this folder can be used to deploy the required resources into your Azure Subscription. This can be done either via the [Azure Portal](https://portal.azure.com) or by using the [PowerShell script](./00%20-%20Resource%20Deployment/deploy.ps1) included in the resource deployment folder.  
+The contents of this folder show you how to deploy the required resources to your Azure subscription. You can do this either through the [Azure portal](https://portal.azure.com) or using the provided [PowerShell script](./00%20-%20Resource%20Deployment/deploy.ps1).
 
-Alternatively, you can deploy the resources using this button:
+Alternatively, you can automatically deploy the required resources using this button:
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure-Samples%2Fazure-search-knowledge-mining%2Fmaster%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a> 
 
 ### [01 - Search Index Creation](./01%20-%20Search%20Index%20Creation)
-This folder contains a Postman collection that can be used to create a search index. The collection is pre-configured to take advantage of a majority of the out of the box Cognitive Search functionality.
+This folder contains a Postman collection that you can use to create a search index. The collection is pre-configured to take advantage of out-of-the-box Cognitive Search functionality.
 
-We recommend using this collection to create an initial index and then iterrating by editing the postman collection and adding custom skills as needed.
+We recommend using this collection to create an initial search index and then iterating by editing the postman collection and adding custom skills as needed.
 
 ### [02 - Web UI Template](./02%20-%20Web%20UI%20Template)
-This folder contains a basic Web UI Template, written in .NET Core, which can be configured to query your search index. Simply follow the steps outlined in the [Web UI Template README file](./02%20-%20Web%20UI%20Template/README.md) to integrate your new search index into the web app.
+This folder contains a basic Web UI Template, written in .NET Core, which you can configure to query your search index. Follow the steps outlined in the [Web UI Template README file](./02%20-%20Web%20UI%20Template/README.md) to integrate your new search index into the web app.
 
 ### [03 - Data Science & Custom Skills](./03%20-%20Data%20Science%20and%20Custom%20Skills)
-This folder contains examples and templates to add your own custom skills to your solution. These custom skills help to align the solution to the needs of your particular use case, but is entirely optional and may be skipped if not needed.
+This folder contains examples and templates to add your own custom skills to your solution. These custom skills help to align the solution to the needs of your particular use case. This step is entirely optional and may be skipped if not needed.
 
-Additional samples and information on custom skill development can be found [here](https://docs.microsoft.com/en-us/azure/search/cognitive-search-create-custom-skill-example). .NET Azure Function Custom Skills have moved to [the Power Skills repository](https://github.com/Azure-Samples/azure-search-power-skills).
+For additional samples and information on custom skill development, see the [Custom skill documentation](https://docs.microsoft.com/azure/search/cognitive-search-custom-skill-interface). .NET Azure Function Custom Skills have moved to the[Power Skills repository](https://github.com/Azure-Samples/azure-search-power-skills).
 
 ### [04 - Reporting](./04%20-%20Reporting)
-This folder contains optional pre-built PowerBI reports that can be used to monitor your solution and to understand user search behavior.  They leverage data captured via [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview) and can be modified to meet your particular business objectives.
+This folder contains pre-built PowerBI reports that you can use to monitor your solution and to understand user search behavior. They leverage data captured through [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview) and can be modified to meet your particular business objectives. This step is entirely optional and may be skipped if not needed.
 
 ### [Sample Documents](./sample_documents)
-This folder contains a small data set in a variety of file formats that can be used to build your solution if you do not have another data set available.
+This folder contains a small data set in a variety of file formats that you can use to build your solution if you don't have another data set available.
 
 ## Special Thanks
-Special thanks Microsoft's Early Access innovation Program (EAiP) and to Derek Legenzoff, Christopher Romero, Lauren Mills, and Chris Lill who wrote a large majority of the code here.
+Special thanks to Microsoft's Early Access innovation Program (EAiP) and to Derek Legenzoff, Christopher Romero, Lauren Mills, and Chris Lill who wrote a large majority of the code here.
 
 ## License
 Copyright (c) Microsoft Corporation
