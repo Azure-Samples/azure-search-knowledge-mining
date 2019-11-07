@@ -28,7 +28,7 @@ Sometimes the portal makes it easy to make an edit. However we can also do it pr
 
 The first field we will add will be called "diseases" and it will simply hold a collection of diseases extracted from the text.  That is the focus of the remainder of this module.  
 
-The second field, called "diseasesPhonetic" will also hold the diseases extracted, however, it will use something called a Phonetic analyzer, which is one of the many Custom Analyzers that Azure Cognitive Search makes available to users.  As you might guess, the Phonetic analyzer allows you to search for words that sounds phonetically similar - we will be adding this field and exploring the phonetic analyzer further in Module 5.  
+In Module 5 we'll add a second field, called "diseasesPhonetic".  It will also hold the diseases extracted, however, it will use something called a Phonetic analyzer, which is one of the many Custom Analyzers that Azure Cognitive Search makes available to users.  As you might guess, the Phonetic analyzer allows you to search for words that sounds phonetically similar.
 
 We can first retrieve the current index schema by opening Postman and making the following GET request:
 ```
@@ -260,7 +260,7 @@ https://{your-service-name-goes-here}.search.windows.net/indexers/clinical-trial
 	...
  ```
 
-This will map the diseases into two distinct fields, so that we can assign different analyzers to each of them.
+This will map the diseases into a field named **diseases** in the search index.
 
 Now, let’s reprocess documents. Go to the portal to **RESET** your Indexer and re **RUN** it.
 
