@@ -72,7 +72,7 @@ Add this outputFieldMapping to the indexer.
 
 ```json
 {
-	  "sourceFieldName": "/document/diseases",
+	  "sourceFieldName": "/document/diseases/*/name",
 	  "targetFieldName": "diseasesPhonetic",
 	  "mappingFunction": null
 }
