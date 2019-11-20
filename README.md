@@ -34,14 +34,14 @@ In order to successfully complete your solution, you'll need to gain access and 
 * [Postman](https://www.getpostman.com/) for making API calls
 * Documents uploaded to any data source supported by Azure Search Indexers. For a list of these, see [Indexers in Azure Cognitive Search](https://docs.microsoft.com/azure/search/search-indexer-overview). This solution accelerator uses Azure Blob Storage as a container for source data files. You can find sample documents in the **sample_documents/** folder.
 
-The directions provided in this guide assume you have a fundamental working knowledge of the Azure portal, Azure Functions, Azure Search, Visual Studio and Postman. For additional training and support, please see:
+The directions provided in this guide assume you have a fundamental working knowledge of the Azure portal, Azure Functions, Azure Cognitive Search, Visual Studio and Postman. For additional training and support, please see:
 
 * [Knowledge Mining Bootcamp](https://github.com/Azure/LearnAI-KnowledgeMiningBootcamp)
 * [AI in Cognitive Search documentation](https://docs.microsoft.com/azure/search/cognitive-search-resources-documentation)
 
 ## Process overview
 
-Clone or download this repository and then navigate through each of these folders in order, following the steps outlined in each of the README files. When you complete all of the steps, you'll have a working end-to-end solution that combines data sources with data enrichment skills, a web app powered by Azure Search, and intelligent reporting on user search activity.
+Clone or download this repository and then navigate through each of these folders in order, following the steps outlined in each of the README files. When you complete all of the steps, you'll have a working end-to-end solution that combines data sources with data enrichment skills, a web app powered by Azure Cognitive Search, and intelligent reporting on user search activity.
 
 ![the cognitive indexing pipelines used for processing unstructured data in Azure Search](images/architecture.jpg)
 
