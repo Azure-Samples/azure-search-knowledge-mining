@@ -163,11 +163,37 @@ To get the URI, you will need to get it from the published skill you tested in m
                 },
 ...
 ```
-Remember that *document/diseases/** refers to an array of strings, something like this:
+Remember that *document/diseases* refers to an array of complex types, something like this:
 ```
-"document/diseases": ["heart failure", "morquio", ...]
+"document/diseases": 
+[
+    {
+        "name": "heart failure",
+        "matches": [
+            {
+                "text": "heart failure",
+                "offset": 10,
+                "length": 12,
+                "matchDistance": 0.0
+            }
+        ]
+    },
+    {
+        "name": "morquio",
+        "matches": [
+            {
+                "text": "morquio",
+                "offset": 25,
+                "length": 7,
+                "matchDistance": 0.0
+            }
+        ]
+    },
+    ...
+]
+
 ```
-and */document/diseases/** refers to the each of the members of that element -- each of those strings.
+and */document/diseases/** refers to the each of the members of that array -- each of those complex types.
 
 This skill is shaping a new complex object called *tableprojection* that will have many members.
 You have just added a new member to it called *diseases*. 
@@ -260,7 +286,7 @@ https://{your-service-name-goes-here}.search.windows.net/indexers/clinical-trial
 	...
  ```
 
-This will map the diseases into two distinct fields, so that we can assign different analyzers to each of them.
+This will map each of the names of the diseases complex types into a flat array (i.e. \["diabetes", "morquio", ...\] )
 
 Now, let’s reprocess documents. Go to the portal to **RESET** your Indexer and re **RUN** it.
 
