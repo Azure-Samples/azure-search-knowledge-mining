@@ -1,5 +1,5 @@
 # Cognitive Search UI Template
-This folder contains a basic web front end that can be used to quickly create a view of your search results.  With just a few simles steps, you can configure this template UI to query your newly created search index.
+This folder contains a basic web front end that can be used to quickly create a view of your search results.  With just a few simple steps, you can configure this template UI to query your newly created search index.
 
 The Cognitive Search Template contains two projects:
 
