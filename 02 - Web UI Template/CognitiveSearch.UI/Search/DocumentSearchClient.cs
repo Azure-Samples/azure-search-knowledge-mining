@@ -214,8 +214,15 @@ namespace CognitiveSearch.UI
             return string.Empty;
         }
 
-        public DocumentSearchResult<Document> GetFacets(string searchText, string facetName, int maxCount = 30)
+        public DocumentSearchResult<Document> GetFacets(string searchText, List<string> facetNames, int maxCount = 30)
         {
+            var facets = new List<String>();
+
+            foreach (var facet in facetNames) 
+            {
+                 facets.Add($"{facet}, count:{maxCount}");
+            }
+
             // Execute search based on query string
             try
             {
@@ -224,7 +231,7 @@ namespace CognitiveSearch.UI
                     SearchMode = SearchMode.Any,
                     Top = 10,
                     Select = new List<String>() { idField },
-                    Facets = new List<String>() { $"{facetName}, count:{maxCount}" },
+                    Facets = facets, 
                     QueryType = QueryType.Full
                 };
 

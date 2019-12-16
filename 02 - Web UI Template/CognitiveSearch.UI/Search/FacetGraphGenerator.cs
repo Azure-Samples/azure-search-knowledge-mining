@@ -16,7 +16,7 @@ namespace CognitiveSearch.UI
             _searchHelper = searchClient;
         }
 
-        public JObject GetFacetGraphNodes(string q, string facetName)
+        public JObject GetFacetGraphNodes(string q, List<string> facetNames)
         {
             // Calculate nodes for 3 levels
             JObject dataset = new JObject();
@@ -48,30 +48,37 @@ namespace CognitiveSearch.UI
                 {
                     CurrentLevel++;
                 }
-                DocumentSearchResult<Document> response = _searchHelper.GetFacets(q, facetName, 10);
+                DocumentSearchResult<Document> response = _searchHelper.GetFacets(q, facetNames, 10);
                 if (response != null)
                 {
-                    IList<FacetResult> facetVals = (response.Facets)[facetName];
-                    foreach (FacetResult facet in facetVals)
+                    //var facetName = facetNames[0]; // TODO: Fix this in a bit.
+                    foreach (var facetName in facetNames)
                     {
-                        int node = -1;
-                        if (NodeMap.TryGetValue(facet.Value.ToString(), out node) == false)
+                        IList<FacetResult> facetVals = (response.Facets)[facetName];
+
+                        foreach (FacetResult facet in facetVals)
                         {
-                            // This is a new node
-                            CurrentNodes++;
-                            node = CurrentNodes;
-                            NodeMap[facet.Value.ToString()] = node;
-                        }
-                        // Add this facet to the fd list
-                        if (NodeMap[q] != NodeMap[facet.Value.ToString()])
-                        {
-                            FDEdgeList.Add(new FDGraphEdges { source = NodeMap[q], target = NodeMap[facet.Value.ToString()] });
-                            if (CurrentLevel < MaxLevels)
+                            int node = -1;
+                            if (NodeMap.TryGetValue(facet.Value.ToString(), out node) == false)
                             {
-                                NextLevelTerms.Add(facet.Value.ToString());
+                                // This is a new node
+                                CurrentNodes++;
+                                node = CurrentNodes;
+                                NodeMap[facet.Value.ToString()] = node;
+                            }
+                            // Add this facet to the fd list
+                            if (NodeMap[q] != NodeMap[facet.Value.ToString()])
+                            {
+                                FDEdgeList.Add(new FDGraphEdges { source = NodeMap[q], target = NodeMap[facet.Value.ToString()] });
+                                if (CurrentLevel < MaxLevels)
+                                {
+                                    NextLevelTerms.Add(facet.Value.ToString());
+                                }
                             }
                         }
                     }
+
+
                 }
             }
 

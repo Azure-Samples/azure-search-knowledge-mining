@@ -290,14 +290,16 @@ namespace CognitiveSearch.UI.Controllers
         [HttpPost]
         public JObject GetGraphData(string query)
         {
-            string facetName = _configuration.GetSection("GraphFacet")?.Value;
+            string facetsList = _configuration.GetSection("GraphFacet")?.Value;
+
+            string[] facetNames = facetsList.Split(new char[] {',',' '}, StringSplitOptions.RemoveEmptyEntries);
 
             if (query == null)
             {
                 query = "*";
             }
             FacetGraphGenerator graphGenerator = new FacetGraphGenerator(_docSearch);
-            var graphJson = graphGenerator.GetFacetGraphNodes(query, facetName);
+            var graphJson = graphGenerator.GetFacetGraphNodes(query, facetNames.ToList<string>());
 
             return graphJson;
         }
