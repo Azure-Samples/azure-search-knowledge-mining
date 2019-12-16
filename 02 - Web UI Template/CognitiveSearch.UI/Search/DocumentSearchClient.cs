@@ -56,6 +56,8 @@ namespace CognitiveSearch.UI
             }
             catch (Exception e)
             {
+                // If you get an exceptio here, most likely you have not set your
+                // credentials correctly in appsettings.json
                 throw new ArgumentException(e.Message.ToString());
             }
         }

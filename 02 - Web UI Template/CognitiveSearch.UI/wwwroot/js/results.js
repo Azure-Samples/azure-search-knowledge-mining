@@ -42,8 +42,6 @@ function UpdateResults(data) {
             path = result.metadata_storage_path;
         }
 
-        path = path; 
-
         if (result["metadata_storage_name"] !== undefined) {
             name = result.metadata_storage_name.split(".")[0];
         }
