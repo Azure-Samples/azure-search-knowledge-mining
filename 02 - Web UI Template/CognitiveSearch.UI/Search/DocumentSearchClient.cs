@@ -157,6 +157,28 @@ namespace CognitiveSearch.UI
             return null;
         }
 
+        public AutocompleteResult Autocomplete(string searchText, bool fuzzy)
+        {
+            // Execute search based on query string
+            try
+            {
+                AutocompleteParameters ap = new AutocompleteParameters()
+                {
+                    AutocompleteMode = AutocompleteMode.OneTermWithContext,
+                    UseFuzzyMatching = fuzzy,
+                    Top = 8
+                };
+
+                return _indexClient.Documents.Autocomplete(searchText, "sg", ap);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error querying index: {0}\r\n", ex.Message.ToString());
+            }
+            return null;
+        }
+
+
         public Document LookUp(string id)
         {
             // Execute geo search based on query string
@@ -170,6 +192,7 @@ namespace CognitiveSearch.UI
             }
             return null;
         }
+
 
         private async Task<string> GenerateSearchId(string searchText, SearchParameters sp)
         {

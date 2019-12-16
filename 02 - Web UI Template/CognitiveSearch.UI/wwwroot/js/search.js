@@ -27,10 +27,7 @@ $("#transcript-search-input").keyup(function (e) {
 
 // Search with query and facets
 function Search() {
-    if (results && results.length > 0) {
-        $('#loading-indicator').show();
-    }
-    else $('#progress-indicator').show();
+    $('#loading-indicator').show();
 
     if (currentPage > 1) {
         if (q != $("#q").val()) {
@@ -38,8 +35,6 @@ function Search() {
         }
     }
     q = $("#q").val();
-
-
 
     // Get center of map to use to score the search results
     $.post('/home/getdocuments',
@@ -50,7 +45,6 @@ function Search() {
         },
         function (data) {
             $('#loading-indicator').css("display", "none");
-            $('#progress-indicator').css("display", "none");
             Update(data);
         });
 }

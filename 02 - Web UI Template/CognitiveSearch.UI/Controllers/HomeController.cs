@@ -305,8 +305,9 @@ namespace CognitiveSearch.UI.Controllers
         [HttpPost, HttpGet]
         public ActionResult Suggest(string term, bool fuzzy = true)
         {
-            // Call suggest query and return results
-            var response = _docSearch.Suggest(term, fuzzy);
+            // Change to _docSearch.Suggest if you would prefer to have suggestions instead of auto-completion
+            var response = _docSearch.Autocomplete(term, fuzzy);
+
             List<string> suggestions = new List<string>();
             if (response != null)
             {
