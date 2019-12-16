@@ -32,20 +32,23 @@ function UpdateResults(data) {
         var id = result[data.idField]; 
 
         var tags = GetTagsHTML(result);
-
         var path;
+
+        // get path
         if (data.isPathBase64Encoded) {
-            path = Base64Decode(result.metadata_storage_path) + token;
+            path = Base64Decode(result.metadata_storage_path);
         }
         else {
-            path = result.metadata_storage_path + token;
+            path = result.metadata_storage_path;
         }
+
+        path = path; 
 
         if (result["metadata_storage_name"] !== undefined) {
             name = result.metadata_storage_name.split(".")[0];
         }
         
-        if (result["metadata_title"] !== undefined) {
+        if (result["metadata_title"] !== undefined && result["metadata_title"] !== null) {
             title = result.metadata_title;
         }
         else {

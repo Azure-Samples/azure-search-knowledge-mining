@@ -160,8 +160,20 @@ audio {
     border: 1px solid #ccc;
 }
 
+#maps-viewer {
+    height: 100%;
+    overflow-y: scroll;
+    margin: 10px;
+    border: 1px solid #ccc;
+}
+
+
 #filingDate-slider-label {
     text-align: center;
+}
+
+#myMap {
+    height: 100%;
 }
 
 .filter-list {
@@ -278,7 +290,8 @@ h1, h2, h3, h4, h5 {
     height: calc(100% - 60px) !important;
 }
 
-.ms-Pivot-link:focus {
+.ms-Pivot-
+:focus {
     outline: none;
 }
 
@@ -424,6 +437,20 @@ pre {
 }
 
 #transcript-search-box {
+}
+
+.tag.tag-parts {
+    background-color: #4A4A4A;
+}
+.tag.tag-parts_descriptions {
+    background-color: #202020;
+}
+
+.tag.tag-attachments {
+    background-color: #481547;
+}
+.tag.tag-attachments_descriptions {
+    background-color: #7a2f7e;
 }
 
 .tag {

@@ -22,13 +22,16 @@ function UpdateFilterReset() {
 
             if (item.value && item.value.length > 0) {
                 item.value.forEach(function (item2, index2, array) {
-                    var idx = result.value.indexOf(result.value.filter(function (v) { return v.value === item2; })[0]);
+                    var idx = result.value.indexOf(result.value.filter(function (v) {
+                        return v.value.toString() === item2.toString();
+                    }
+                    )[0]);
 
                     htmlString += item2 + ` <a href="javascript:void(0)" onclick="RemoveFilter(\'${name}\', \'${item2}'\)"><span class="ms-Icon ms-Icon--Clear"></span></a><br>`;
                     $('#' + name + '_' + idx).addClass('is-checked');
-                })
+                });
             }
-        })
+        });
 
         htmlString += `</div></div></div>`;
     }
@@ -62,40 +65,43 @@ function UpdateFacets() {
         var name = item.key;
         var data = item.value;
 
-        var title = name.replace(/([A-Z])/g, ' $1').replace(/^./, function (str) { return str.toUpperCase(); })
+        if (data !== null && data.length > 0) {
 
-        facetResultsHTML += `<div class="panel panel-default">
+            var title = name.replace(/([A-Z])/g, ' $1').replace(/^./, function (str) { return str.toUpperCase(); })
+
+            facetResultsHTML += `<div class="panel panel-default">
                                 <div class="panel-heading">
                                     <h4 class="panel-title" id="${name}-facets">
                                         <a data-toggle="collapse" data-parent="#accordion" href="#${name}">${title}</a>
                                     </h4>
                                 </div>`;
-        if (index == 0) {
-            facetResultsHTML += `<div id="${name}" class="panel-collapse collapse in">
+            if (index === 0) {
+                facetResultsHTML += `<div id="${name}" class="panel-collapse collapse in">
                 <div class="panel-body">`;
-        }
-        else {
-            facetResultsHTML += `<div id="${name}" class="panel-collapse collapse">
+            }
+            else {
+                facetResultsHTML += `<div id="${name}" class="panel-collapse collapse">
                 <div class="panel-body">`;
-        }
-       
-        if (data != null) {
-            for (var j = 0; j < data.length; j++) {
-                if (data[j].value.length < 30) {
-                    facetResultsHTML += `<div class="ms-CheckBox">
+            }
+
+            if (data !== null) {
+                for (var j = 0; j < data.length; j++) {
+                    if (data[j].value.toString().length < 100) {
+                        facetResultsHTML += `<div class="ms-CheckBox">
                                             <input tabindex="-1" type="checkbox" class="ms-CheckBox-input" onclick="ChooseFacet('${name}','${data[j].value}', '${j}');">
                                             <label id="${name}_${j}" role="checkbox" class="ms-CheckBox-field" tabindex="0" aria-checked="false" name="checkboxa">
                                                 <span class="ms-Label">${data[j].value} (${data[j].count})</span> 
                                             </label>
                                         </div>`;
+                    }
                 }
             }
-        }
 
-        facetResultsHTML += `</div>
+            facetResultsHTML += `</div>
                         </div>
                     </div>`;
-    })
+        }
+    });
     facetResultsHTML += `</div>`;
     $("#facet-nav").append(facetResultsHTML);
 
@@ -106,7 +112,7 @@ function ChooseFacet(facet, value, position) {
     //if (boxStatus) {
     //    RemoveFilter(facet, value);
     //}
-    if (selectedFacets != undefined) {
+    if (selectedFacets !== undefined) {
 
         // facetValues where key == selected facet
         var result = selectedFacets.filter(function (f) { return f.key === facet; })[0];

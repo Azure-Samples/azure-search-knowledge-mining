@@ -11,6 +11,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Auth;
 using CognitiveSearch.UI.Models;
 using Newtonsoft.Json.Linq;
+using Microsoft.Azure.Search.Models;
 
 namespace CognitiveSearch.UI.Controllers
 {
@@ -20,6 +21,10 @@ namespace CognitiveSearch.UI.Controllers
         private DocumentSearchClient _docSearch { get; set; }
         private string _idField { get; set; }
         bool _isPathBase64Encoded { get; set; }
+
+        // data source information. Currently supporting 3 data sources indexed by different indexers
+        private static string[] containerAddresses = null; 
+        private static string[] tokens = null;
 
         public HomeController(IConfiguration configuration)
         {
@@ -61,12 +66,13 @@ namespace CognitiveSearch.UI.Controllers
         [HttpPost]
         public IActionResult GetDocuments(string q = "", SearchFacet[] searchFacets = null, int currentPage = 1)
         {
-            var token = GetContainerSasUri();
+            GetContainerSasUris();
+ 
             var selectFilter = _docSearch.Model.SelectFilter;
 
             if (!string.IsNullOrEmpty(q))
             {
-                q = q.Replace("-", "").Replace("?", "");
+                q = q.Replace("?", "");
             }
 
             var response = _docSearch.Search(q, searchFacets, selectFilter, currentPage);
@@ -74,73 +80,211 @@ namespace CognitiveSearch.UI.Controllers
             var facetResults = new List<object>();
             var tagsResults = new List<object>();
 
-            if (response.Facets != null)
+            if (response != null && response.Facets != null)
             {
                 // Return only the selected facets from the Search Model
                 foreach (var facetResult in response.Facets.Where(f => _docSearch.Model.Facets.Where(x => x.Name == f.Key).Any()))
                 {
+                    var cleanValues = GetCleanFacetValues(facetResult);
+
                     facetResults.Add(new
                     {
                         key = facetResult.Key,
-                        value = facetResult.Value
+                        value = cleanValues
                     });
                 }
 
                 foreach (var tagResult in response.Facets.Where(t => _docSearch.Model.Tags.Where(x => x.Name == t.Key).Any()))
                 {
+                    var cleanValues = GetCleanFacetValues(tagResult);
+
                     tagsResults.Add(new
                     {
                         key = tagResult.Key,
-                        value = tagResult.Value
+                        value = cleanValues
                     });
                 }
             }
 
             return new JsonResult(new DocumentResult
             {
-                Results = response.Results,
+                Results = (response == null? null : response.Results),
                 Facets = facetResults,
                 Tags = tagsResults,
-                Count = Convert.ToInt32(response.Count),
-                Token = token,
+                Count = (response == null? 0 :  Convert.ToInt32(response.Count)),
                 SearchId = searchId,
                 IdField = _idField,
                 IsPathBase64Encoded = _isPathBase64Encoded
             });
         }
 
+        /// <summary>
+        /// In some situations you may want to restrict the facets that are displayed in the
+        /// UI. This allows you to add some heuristics to remove facets that you may consider unnecessary.
+        /// </summary>
+        /// <param name="facetResult"></param>
+        /// <returns></returns>
+        private static IList<FacetResult> GetCleanFacetValues(KeyValuePair<string, IList<FacetResult>> facetResult)
+        {
+            IList<FacetResult> cleanValues = new List<FacetResult>();
+            
+            if (facetResult.Key == "people")
+            {
+                // only add names that are long enough 
+                foreach (var element in facetResult.Value)
+                {
+                    if (element.Value.ToString().Length >= 4)
+                    {
+                        cleanValues.Add(element);
+                    }
+                }
+
+                return cleanValues;
+            }
+            else
+            {
+                return facetResult.Value;
+            }
+        }
+
+        private static string Base64Decode(string input)
+        {
+            if (input == null) throw new ArgumentNullException("input");
+            int inputLength = input.Length;
+            if (inputLength  < 1) return null;
+
+            // Get padding chars
+            int numPadChars = (int)input[inputLength - 1] - (int)'0';            
+            if (numPadChars < 0 || numPadChars > 10)
+            {
+                return null;
+            }
+
+            // replace '-' and '_'
+            char[] base64Chars = new char[inputLength - 1 + numPadChars];
+            for (int iter = 0; iter < inputLength - 1; iter++)
+            {
+                char c = input[iter];
+
+                switch (c)
+                {
+                    case '-':
+                        base64Chars[iter] = '+';
+                        break;
+
+                    case '_':
+                        base64Chars[iter] = '/';
+                        break;
+
+                    default:
+                        base64Chars[iter] = c;
+                        break;
+                }
+            }
+
+            // Add padding chars
+            for (int iter = inputLength - 1; iter < base64Chars.Length; iter++)
+            {
+                base64Chars[iter] = '=';
+            }
+
+            var charArray = Convert.FromBase64CharArray(base64Chars, 0, base64Chars.Length);
+            return System.Text.Encoding.Default.GetString(charArray);
+        }
+
+
         [HttpPost]
         public IActionResult GetDocumentById(string id = "")
         {
-            var token = GetContainerSasUri();
             var response = _docSearch.LookUp(id);
+
+            var decodedPath = id;
+
+            if (_isPathBase64Encoded)
+            {
+                decodedPath = Base64Decode(id);
+            }
+
+            string tokenToUse = GetToken(decodedPath);
 
             return new JsonResult(
                 new DocumentResult
                 {
                     Result = response,
-                    Token = token,
+                    Token = tokenToUse,
+                    DecodedPath = decodedPath,
                     IdField = _idField,
                     IsPathBase64Encoded = _isPathBase64Encoded
                 });
         }
 
-        private string GetContainerSasUri()
+
+        public class MapCredentials
         {
-            string sasContainerToken;
-            string accountName = _configuration.GetSection("StorageAccountName")?.Value;
-            string accountKey = _configuration.GetSection("StorageAccountKey")?.Value;
-            string containerAddress = _configuration.GetSection("StorageContainerAddress")?.Value;
-            CloudBlobContainer container = new CloudBlobContainer(new Uri(containerAddress), new StorageCredentials(accountName, accountKey));
+            public string MapKey { get; set; }
+        }
 
-            SharedAccessBlobPolicy adHocPolicy = new SharedAccessBlobPolicy()
+
+        [HttpPost]
+        public IActionResult GetMapCredentials()
+        {
+            string mapKey = _configuration.GetSection("AzureMapsSubscriptionKey")?.Value;
+
+            return new JsonResult(
+                new MapCredentials
+                {
+                    MapKey = mapKey
+                });
+        }
+
+        private string GetToken(string decodedPath)
+        {
+            // Initialize tokens and containers if not already initialized
+            GetContainerSasUris();
+
+            // Determine which token to use.
+            string tokenToUse;
+            if (decodedPath.ToLower().Contains(containerAddresses[1])) { tokenToUse = tokens[1]; }
+            else if (decodedPath.ToLower().Contains(containerAddresses[2])) { tokenToUse = tokens[2]; }
+            else { tokenToUse = tokens[0]; }
+
+            return tokenToUse;
+        }
+
+        /// <summary>
+        /// This will return up to 3 tokens for the storage accounts
+        /// </summary>
+        /// <returns></returns>
+        private void GetContainerSasUris()
+        {
+            if (tokens == null)
             {
-                SharedAccessExpiryTime = DateTime.UtcNow.AddHours(1),
-                Permissions = SharedAccessBlobPermissions.Read
-            };
+                tokens = new string[3];
+                containerAddresses = new string[3];
 
-            sasContainerToken = container.GetSharedAccessSignature(adHocPolicy, null);
-            return sasContainerToken;
+                string accountName = _configuration.GetSection("StorageAccountName")?.Value;
+                string accountKey = _configuration.GetSection("StorageAccountKey")?.Value;
+
+                SharedAccessBlobPolicy adHocPolicy = new SharedAccessBlobPolicy()
+                {
+                    SharedAccessExpiryTime = DateTime.UtcNow.AddHours(24),
+                    Permissions = SharedAccessBlobPermissions.Read
+                };
+
+                containerAddresses[0] = _configuration.GetSection("StorageContainerAddress")?.Value.ToLower();
+                CloudBlobContainer container = new CloudBlobContainer(new Uri(containerAddresses[0]), new StorageCredentials(accountName, accountKey));
+                tokens[0] = container.GetSharedAccessSignature(adHocPolicy, null);
+
+                // Get token for second indexer data source
+                containerAddresses[1] = _configuration.GetSection("StorageContainerAddress2")?.Value.ToLower();
+                CloudBlobContainer container2 = new CloudBlobContainer(new Uri(containerAddresses[1]), new StorageCredentials(accountName, accountKey));
+                tokens[1] = container2.GetSharedAccessSignature(adHocPolicy, null);
+
+                // Get token for third indexer data source
+                containerAddresses[2] = _configuration.GetSection("StorageContainerAddress3")?.Value.ToLower();
+                CloudBlobContainer container3 = new CloudBlobContainer(new Uri(containerAddresses[2]), new StorageCredentials(accountName, accountKey));
+                tokens[2] = container3.GetSharedAccessSignature(adHocPolicy, null);
+            }
         }
 
         [HttpPost]

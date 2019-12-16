@@ -15,17 +15,17 @@ function GetTagsHTML(result) {
                 if (i <= 10) {
                     if ($.inArray(tagValue, dedupedEntities) === -1) { //! in array
                         dedupedEntities.push(tagValue);
-                        if (tagValue.length > 30) { // check tag name length
-                            // create substring of tag name length if too long
-                            tagValue = tagValue.substring(0, 30);
+                            if (tagValue.length > 30) { // check tag name length
+                                // create substring of tag name length if too long
+                                tagValue = tagValue.substring(0, 30);
+                            }
+                            tagsHTML += `<button class="tag tag-${name}" onclick="HighlightTag(event)">${tagValue}</button>`;
+                            i++;
                         }
-                        tagsHTML += `<button class="tag tag-${name}" onclick="HighlightTag(event)">${tagValue}</button>`;
-                        i++;
-                    }
                 }
-            })
+            });
         }
-    })
+    });
 
     return tagsHTML;
 }
@@ -38,7 +38,18 @@ function HighlightTag(tag) {
     }
     else {
         event.stopPropagation();
-        query = $('#q').val() + ` ${searchText}`;
+
+        query = $('#q').val();
+
+        if (query === "*") {
+
+            // Remove the "*" if we are adding some terms to the query
+            query = `"${searchText}"`;
+        }
+        else {
+            query = query + ` "${searchText}"`;
+        }
+
         $('#q').val(query);
         Search();
     }
@@ -56,7 +67,7 @@ function GetReferences(searchText, allowMultiple) {
     }
 
     // find all matches in transcript
-    var regex = new RegExp(searchText, 'gi')
+    var regex = new RegExp(searchText, 'gi');
 
     var i = -1;
     var response = transcriptText.replace(regex, function (str) {

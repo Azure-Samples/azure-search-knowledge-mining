@@ -11,16 +11,16 @@ namespace CognitiveSearch.UI
         private string[] facets = new string[]
         {
             // Add UI facets here in order
-            //"persons",
+            //"people", 
             //"locations",
             //"organizations",
-            //"keyPhrases"
+            //"keyphrases"
         };
 
         private string[] tags = new string[]
         {
             // Add tags fields here in order
-            //"persons",
+            //"people", 
             //"locations",
             //"organizations"
         };
@@ -37,10 +37,10 @@ namespace CognitiveSearch.UI
             // NOTE: id is required for the details view to function properly when a search result is clicked on 
             //"id",
 
-            //"persons",
+            //"people",
             //"locations",
             //"organizations",
-            //"keyPhrases"
+            //"keyphrases"
         };
 
         public List<SearchField> Facets { get; set; }

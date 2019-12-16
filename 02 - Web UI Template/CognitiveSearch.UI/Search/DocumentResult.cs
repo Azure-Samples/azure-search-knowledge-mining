@@ -16,6 +16,7 @@ namespace CognitiveSearch.UI
         public IList<SearchResult<Document>> Results { get; set; }
         public int? Count { get; set; }
         public string Token { get; set; }
+        public string DecodedPath { get; set; }
         public List<object> Tags { get; set; }
         public string SearchId { get; set; }
         public string IdField { get; set; }

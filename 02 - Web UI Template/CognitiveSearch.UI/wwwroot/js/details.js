@@ -20,43 +20,73 @@ function ShowDocument(id) {
             $('#result-id').val(id);
 
             var path;
-            if (data.isPathBase64Encoded) {
-                path = Base64Decode(result.metadata_storage_path) + token;
-            }
-            else {
-                path = result.metadata_storage_path + token;
-            }
+
+            path = data.decodedPath;
+            path = path + data.token;
 
             var fileContainerHTML = GetFileHTML(path);
 
-            var transcriptContainerHTML = htmlDecode(result.content.trim());
+            // Transcript Tab Content
+            var transcriptContainerHTML = GetTranscriptHTML(result);
 
-            // If we have merged content, let's use it.
-            if (result.merged_content) {
-                if (result.merged_content.length > 0) {
-                    transcriptContainerHTML = htmlDecode(result.merged_content.trim());
-                }
-            }
+            // Metadata Tab Content 
+            var metadataContainerHTML = GetMetadataHTML(result);
 
             var fileName = "File";
 
-            $('#details-pivot-content').html(`<div id="file-pivot" class="ms-Pivot-content" data-content="file">
-                                            <div id="file-viewer" style="height: 100%;">
-                                            </div>
-                                        </div>
-                                        <div id="transcript-pivot" class="ms-Pivot-content" data-content="transcript">
-                                            <div id="transcript-viewer" style="height: 100%;">
-                                                <div id='transcript-div'>
-                                                    <pre id="transcript-viewer-pre"></pre>
-                                                </div>
-                                            </div>
-                                        </div>`);
+            var pivotsHTML = '          <div id="file-pivot" class="ms-Pivot-content" data-content="file"> ';
+            pivotsHTML += '                 <div id="file-viewer" style="height: 100%;"></div> ';
+            pivotsHTML += '             </div> ';
 
+            if (transcriptContainerHTML !== null) {
+                pivotsHTML += '             <div id="transcript-pivot" class="ms-Pivot-content" data-content="transcript"> ';
+                pivotsHTML += '                 <div id="transcript-viewer" style="height: 100%;"> ';
+                pivotsHTML += '                 </div> ';
+                pivotsHTML += '             </div>  ';
+            }
+
+            pivotsHTML += '             <div id="metadata-pivot" class="ms-Pivot-content" data-content="metadata"> ';
+            pivotsHTML += '                 <div id="metadata-viewer" style="height: 100%;overflow-y:scroll;"> ';
+            pivotsHTML += '                 </div> ';
+            pivotsHTML += '             </div>';
+
+            if (result.geoLocation !== null) {
+                pivotsHTML += '             <div id="maps-pivot" class="ms-Pivot-content" data-content="maps"> ';
+                pivotsHTML += '                 <div id="maps-viewer"> ';
+                pivotsHTML += '                 </div> ';
+                pivotsHTML += '             </div>';
+            }
+
+            $('#details-pivot-content').html(pivotsHTML);
+
+            // Populate the tabs
             $('#file-viewer').html(fileContainerHTML);
-            $('#transcript-viewer-pre').html(transcriptContainerHTML);
 
-            pivotLinksHTML += `<li id="file-pivot-link" class="ms-Pivot-link is-selected" data-content="file" title="File" tabindex="1">${fileName}</li>
-                       <li id="transcript-pivot-link" class="ms-Pivot-link " data-content="transcript" title="Transcript" tabindex="1">Transcript</li>`;
+            if (transcriptContainerHTML !== null) {
+                $('#transcript-viewer').html(transcriptContainerHTML);
+            }
+
+            $('#metadata-viewer').html(metadataContainerHTML);
+
+            if (result.geoLocation !== null)
+            {
+                // Maps Tab Content
+                var mapsContainerHTML = GetMapsHTML(result);
+                $('#maps-viewer').html(mapsContainerHTML);
+            }
+
+
+            pivotLinksHTML += '<li id="file-pivot-link" class="ms-Pivot-link is-selected" data-content="file" title="File" tabindex="1">' + fileName + '</li>';
+
+            if (transcriptContainerHTML !== null) {
+                pivotLinksHTML += '<li id="transcript-pivot-link" class="ms-Pivot-link " data-content="transcript" title="Transcript" tabindex="1">Transcript</li>';
+            }
+
+            pivotLinksHTML += '<li id="metadata-pivot-link" class="ms-Pivot-link" data-content="metadata" title="Metadata" tabindex="1">Metadata</li>';
+
+            if (result.geoLocation !== null) {
+                pivotLinksHTML += '<li id="maps-pivot-link" class="ms-Pivot-link" data-content="maps" title="Maps" tabindex="1">Maps</li>';
+            }
 
             var tagContainerHTML = GetTagsHTML(result);
 
@@ -69,9 +99,71 @@ function ShowDocument(id) {
                 new fabric['Pivot'](PivotElements[i]);
             }
 
+            // this needs to happen after maps-pivot-link is part of the DOM
+            if (result.geoLocation !== null) {
+                AuthenticateMap(result);
+            }
+
             //Log Click Events
             LogClickAnalytics(result.metadata_storage_name, 0);
+            GetSearchReferences(q);
         });
+}
+
+//  Authenticates the map and shows some locations.
+function AuthenticateMap(result) {
+    $.post('/home/getmapcredentials', { },
+        function (data) {
+
+            var latlon = result.geoLocation;
+
+            if (latlon !== null) {
+
+                if (latlon.isEmpty === false) {
+
+                    var coordinates = [latlon.longitude, latlon.latitude];
+
+                    // Authenticate the map using the key 
+                    var map = new atlas.Map('myMap', {
+                        center: coordinates,
+                        zoom: 6,
+                        width: "500px",
+                        height: "500px",
+                        style: "grayscale_dark",
+                        language: 'en-US',
+                        authOptions: {
+                            authType: 'subscriptionKey',
+                            subscriptionKey: data.mapKey 
+                        }
+                    });
+
+                    //Wait until the map resources are ready.
+                    map.events.add('ready', function () {
+
+                        //Create a data source and add it to the map 
+                        var dataSource = new atlas.source.DataSource();
+                        map.sources.add(dataSource);
+
+                        //Add the symbol to the data source.
+                        var point = new atlas.Shape(new atlas.data.Point(coordinates));
+                        dataSource.add([point]);
+                        map.layers.add(new atlas.layer.SymbolLayer(dataSource, null));
+                    });
+
+
+                    // This is necessary for the map to resize correctly after the 
+                    // map is actually in view.
+                    $('#maps-pivot-link').on("click", function () {
+                        window.setTimeout(function () {
+                            map.map.resize();
+                        }, 100);
+                    });
+
+                    return;
+                }
+            }
+        });
+    return;
 }
 
 function GetMatches(string, regex, index) {
@@ -85,9 +177,8 @@ function GetMatches(string, regex, index) {
 
 function GetFileHTML(path) {
 
-    if (path !== null) {
+    if (path != null) {
         var pathLower = path.toLowerCase();
-        var fileContainherHTML;
 
         if (pathLower.includes(".pdf")) {
             fileContainerHTML =
@@ -97,6 +188,10 @@ function GetFileHTML(path) {
         else if (pathLower.includes(".txt") || pathLower.includes(".json")) {
             var txtHtml = htmlDecode(result.content.trim());
             fileContainerHTML = `<pre id="file-viewer-pre"> ${txtHtml} </pre>`;
+        }
+        else if (pathLower.includes(".las")) {
+            fileContainerHTML = 
+            `<iframe id="d1" width="100%" height="100%" src="${path}"><p>Your browser does not support iframes.</p></iframe>`;
         }
         else if (pathLower.includes(".jpg") || pathLower.includes(".jpeg") || pathLower.includes(".gif") || pathLower.includes(".png")) {
             fileContainerHTML =
@@ -152,6 +247,108 @@ function GetFileHTML(path) {
 
     return fileContainerHTML;
 }
+
+function GetMapsHTML(result) {
+    var mapsContainerHTML = '';
+
+    mapsContainerHTML += '<div id="myMap" ></div>';
+
+    return mapsContainerHTML;
+}
+
+
+// this function will get a table with the text content of the file, 
+function GetTranscriptHTML(result) {
+
+    var transcriptContainerHTML = '';
+
+    full_content = result.content.trim();
+
+    // If we have merged content, let's use it.
+    if (result.merged_content != null && result.merged_content.length > 0) {
+        full_content = htmlDecode(result.merged_content.trim());
+    }
+
+    if (full_content === null || full_content === "")
+    {
+      // not much to display
+        return null;
+    }
+
+    if (!!result.translated_text && result.translated_text !== null && result.language !== "en" ) {
+        transcriptContainerHTML = '<div style="overflow-x:auto;"><table class="table table-hover table-striped table-bordered"><thead><tr><th>Original Content</th><th>Translated (En)</th></tr></thead>';
+        transcriptContainerHTML += '<tbody>';
+        transcriptContainerHTML += '<tr><td class="wrapword" style="width:50%"><pre id="transcript-viewer-pre">' + full_content + '</pre></td><td class="wrapword"><pre>' + htmlDecode(result.translated_text.trim()) + '</pre></td></tr>';
+        transcriptContainerHTML += '</tbody>';
+        transcriptContainerHTML += '</table></div>';
+    }
+    else {
+        transcriptContainerHTML = '<div style="overflow-x:auto;"><table class="table table-hover table-striped table-bordered"><thead><tr><th>Original Content</th></tr></thead>';
+        transcriptContainerHTML += '<tbody>';
+        transcriptContainerHTML += '<tr><td class="wrapword"><pre id="transcript-viewer-pre">' + full_content + '</pre></td></tr>';
+        transcriptContainerHTML += '</tbody>';
+        transcriptContainerHTML += '</table></div>';
+    }
+
+    return transcriptContainerHTML;
+}
+
+function SpaceArray(stringArray) {
+    var result = "";
+
+    for (var idx in stringArray) {
+        result += stringArray[idx] + "  <br/> ";
+    }
+
+    return result;
+}
+
+// Returns a table with metadata produced as part of the enrichment pipeline.
+
+function GetMetadataHTML(result) {
+    var metadataContainerHTML = $("#metadata-viewer").html();
+
+    metadataContainerHTML = '<div id="actions-header">    </div > ';
+    //< button type="button" class="btn btn-outline-secondary" > Export to CSV</button >        <button type="button" class="btn btn-outline-secondary">Export to JSON</button>
+
+    metadataContainerHTML += '<h4>Indexed Metadata</h4><div style="overflow-x:auto;"><table class="table metadata-table table-hover table-striped table-bordered"><thead><tr><th data-field="key" class="key">Key</th><th data-field="value">Value</th></tr></thead>';
+    metadataContainerHTML += '<tbody>';
+
+    for (var key in result) {
+        if (result.hasOwnProperty(key)) {
+            if (key !== "content" && /*key !== "enriched" &&*/ key !== "id" && key != "layoutText" && key != "ImageTags" && key != "ImageCaption" && key !== "text" && key !== "merged_content" && key !== "translated_text" && key !== "keyphrases") {
+                if (result[key] !== null) {
+
+                    value = result[key];
+
+                    if (key === "metadata_storage_path") {
+                            value = Base64Decode(value);
+                    }
+
+                    if (key === "people" || key === "organizations" || key === "locations") {
+                        value = SpaceArray(value);
+                    }
+
+                    if (key === "geoLocation")
+                    {
+                        value = "LAT:" + value.latitude + "<br/>" + "LON:" + value.longitude;
+                    }
+
+                    if (value != "" && value != null)
+                    {
+                        metadataContainerHTML += '<tr><td class="key"  style="width:50%" >' + key + '</td><td class="wrapword"  style="width:50%" >' + value + '</td></tr>';
+                    }
+                }
+            }
+        }
+    }
+
+    metadataContainerHTML += '</tbody>';
+    metadataContainerHTML += '</table></div><br/>';
+
+    return metadataContainerHTML;
+}
+
 
 function GetSearchReferences(q) {
     var copy = q;

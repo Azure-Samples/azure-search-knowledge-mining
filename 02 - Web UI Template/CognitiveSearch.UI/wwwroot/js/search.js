@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-// Initialize properties
+// Initialize global properties
 var q, sortType, tempdata, instrumentationKey;
 var results = [];
 var facets = [];
-var token = "";
 var selectedFacets = [];
 var currentPage = 1;
 var searchId;
@@ -60,7 +59,7 @@ function Update(data) {
     results = data.results;
     facets = data.facets;
     tags = data.tags;
-    token = data.token;
+
     searchId = data.searchId;
 
     //Facets
