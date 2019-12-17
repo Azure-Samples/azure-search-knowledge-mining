@@ -175,7 +175,11 @@ function update(links, nodes) {
         );
     node.append("circle")
         .attr("r", nodeRadius)
-        .style("fill", function (d, i) { return colors(i); });
+        .style("fill", function (d, i)
+        {
+            return colors(d.color);
+        }
+        );
     node.append("title")
         .text(d => d.id);
 

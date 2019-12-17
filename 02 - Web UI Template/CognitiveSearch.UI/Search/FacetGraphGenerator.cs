@@ -7,6 +7,17 @@ using System.Threading.Tasks;
 
 namespace CognitiveSearch.UI
 {
+    public class NodeInfo
+    {
+        public NodeInfo(int index, int colorId)
+        {
+            Index = index;
+            ColorId = colorId;
+        }
+        public int Index { get; set; }
+        public int ColorId { get; set; }
+    }
+
     public class FacetGraphGenerator
     {
         private DocumentSearchClient _searchHelper;
@@ -20,15 +31,17 @@ namespace CognitiveSearch.UI
         {
             // Calculate nodes for 3 levels
             JObject dataset = new JObject();
-            int MaxEdges = 30;
+            int MaxEdges = 50;
             int MaxLevels = 3;
             int CurrentLevel = 1;
             int CurrentNodes = 0;
 
             List<FDGraphEdges> FDEdgeList = new List<FDGraphEdges>();
             // Create a node map that will map a facet to a node - nodemap[0] always equals the q term
-            Dictionary<string, int> NodeMap = new Dictionary<string, int>();
-            NodeMap[q] = CurrentNodes;
+
+            Dictionary<string, NodeInfo> NodeMap = new Dictionary<string, NodeInfo>();
+            
+            NodeMap[q] = new NodeInfo(CurrentNodes, 0);
 
             // If blank search, assume they want to search everything
             if (string.IsNullOrWhiteSpace(q))
@@ -51,25 +64,28 @@ namespace CognitiveSearch.UI
                 DocumentSearchResult<Document> response = _searchHelper.GetFacets(q, facetNames, 10);
                 if (response != null)
                 {
-                    //var facetName = facetNames[0]; // TODO: Fix this in a bit.
+                    int facetColor = 0;
+                    
                     foreach (var facetName in facetNames)
                     {
                         IList<FacetResult> facetVals = (response.Facets)[facetName];
+                        facetColor++;
 
                         foreach (FacetResult facet in facetVals)
                         {
-                            int node = -1;
-                            if (NodeMap.TryGetValue(facet.Value.ToString(), out node) == false)
+                            NodeInfo nodeInfo = new NodeInfo(-1,-1);
+                            if (NodeMap.TryGetValue(facet.Value.ToString(), out nodeInfo) == false)
                             {
                                 // This is a new node
                                 CurrentNodes++;
-                                node = CurrentNodes;
-                                NodeMap[facet.Value.ToString()] = node;
+                                int node = CurrentNodes;
+                                NodeMap[facet.Value.ToString()] =  new NodeInfo(node, facetColor);
                             }
+
                             // Add this facet to the fd list
                             if (NodeMap[q] != NodeMap[facet.Value.ToString()])
                             {
-                                FDEdgeList.Add(new FDGraphEdges { source = NodeMap[q], target = NodeMap[facet.Value.ToString()] });
+                                FDEdgeList.Add(new FDGraphEdges { source = NodeMap[q].Index, target = NodeMap[facet.Value.ToString()].Index });
                                 if (CurrentLevel < MaxLevels)
                                 {
                                     NextLevelTerms.Add(facet.Value.ToString());
@@ -77,17 +93,15 @@ namespace CognitiveSearch.UI
                             }
                         }
                     }
-
-
                 }
             }
 
             // Create nodes
             JArray nodes = new JArray();
             int nodeNumber = 0;
-            foreach (KeyValuePair<string, int> entry in NodeMap)
+            foreach (KeyValuePair<string, NodeInfo> entry in NodeMap)
             {
-                nodes.Add(JObject.Parse("{name: \"" + entry.Key.Replace("\"", "") + "\"" + ", id: " + entry.Value + "}"));
+                nodes.Add(JObject.Parse("{name: \"" + entry.Key.Replace("\"", "") + "\"" + ", id: " + entry.Value.Index + ", color: " + entry.Value.ColorId + "}"));
                 nodeNumber++;
             }
 
