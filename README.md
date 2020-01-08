@@ -65,7 +65,7 @@ This folder contains a basic Web UI Template, written in .NET Core, which you ca
 ### [03 - Data Science & Custom Skills](./03%20-%20Data%20Science%20and%20Custom%20Skills)
 This folder contains examples and templates to add your own custom skills to your solution. These custom skills help to align the solution to the needs of your particular use case. This step is entirely optional and may be skipped if not needed.
 
-For additional samples and information on custom skill development, see the [Custom skill documentation](https://docs.microsoft.com/azure/search/cognitive-search-custom-skill-interface). .NET Azure Function Custom Skills have moved to the[Power Skills repository](https://github.com/Azure-Samples/azure-search-power-skills).
+For additional samples and information on custom skill development, see the [Custom skill documentation](https://docs.microsoft.com/azure/search/cognitive-search-custom-skill-interface). .NET Azure Function Custom Skills have moved to the [Power Skills repository](https://github.com/Azure-Samples/azure-search-power-skills).
 
 ### [04 - Reporting](./04%20-%20Reporting)
 This folder contains pre-built PowerBI reports that you can use to monitor your solution and to understand user search behavior. They leverage data captured through [Application Insights](https://docs.microsoft.com/azure/azure-monitor/app/app-insights-overview) and can be modified to meet your particular business objectives. This step is entirely optional and may be skipped if not needed.
@@ -73,8 +73,19 @@ This folder contains pre-built PowerBI reports that you can use to monitor your 
 ### [Sample Documents](./sample_documents)
 This folder contains a small data set in a variety of file formats that you can use to build your solution if you don't have another data set available.
 
-## Special Thanks
-Special thanks to Microsoft's Early Access innovation Program (EAiP) and to Derek Legenzoff, Christopher Romero, Lauren Mills, and Chris Lill who wrote a large majority of the code here.
+### [Workshop](./workshops)
+Become an Azure Cognitive Search expert in a day!
+This folder contains a self paced workshop that teaches you everything you need to know. Most developer with Azure familiarity should be able to complete the majority of the modules below in 8 hours.
+
++ [Module 0 - Pre-Requisites](./workshops/Module%200.md) (*you must complete prior to moving on!*)
++ [Module 1 - Using Azure Portal to Build a Search Index and Knowledge Store](./workshops/Module%201.md)
++ [Module 2 - Visualizing the Results with a Demo FrontEnd](./workshops/Module%202.md)
++ [Module 3 - Introduction to Custom Skills and Azure Functions](./workshops/Module%203.md)
++ [Module 4 - Learning the Object Model](./Module%204.md)
++ [Module 5 - Advanced Azure Cognitive Search: Analyzers and Scoring Profiles](./workshops/Module%205.md)
++ [Module 6 - Analyzing Your Data with PowerBI](./workshops/Module%206.md)
++ [Module 7 - Using Azure Cognitive Search to index structured data](./workshops/Module%207.md) (Optional)
+
 
 ## License
 
