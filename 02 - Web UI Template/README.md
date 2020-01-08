@@ -29,7 +29,9 @@ Update the following fields in the *appsettings.json* file to connect the web ap
   "StorageContainerAddress": "https://{storage-account-name}.blob.core.windows.net/{container-name}",
   "KeyField": "metadata_storage_path",
   "IsPathBase64Encoded": true,
+  "AzureMapsSubscriptionKey": "",
   "GraphFacet": "keyPhrases"
+
 ```
 
 ###
@@ -39,6 +41,10 @@ Update the following fields in the *appsettings.json* file to connect the web ap
 3. Key Field should be set to the field specified as a key document Id in the index.
 4. Sometimes metadata_storage_path is the key, and it gets base64 encoded. In that case set IsPathBase64Encoded to false.
 5. The GraphFacet is used for generating the relationship graph.
+6. You can optially provide an Azure Maps account if you would like to display a geographic point in a map for a given document.
+   The template expects a field called *geolocation*. If your field has a different name, you can modify details.js to use a different field.
+
+![geolocation](../images/geolocation.png)
 
 
 ## 2. Update SearchModel.cs
@@ -56,6 +62,11 @@ If you would like to further customize the UI, you can update the following fiel
 
 ## 3. Add additional customization
 This template serves as a great baseline for a Cognitive Search solution, however, you may want to make additional updates depending on your use case. 
+
+We have a special behavior if you have a field called *translated_text*. The UI will automatically show the original text and the translated text in the UI. This can be handy. If you would like to change this behavior (disable it, or change the name of the field), you can do that at details.js (GetTranscriptHTML method).
+
+![geolocation](../images/translated.png)
+
 
 ### *Notes*
 Much of the UI is rendered dynamically by javascript. Some important files to know when making changes to the UI are:
