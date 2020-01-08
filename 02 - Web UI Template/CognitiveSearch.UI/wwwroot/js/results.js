@@ -36,10 +36,10 @@ function UpdateResults(data) {
 
         // get path
         if (data.isPathBase64Encoded) {
-            path = Base64Decode(result.metadata_storage_path);
+            path = Base64Decode(result.metadata_storage_path) + token;
         }
         else {
-            path = result.metadata_storage_path;
+            path = result.metadata_storage_path + token;
         }
 
         if (result["metadata_storage_name"] !== undefined) {

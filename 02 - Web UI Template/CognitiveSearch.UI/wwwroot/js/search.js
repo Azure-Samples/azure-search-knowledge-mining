@@ -6,6 +6,7 @@ var q, sortType, tempdata, instrumentationKey;
 var results = [];
 var facets = [];
 var selectedFacets = [];
+var token = "";
 var currentPage = 1;
 var searchId;
 var searchServiceName = "";
@@ -53,6 +54,7 @@ function Update(data) {
     results = data.results;
     facets = data.facets;
     tags = data.tags;
+    token = data.token;
 
     searchId = data.searchId;
 

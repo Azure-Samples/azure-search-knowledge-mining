@@ -66,8 +66,8 @@ namespace CognitiveSearch.UI.Controllers
         [HttpPost]
         public IActionResult GetDocuments(string q = "", SearchFacet[] searchFacets = null, int currentPage = 1)
         {
-            GetContainerSasUris();
- 
+            var tokens = GetContainerSasUris();
+
             var selectFilter = _docSearch.Model.SelectFilter;
 
             if (!string.IsNullOrEmpty(q))
@@ -114,6 +114,7 @@ namespace CognitiveSearch.UI.Controllers
                 Count = (response == null? 0 :  Convert.ToInt32(response.Count)),
                 SearchId = searchId,
                 IdField = _idField,
+                Token = tokens[0],
                 IsPathBase64Encoded = _isPathBase64Encoded
             });
         }
@@ -255,7 +256,7 @@ namespace CognitiveSearch.UI.Controllers
         /// This will return up to 3 tokens for the storage accounts
         /// </summary>
         /// <returns></returns>
-        private void GetContainerSasUris()
+        private string[] GetContainerSasUris()
         {
             if (tokens == null)
             {
@@ -285,6 +286,8 @@ namespace CognitiveSearch.UI.Controllers
                 CloudBlobContainer container3 = new CloudBlobContainer(new Uri(containerAddresses[2]), new StorageCredentials(accountName, accountKey));
                 tokens[2] = container3.GetSharedAccessSignature(adHocPolicy, null);
             }
+
+            return tokens;
         }
 
         [HttpPost]
