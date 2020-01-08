@@ -41,8 +41,7 @@ Update the following fields in the *appsettings.json* file to connect the web ap
 3. Key Field should be set to the field specified as a key document Id in the index.
 4. Sometimes metadata_storage_path is the key, and it gets base64 encoded. In that case set IsPathBase64Encoded to false.
 5. The GraphFacet is used for generating the relationship graph.
-6. You can optially provide an Azure Maps account if you would like to display a geographic point in a map for a given document.
-   The template expects a field called *geolocation*. If your field has a different name, you can modify details.js to use a different field.
+6. You have the option to provide an Azure Maps account if you would like to display a geographic point in a map in the document details. The code expects a field called *geolocation* of type Edm.GeographyPoint. If your wish to change this behavior (for instance if you would like to use a different field), you can modify details.js.
 
 ![geolocation](../images/geolocation.png)
 
