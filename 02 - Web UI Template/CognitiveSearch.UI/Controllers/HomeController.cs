@@ -26,6 +26,9 @@ namespace CognitiveSearch.UI.Controllers
         private static string[] containerAddresses = null; 
         private static string[] tokens = null;
 
+        // this should match the default value used in appsettings.json.  
+        private static string defaultContainerUriValue = "https://{storage-account-name}.blob.core.windows.net/{container-name}";
+
         public HomeController(IConfiguration configuration)
         {
             _configuration = configuration;
@@ -278,13 +281,19 @@ namespace CognitiveSearch.UI.Controllers
 
                 // Get token for second indexer data source
                 containerAddresses[1] = _configuration.GetSection("StorageContainerAddress2")?.Value.ToLower();
-                CloudBlobContainer container2 = new CloudBlobContainer(new Uri(containerAddresses[1]), new StorageCredentials(accountName, accountKey));
-                tokens[1] = container2.GetSharedAccessSignature(adHocPolicy, null);
+                if (!String.Equals(containerAddresses[1], defaultContainerUriValue))
+                {
+                    CloudBlobContainer container2 = new CloudBlobContainer(new Uri(containerAddresses[1]), new StorageCredentials(accountName, accountKey));
+                    tokens[1] = container2.GetSharedAccessSignature(adHocPolicy, null);
+                }
 
                 // Get token for third indexer data source
                 containerAddresses[2] = _configuration.GetSection("StorageContainerAddress3")?.Value.ToLower();
-                CloudBlobContainer container3 = new CloudBlobContainer(new Uri(containerAddresses[2]), new StorageCredentials(accountName, accountKey));
-                tokens[2] = container3.GetSharedAccessSignature(adHocPolicy, null);
+                if (!String.Equals(containerAddresses[2], defaultContainerUriValue))
+                {
+                    CloudBlobContainer container3 = new CloudBlobContainer(new Uri(containerAddresses[2]), new StorageCredentials(accountName, accountKey));
+                    tokens[2] = container3.GetSharedAccessSignature(adHocPolicy, null);
+                }
             }
 
             return tokens;
