@@ -22,21 +22,20 @@ namespace CognitiveSearch.UI
             // Add tags fields here in order
             //"people", 
             //"locations",
-            //"organizations"
+            //"organizations",
+            //"keyphrases"
         };
 
         private string[] resultFields = new string[]
         {
+            "metadata_storage_path",
+            "metadata_storage_name",
+            "metadata_title",
+
             // Add fields needed to display results cards
 
-            // NOTE: if you customize the resultFields, be sure to include id, metadata_storage_name and metadata_storage_path as those fields are needed for the UI to work properly
-
-            //"metadata_storage_path",
-            //"metadata_storage_name",
-
-            // NOTE: id is required for the details view to function properly when a search result is clicked on 
-            //"id",
-
+            // NOTE: if you customize the resultFields, be sure to include metadata_storage_name,
+            // metadata_storage_path as those fields are needed for the UI to work properly
             //"people",
             //"locations",
             //"organizations",

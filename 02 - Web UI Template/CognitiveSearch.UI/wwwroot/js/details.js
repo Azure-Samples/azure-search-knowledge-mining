@@ -316,7 +316,7 @@ function GetMetadataHTML(result) {
 
     for (var key in result) {
         if (result.hasOwnProperty(key)) {
-            if (key !== "content" && /*key !== "enriched" &&*/ key !== "id" && key != "layoutText" && key != "ImageTags" && key != "ImageCaption" && key !== "text" && key !== "merged_content" && key !== "translated_text" && key !== "keyphrases") {
+            if (key !== "content" &&  key !== "enriched" && key !== "id" && key !== "layoutText" && key !== "ImageTags" && key !== "ImageCaption" && key !== "text" && key !== "merged_content" && key !== "translated_text" && key !== "keyphrases") {
                 if (result[key] !== null) {
 
                     value = result[key];
