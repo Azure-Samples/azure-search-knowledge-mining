@@ -261,39 +261,37 @@ namespace CognitiveSearch.UI.Controllers
         /// <returns></returns>
         private string[] GetContainerSasUris()
         {
-            if (tokens == null)
+            // We need to refresh the tokens every time or they will become invalid.
+            tokens = new string[3];
+            containerAddresses = new string[3];
+
+            string accountName = _configuration.GetSection("StorageAccountName")?.Value;
+            string accountKey = _configuration.GetSection("StorageAccountKey")?.Value;
+
+            SharedAccessBlobPolicy adHocPolicy = new SharedAccessBlobPolicy()
             {
-                tokens = new string[3];
-                containerAddresses = new string[3];
+                SharedAccessExpiryTime = DateTime.UtcNow.AddHours(24),
+                Permissions = SharedAccessBlobPermissions.Read
+            };
 
-                string accountName = _configuration.GetSection("StorageAccountName")?.Value;
-                string accountKey = _configuration.GetSection("StorageAccountKey")?.Value;
+            containerAddresses[0] = _configuration.GetSection("StorageContainerAddress")?.Value.ToLower();
+            CloudBlobContainer container = new CloudBlobContainer(new Uri(containerAddresses[0]), new StorageCredentials(accountName, accountKey));
+            tokens[0] = container.GetSharedAccessSignature(adHocPolicy, null);
 
-                SharedAccessBlobPolicy adHocPolicy = new SharedAccessBlobPolicy()
-                {
-                    SharedAccessExpiryTime = DateTime.UtcNow.AddHours(24),
-                    Permissions = SharedAccessBlobPermissions.Read
-                };
+            // Get token for second indexer data source
+            containerAddresses[1] = _configuration.GetSection("StorageContainerAddress2")?.Value.ToLower();
+            if (!String.Equals(containerAddresses[1], defaultContainerUriValue))
+            {
+                CloudBlobContainer container2 = new CloudBlobContainer(new Uri(containerAddresses[1]), new StorageCredentials(accountName, accountKey));
+                tokens[1] = container2.GetSharedAccessSignature(adHocPolicy, null);
+            }
 
-                containerAddresses[0] = _configuration.GetSection("StorageContainerAddress")?.Value.ToLower();
-                CloudBlobContainer container = new CloudBlobContainer(new Uri(containerAddresses[0]), new StorageCredentials(accountName, accountKey));
-                tokens[0] = container.GetSharedAccessSignature(adHocPolicy, null);
-
-                // Get token for second indexer data source
-                containerAddresses[1] = _configuration.GetSection("StorageContainerAddress2")?.Value.ToLower();
-                if (!String.Equals(containerAddresses[1], defaultContainerUriValue))
-                {
-                    CloudBlobContainer container2 = new CloudBlobContainer(new Uri(containerAddresses[1]), new StorageCredentials(accountName, accountKey));
-                    tokens[1] = container2.GetSharedAccessSignature(adHocPolicy, null);
-                }
-
-                // Get token for third indexer data source
-                containerAddresses[2] = _configuration.GetSection("StorageContainerAddress3")?.Value.ToLower();
-                if (!String.Equals(containerAddresses[2], defaultContainerUriValue))
-                {
-                    CloudBlobContainer container3 = new CloudBlobContainer(new Uri(containerAddresses[2]), new StorageCredentials(accountName, accountKey));
-                    tokens[2] = container3.GetSharedAccessSignature(adHocPolicy, null);
-                }
+            // Get token for third indexer data source
+            containerAddresses[2] = _configuration.GetSection("StorageContainerAddress3")?.Value.ToLower();
+            if (!String.Equals(containerAddresses[2], defaultContainerUriValue))
+            {
+                CloudBlobContainer container3 = new CloudBlobContainer(new Uri(containerAddresses[2]), new StorageCredentials(accountName, accountKey));
+                tokens[2] = container3.GetSharedAccessSignature(adHocPolicy, null);
             }
 
             return tokens;
