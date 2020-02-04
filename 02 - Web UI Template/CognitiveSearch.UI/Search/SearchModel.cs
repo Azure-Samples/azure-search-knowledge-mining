@@ -28,9 +28,9 @@ namespace CognitiveSearch.UI
 
         private string[] resultFields = new string[]
         {
-            "metadata_storage_path",
-            "metadata_storage_name",
-            "metadata_title",
+            //"metadata_storage_path",
+            //"metadata_storage_name",
+            //"metadata_title",
 
             // Add fields needed to display results cards
 
