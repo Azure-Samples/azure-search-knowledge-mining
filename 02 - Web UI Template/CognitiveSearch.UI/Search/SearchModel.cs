@@ -28,9 +28,9 @@ namespace CognitiveSearch.UI
 
         private string[] resultFields = new string[]
         {
-            //"metadata_storage_path",
-            //"metadata_storage_name",
-            //"metadata_title",
+            "metadata_storage_path",
+            "metadata_storage_name",
+            "metadata_title",
 
             // Add fields needed to display results cards
 
@@ -53,7 +53,16 @@ namespace CognitiveSearch.UI
         {
             Facets = new List<SearchField>();
             Tags = new List<SearchField>();
-            SelectFilter = resultFields;
+
+            List<string> validatedResultFields = new List<string>();
+            foreach (string s in resultFields)
+            {
+                if (schema.Fields.ContainsKey(s))
+                {
+                    validatedResultFields.Add(s);
+                }
+            }
+            SelectFilter = validatedResultFields.ToArray();
 
             if (facets.Count() > 0)
             {
