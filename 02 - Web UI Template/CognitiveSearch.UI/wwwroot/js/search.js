@@ -12,6 +12,9 @@ var searchId;
 var searchServiceName = "";
 var indexName = "";
 var scoringProfile = "";
+var resultsMap = null;
+var mapDataSource = null;
+var showMap = true;
 
 // When 'Enter' clicked from Search Box, execute Search()
 $("#q").keyup(function (e) {
@@ -63,6 +66,9 @@ function Update(data) {
 
     //Results List
     UpdateResults(data);
+
+    //Map
+    UpdateMap(data);
 
     //Pagination
     UpdatePagination(data.count);

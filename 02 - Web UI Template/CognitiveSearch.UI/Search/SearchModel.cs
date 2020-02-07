@@ -39,7 +39,8 @@ namespace CognitiveSearch.UI
             //"people",
             //"locations",
             //"organizations",
-            //"keyphrases"
+            //"keyphrases",
+            //"geoLocation"
         };
 
         public List<SearchField> Facets { get; set; }

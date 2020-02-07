@@ -18,8 +18,8 @@ var $grid = $('#doc-details-div');
 $(document).ready(function () {
     if (q) {
         document.getElementById('q').value = q;
+        Search();
     }
-    Search();
 });
 
 function InitLayout() {
