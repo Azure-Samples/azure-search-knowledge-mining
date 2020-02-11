@@ -19,6 +19,13 @@ function Base64Decode(token) {
 function GetResultsMapsHTML() {
     var mapsContainerHTML = '';
     mapsContainerHTML += '<div id="myMap" style="height:400px" ></div>';
+
+    // Buttons to enable setting and resetting search polygon
+    mapsContainerHTML += '<div style="position:absolute;top:50px;left:50px;">';
+    mapsContainerHTML += '    <input type="button" value="Set Search Polygon" onclick="drawingTools.startDrawing();" />';
+    mapsContainerHTML += '    <input type="button" value="Clear Search Polygon" onclick="drawingTools.clear();" />';
+    mapsContainerHTML += '</div>';
+
     return mapsContainerHTML;
 }
 
@@ -126,6 +133,11 @@ function AddMapPoints(results) {
                         popup.close();
                     }
                 }
+            });
+
+            drawingTools = new PolygonDrawingTool(resultsMap, null, function (polygon) {
+                //Do something with the polygon.
+                mapPolygon = polygon;
             });
         });
 

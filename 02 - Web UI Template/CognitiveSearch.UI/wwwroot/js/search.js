@@ -16,6 +16,10 @@ var resultsMap = null;
 var mapDataSource = null;
 var showMap = true;
 
+// variables related to polygon selection on map
+var drawingTools;
+var mapPolygon = null;
+
 // When 'Enter' clicked from Search Box, execute Search()
 $("#q").keyup(function (e) {
     if (e.keyCode === 13) {
@@ -40,12 +44,30 @@ function Search() {
     }
     q = $("#q").val();
 
+
+    //Pass the polygon filter to the query: mapPolygon.data.geometry.coordinates[0][1]
+    var polygonString = "";
+
+    if (mapPolygon !== null && mapPolygon.data !== null && mapPolygon.data.geometry !== null && mapPolygon.data.geometry.coordinates !== null)
+    {
+        var pointArray = mapPolygon.data.geometry.coordinates[0];
+
+        for (var i = 0; i < pointArray.length; i++)
+        {            
+            if (polygonString.length > 0)
+            { polygonString += ","; }
+
+            polygonString += pointArray[i][0] + " " + pointArray[i][1];
+        }
+    }
+
     // Get center of map to use to score the search results
     $.post('/home/getdocuments',
         {
-            q: q != undefined ? q : "*",
+            q: q !== undefined ? q : "*",
             searchFacets: selectedFacets,
-            currentPage: currentPage
+            currentPage: currentPage,
+            polygonString: polygonString
         },
         function (data) {
             $('#loading-indicator').css("display", "none");

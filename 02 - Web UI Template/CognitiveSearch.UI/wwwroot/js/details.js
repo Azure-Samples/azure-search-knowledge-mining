@@ -262,11 +262,16 @@ function GetTranscriptHTML(result) {
 
     var transcriptContainerHTML = '';
 
-    full_content = result.content.trim();
+    var full_content = "";
 
     // If we have merged content, let's use it.
-    if (result.merged_content != null && result.merged_content.length > 0) {
+    if (result.merged_content !== null && result.merged_content.length > 0) {
         full_content = htmlDecode(result.merged_content.trim());
+    }
+    else
+    {
+        // otherwise, let's try getting the content -- although it won't have any image data.
+        full_content = result.content.trim();
     }
 
     if (full_content === null || full_content === "")

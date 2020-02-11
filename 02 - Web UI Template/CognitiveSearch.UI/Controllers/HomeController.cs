@@ -67,7 +67,7 @@ namespace CognitiveSearch.UI.Controllers
         }
 
         [HttpPost]
-        public IActionResult GetDocuments(string q = "", SearchFacet[] searchFacets = null, int currentPage = 1)
+        public IActionResult GetDocuments(string q = "", SearchFacet[] searchFacets = null, int currentPage = 1, string polygonString = null)
         {
             var tokens = GetContainerSasUris();
 
@@ -78,7 +78,7 @@ namespace CognitiveSearch.UI.Controllers
                 q = q.Replace("?", "");
             }
 
-            var response = _docSearch.Search(q, searchFacets, selectFilter, currentPage);
+            var response = _docSearch.Search(q, searchFacets, selectFilter, currentPage, polygonString);
             var searchId = _docSearch.GetSearchId().ToString();
             var facetResults = new List<object>();
             var tagsResults = new List<object>();

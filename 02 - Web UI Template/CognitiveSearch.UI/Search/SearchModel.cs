@@ -30,7 +30,7 @@ namespace CognitiveSearch.UI
         {
             "metadata_storage_path",
             "metadata_storage_name",
-            "metadata_title",
+            "metadata_title"
 
             // Add fields needed to display results cards
 

@@ -62,11 +62,11 @@ namespace CognitiveSearch.UI
             }
         }
 
-        public DocumentSearchResult<Document> Search(string searchText, SearchFacet[] searchFacets = null, string[] selectFilter = null, int currentPage = 1)
+        public DocumentSearchResult<Document> Search(string searchText, SearchFacet[] searchFacets = null, string[] selectFilter = null, int currentPage = 1, string polygonString = null)
         {
             try
             {
-                SearchParameters sp = GenerateSearchParameters(searchFacets, selectFilter, currentPage);
+                SearchParameters sp = GenerateSearchParameters(searchFacets, selectFilter, currentPage, polygonString);
 
                 if (!string.IsNullOrEmpty(telemetryClient.InstrumentationKey))
                 {
@@ -83,10 +83,10 @@ namespace CognitiveSearch.UI
             return null;
         }
 
-        public SearchParameters GenerateSearchParameters(SearchFacet[] searchFacets = null, string[] selectFilter = null, int currentPage = 1)
+        public SearchParameters GenerateSearchParameters(SearchFacet[] searchFacets = null, string[] selectFilter = null, int currentPage = 1, string polygonString = null)
         {
-        // For more information on search parameters visit: 
-        // https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.search.models.searchparameters?view=azure-dotnet
+            // For more information on search parameters visit: 
+            // https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.search.models.searchparameters?view=azure-dotnet
             SearchParameters sp = new SearchParameters()
             {
                 SearchMode = SearchMode.All,
@@ -95,7 +95,7 @@ namespace CognitiveSearch.UI
                 IncludeTotalResultCount = true,
                 QueryType = QueryType.Full,
                 Select = selectFilter,
-                Facets = Model.Facets.Select(f => f.Name).ToList()
+                Facets = Model.Facets.Select(f => f.Name).ToList()                
             };
 
             string filter = null;
@@ -134,6 +134,22 @@ namespace CognitiveSearch.UI
             }
 
             sp.Filter = filter;
+
+            // Add Filter based on geographic polygon if it is set.
+            if (polygonString != null && polygonString.Length > 0)
+            {
+                string geoQuery = "geo.intersects(geoLocation, geography'POLYGON((" + polygonString + "))')";
+                
+                if (sp.Filter != null && sp.Filter.Length > 0)
+                { 
+                    sp.Filter += " and " + geoQuery; 
+                }
+                else
+                { 
+                    sp.Filter = geoQuery; 
+                }
+            }
+
             return sp;
         }
 
