@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="C:\Users\matt.kincaid\OneDrive - Slalom\backup\Projects\microsoft\kma\appsettings.json" Link="appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.9" />
     <PackageReference Include="Microsoft.Azure.Search" Version="9.1.0" />
   </ItemGroup>

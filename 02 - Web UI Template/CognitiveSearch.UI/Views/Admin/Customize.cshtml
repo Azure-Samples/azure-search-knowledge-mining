@@ -1,0 +1,99 @@
+﻿@model CognitiveSearch.UI.Models.CustomizeViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<main role="main">
+    @if (!string.IsNullOrWhiteSpace(ViewBag.Message))
+    {
+        @if (!string.IsNullOrWhiteSpace(ViewBag.Style))
+        {
+            <div class="alert @ViewBag.Style  mb-2 mt-5 mr-5 ml-5">@ViewBag.Message</div>
+        }
+        else
+        {
+            <div class="alert alert-info  mb-2 mt-5 mr-5 ml-5">@ViewBag.Message</div>
+        }
+    }
+    <div class="card m-5">
+        <h4 class="card-header">Customize the homepage</h4>
+        <div class="card-body">
+            <p>
+                Using the options below, you can upload your own logo, as well as set the background and text colors for the navigation bar.
+            </p>
+            <form asp-controller="Admin" asp-action="CustomizeHomepage" asp-antiforgery="false"
+                  id="CustomizeNavBar" enctype="multipart/form-data" method="post">
+                <div class="fallback">
+                    <label>Select an image to use as the homepage image (only support .png)</label>
+                    <input name="file" type="file" />
+                    <br />
+                    <label>Update the headline text on homepage</label>
+                    <br />
+                    <div id="headlinecustomize">
+                        <textarea placeholder="To update the headline, type in the text here with less than 150 characters." name="headline" id="headlinetext" style="width:250px;height:150px;"></textarea>
+                    </div>
+
+                </div>
+                <br />
+                <input type="submit" value="Save Homepage Settings" class="btn btn-primary" />
+            </form>
+        </div>
+    </div>
+
+    <div class="card m-5">
+        <h4 class="card-header">Customize the navigation bar</h4>
+        <div class="card-body">
+            <p>
+                Using the options below, you can upload your own logo, as well as set the background and text colors for the navigation bar.
+            </p>
+            <form asp-controller="Admin" asp-action="CustomizeNavBar" asp-antiforgery="false"
+                  id="CustomizeNavBar" enctype="multipart/form-data" method="post">
+                <div class="fallback">
+                    <label>Select a background color</label>
+                    <input name="navbar-bg" type="color" value="@Model.NavBar.BackgroundColor" />
+                    <br />
+                    <label>Select a text color</label>
+                    <input name="navbar-text" type="color" value="@Model.NavBar.TextColor" />
+                    <br />
+                    <label>Select an image to use as the NavBar logo (only support .png)</label>
+                    <input name="file" type="file" />
+                </div>
+                <br />
+                <input type="submit" value="Save NavBar Settings" class="btn btn-primary" />
+            </form>
+        </div>
+    </div>
+
+    <div class="card m-5">
+        <h4 class="card-header">Customize the footer</h4>
+        <div class="card-body">
+            <p>
+                Using the options below, you can set the background and text colors for the footer.
+            </p>
+            <form asp-controller="Admin" asp-action="CustomizeFooter" asp-antiforgery="false"
+                  id="CustomizeFooter" enctype="multipart/form-data" method="post">
+                <div class="fallback">
+                    <label>Select a background color</label>
+                    <input name="footer-bg" type="color" value="@Model.Footer.BackgroundColor" />
+                    <br />
+                    <label>Select a text color</label>
+                    <input name="footer-text" type="color" value="@Model.Footer.TextColor" />
+                </div>
+                <br />
+                <input type="submit" value="Save Footer Settings" class="btn btn-primary" />
+            </form>
+        </div>
+    </div>
+</main>
+
+@*<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        if (customizable === 'False') {
+            window.location.replace("/Admin/NotAvailable");
+        }
+        
+    });
+</script>*@

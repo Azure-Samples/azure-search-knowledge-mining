@@ -12,6 +12,7 @@ using Microsoft.WindowsAzure.Storage.Auth;
 using CognitiveSearch.UI.Models;
 using Newtonsoft.Json.Linq;
 using Microsoft.Azure.Search.Models;
+using System.Threading.Tasks;
 
 namespace CognitiveSearch.UI.Controllers
 {
@@ -222,6 +223,30 @@ namespace CognitiveSearch.UI.Controllers
                 });
         }
 
+        [HttpPost("upload")]
+        public async Task<IActionResult> Upload()
+        {
+            if (Request.Form.Files.Any())
+            {
+                var container = GetStorageContainer();
+
+                foreach (var formFile in Request.Form.Files)
+                {
+                    if (formFile.Length > 0)
+                    {
+                        var cloudBlockBlob = container.GetBlockBlobReference(formFile.FileName);
+                        await cloudBlockBlob.UploadFromStreamAsync(formFile.OpenReadStream());
+
+                        //_telemetryClient.TrackEvent("FileUpload", telemetryDict);
+                    }
+                }
+            }
+            
+            //await _searchClient.RunIndexer();
+
+            return new JsonResult("ok");
+        }
+
 
         public class MapCredentials
         {
@@ -295,6 +320,16 @@ namespace CognitiveSearch.UI.Controllers
             }
 
             return tokens;
+        }
+
+        private CloudBlobContainer GetStorageContainer()
+        {
+            string accountName = _configuration.GetSection("StorageAccountName")?.Value;
+            string accountKey = _configuration.GetSection("StorageAccountKey")?.Value;
+            var containerAddress = _configuration.GetSection("StorageContainerAddress")?.Value.ToLower();
+
+            var container = new CloudBlobContainer(new Uri(containerAddress), new StorageCredentials(accountName, accountKey));
+            return container;
         }
 
         [HttpPost]
