@@ -28,37 +28,27 @@ namespace CognitiveSearch.UI
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                //options.CheckConsentNeeded = context => true;
+                // options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            //var appInsightsConfig = new AppInsightsConfig
-            //{
-            //    InstrumentationKey = Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"]
-            //};
-            //services.AddSingleton(appInsightsConfig);
-            //services.AddApplicationInsightsTelemetry(appInsightsConfig.InstrumentationKey);
-
             var apiConfig = new ApiConfig
             {
-                BaseUrl = "" //Configuration["ApiUrl"]
+                Url = "/api"
             };
             services.AddSingleton(apiConfig);
 
             var orgConfig = new OrganizationConfig
             {
-                Logo = Configuration["OrganizationLogo"],
                 Name = Configuration["OrganizationName"],
-                Url = Configuration["OrganizationWebSiteUrl"],
             };
             services.AddSingleton(orgConfig);
 
             var appConfig = new AppConfig
             {
                 ApiConfig = apiConfig,
-                //AppInsights = appInsightsConfig,
                 Organization = orgConfig,
-                Customizable = true // Configuration["Customizable"].Equals("true", StringComparison.InvariantCultureIgnoreCase)
+                Customizable = Configuration["Customizable"].Equals("true", StringComparison.InvariantCultureIgnoreCase)
             };
             services.AddSingleton(appConfig);
 
