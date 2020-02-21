@@ -36,61 +36,6 @@ namespace CognitiveSearch.UI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CustomizeHomepage()
-        {
-            var hasImage = Request.Form.Files.Any();
-
-            if (hasImage)
-            {
-                var file = Request.Form.Files[0];
-                if(file.FileName.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    var webPath = _hostingEnvironment.WebRootPath;
-                    var path = Path.Combine("", webPath + @"\images\homepageimage.png");
-
-                    using (var stream = new FileStream(path, FileMode.Create))
-                    {
-                        await file.CopyToAsync(stream);
-                    }
-                }
-                else
-                {
-
-                    ViewBag.Style = "alert-warning";
-                    ViewBag.Message = $"Only .png file supported. Please choose a different file and try again.";
-
-                    var m = new CustomizeViewModel
-                    {
-                        NavBar = await ReadCssColorProperties("navbar")
-                    };
-                    return View("Customize", m);
-                }
-
-            }
-
-            if(Request.Form.Keys.Contains("headline"))
-            {
-                var headline = Request.Form["headline"].ToString();
-
-                if(!string.IsNullOrEmpty(headline))
-                {
-                    var cssString = $"#headlinehomepage::after{{content: '{headline}';}}";
-
-                    await WriteCss("homepage", cssString);
-                }
-
-            }
-
-            ViewBag.Message = $"Successfully updated the homepage.";
-
-            var model = new CustomizeViewModel
-            {
-                NavBar = await ReadCssColorProperties("navbar")
-            };
-            return View("Customize", model);
-        }
-
-        [HttpPost]
         public async Task<IActionResult> CustomizeNavBar()
         {
             var cssString = "";
@@ -135,30 +80,6 @@ namespace CognitiveSearch.UI.Controllers
             await WriteCss("navbar", cssString);
 
             ViewBag.Message = $"Successfully updated the navigation bar.";
-
-            var model = new CustomizeViewModel
-            {
-                NavBar = await ReadCssColorProperties("navbar")
-            };
-            return View("Customize", model);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> CustomizeFooter()
-        {
-            var cssString = "";
-
-            var hasBgColor = Request.Form.Keys.Any(k => k == "footer-bg");
-            var bgColor = hasBgColor ? Request.Form["footer-bg"].ToString() : "#ffffff";
-            cssString += $".footer-bg{{background-color:{bgColor}}}";
-
-            var hasTextColor = Request.Form.Keys.Any(k => k == "footer-text");
-            var textColor = hasTextColor ? Request.Form["footer-text"].ToString() : "#000000";
-            cssString += $".footer-text{{color:{textColor}}}";
-
-            await WriteCss("footer", cssString);
-
-            ViewBag.Message = $"Successfully updated the footer.";
 
             var model = new CustomizeViewModel
             {
