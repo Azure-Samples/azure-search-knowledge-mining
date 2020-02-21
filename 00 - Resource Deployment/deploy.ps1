@@ -314,6 +314,7 @@ function Deploy
         $file.SearchServiceName = $searchServiceName
         $file.SearchApiKey = $global:searchServiceKey
         $file.SearchIndexName = $indexName
+        $file.SearchIndexerName = $indexerName
         $file.StorageAccountName = $storageAccountName
         $file.StorageAccountKey = $global:storageAccountKey
         $file.StorageContainerAddress = ("https://"+$storageAccountName+".blob.core.windows.net/"+$storageContainerName)
