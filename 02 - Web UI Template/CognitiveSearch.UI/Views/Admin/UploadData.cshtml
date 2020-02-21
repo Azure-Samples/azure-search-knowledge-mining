@@ -24,22 +24,9 @@
     </div>
 
     <div id="upload-message" class="alert alert-success mb-2 mt-2 mr-5 ml-5" style="display:none;"></div>
-    <div id="index-message" class="alert alert-success mb-2 mt-2 mr-5 ml-5" style="display:none;"></div>
-    <div id="indexer-history" class="alert alert-info mb-2 mt-2 mr-5 ml-5" style="display:none;"></div>
 </main>
 
 <script type="text/javascript">
-
-
-    function updateDisplayFullHistory() {
-        if (document.getElementById("indexer-history").style.display === 'none') {
-            document.getElementById("indexer-history").style.display = 'block';
-            document.getElementById("histLink").text = 'Hide Full Indexing History';
-        } else {
-            document.getElementById("indexer-history").style.display = 'none';
-            document.getElementById("histLink").text = 'Show Full Indexing History (last 20 runs)';
-        }
-    }
 
     $(document).ready(function () {
 
@@ -59,25 +46,6 @@
                 var $message = $('#upload-message');
                 $message.text("Files uploaded successfully.");
                 $message.attr('style', 'display:block;');
-                $.ajax({
-                    type: "GET",
-                    url: `${apiUrl}/Indexer/indexerStatus`,
-                    contentType: 'application/json; charset=utf-8',
-                    success: function (data, status) {
-                        console.log(data);
-                        var indexMessage = $('#index-message');
-                        if (data.lastResult.status === 'transientFailure') {
-                            indexMessage.removeClass('alert-success');
-                            indexMessage.addClass('alert-warning');
-                        }
-                        //indexMessage.html(formatLastRunStatus(data));
-                        //indexMessage.attr('style', 'display:block;');
-                        //$('#indexer-history').html(formatRunHistory(data));
-                    },
-                    error: function (response) {
-                        window.alert(response.statusCode);
-                    }
-                });
             },
             error: function (file, response) {
                 file.previewElement.classList.add('dz-error');
