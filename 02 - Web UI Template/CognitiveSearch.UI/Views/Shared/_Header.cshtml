@@ -1,0 +1,28 @@
+﻿@using CognitiveSearch.UI.Configuration
+@inject AppConfig AppConfig
+
+<nav class="navbar navbar-bg">
+    <div class="container-fluid">
+        <div class="content">
+            <div class="navbar-header">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src="~/images/logo.png" height="35px" id="navbar-img" alt="@AppConfig.Organization.Name logo" title="@AppConfig.Organization.Name Cognitive Search" class="logo-container logo-sgv" asp-append-version="true" />
+                </a>
+            </div>
+            <span class="navbar-user">
+                @*Bryan Foster*@
+            </span>
+            <ul class="navbar-nav list-group-horizontal">
+                <li class="nav-item pl-5">
+                    <a class="nav-link navbar-text" asp-area="" asp-controller="Home" asp-action="Index">Search</a>
+                </li>
+                <li class="nav-item pl-5">
+                    <a id="customize-page" class="nav-link navbar-text" asp-area="" asp-controller="Admin" asp-action="Customize">Customize</a>
+                </li>
+                <li class="nav-item pl-5">
+                    <a id="upload-data-page" class="nav-link navbar-text" asp-area="" asp-controller="Admin" asp-action="UploadData">Upload Files</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

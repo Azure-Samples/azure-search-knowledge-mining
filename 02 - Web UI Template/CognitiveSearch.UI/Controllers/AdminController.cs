@@ -30,8 +30,7 @@ namespace CognitiveSearch.UI.Controllers
         {
             var model = new CustomizeViewModel
             {
-                NavBar = await ReadCssColorProperties("navbar"),
-                Footer = await ReadCssColorProperties("footer")
+                NavBar = await ReadCssColorProperties("navbar")
             };
             return View(model);
         }
@@ -62,8 +61,7 @@ namespace CognitiveSearch.UI.Controllers
 
                     var m = new CustomizeViewModel
                     {
-                        NavBar = await ReadCssColorProperties("navbar"),
-                        Footer = await ReadCssColorProperties("footer")
+                        NavBar = await ReadCssColorProperties("navbar")
                     };
                     return View("Customize", m);
                 }
@@ -87,8 +85,7 @@ namespace CognitiveSearch.UI.Controllers
 
             var model = new CustomizeViewModel
             {
-                NavBar = await ReadCssColorProperties("navbar"),
-                Footer = await ReadCssColorProperties("footer")
+                NavBar = await ReadCssColorProperties("navbar")
             };
             return View("Customize", model);
         }
@@ -121,8 +118,7 @@ namespace CognitiveSearch.UI.Controllers
 
                     var m = new CustomizeViewModel
                     {
-                        NavBar = await ReadCssColorProperties("navbar"),
-                        Footer = await ReadCssColorProperties("footer")
+                        NavBar = await ReadCssColorProperties("navbar")
                     };
                     return View("Customize", m);
                 }
@@ -142,8 +138,7 @@ namespace CognitiveSearch.UI.Controllers
 
             var model = new CustomizeViewModel
             {
-                NavBar = await ReadCssColorProperties("navbar"),
-                Footer = await ReadCssColorProperties("footer")
+                NavBar = await ReadCssColorProperties("navbar")
             };
             return View("Customize", model);
         }
@@ -167,8 +162,7 @@ namespace CognitiveSearch.UI.Controllers
 
             var model = new CustomizeViewModel
             {
-                NavBar = await ReadCssColorProperties("navbar"),
-                Footer = await ReadCssColorProperties("footer")
+                NavBar = await ReadCssColorProperties("navbar")
             };
             return View("Customize", model);
         }

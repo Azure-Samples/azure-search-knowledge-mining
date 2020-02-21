@@ -26,7 +26,6 @@
     </environment>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/navbar.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/footer.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/homepage.css" asp-append-version="true" />
     @*@Html.Raw(JavaScriptSnippet.FullScript)*@
     <environment include="Development">
@@ -67,60 +66,37 @@
     <script src="https://d3js.org/d3-selection-multi.v1.js"></script>
 </head>
 <body>
-	<nav class="navbar navbar-bg">
-		<div class="container-fluid">
-			<div class="content">
-				<div class="navbar-header">
-					<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-						<img src="~/images/logo.png" height="35px" id="navbar-img" alt="@AppConfig.Organization.Name logo" title="@AppConfig.Organization.Name Cognitive Search" class="logo-container logo-sgv" asp-append-version="true" />
-					</a>
-				</div>
-				<span class="navbar-user">
-					@*Bryan Foster*@
-				</span>
-				<ul class="navbar-nav list-group-horizontal">
-					<li class="nav-item pl-5">
-						<a class="nav-link navbar-text" asp-area="" asp-controller="Home" asp-action="Index">Search</a>
-					</li>
-					<li class="nav-item pl-5">
-						<a id="customize-page" class="nav-link navbar-text" asp-area="" asp-controller="Admin" asp-action="Customize">Customize</a>
-					</li>
-					<li class="nav-item pl-5">
-						<a id="upload-data-page" class="nav-link navbar-text" asp-area="" asp-controller="Admin" asp-action="UploadData">Upload Files</a>
-					</li>
-				</ul>
-			</div>
-		</div>
-	</nav>
-	<div class="container-fluid">
-		@RenderBody()
-	</div>
+    @await Html.PartialAsync("_Header")
 
-	@await Html.PartialAsync("_Footer")
+    <div class="container-fluid">
+        @RenderBody()
+    </div>
 
-	@*		<script src="~/lib/jquery/dist/jquery.js"></script>
+    @await Html.PartialAsync("_Footer")
 
-			<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    @*		<script src="~/lib/jquery/dist/jquery.js"></script>
 
-			<script type="text/javascript">
-				// Change JQueryUI plugin names to fix name collision with Bootstrap.
-				$.widget.bridge('uitooltip', $.ui.tooltip);
-				$.widget.bridge('uibutton', $.ui.button);
-			</script>
-			<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
-			<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
-			<script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>*@
-	<script src="~/js/tags.js"></script>
-	<script src="~/js/details.js"></script>
-	<script src="~/js/appInsights.js"></script>
-	<script src="~/js/results.js"></script>
-	<script src="~/js/facets.js"></script>
-	<script src="~/js/search.js"></script>
-	<script src="~/js/site.js"></script>
-	<script src="~/js/entityMap.js"></script>
+        <script type="text/javascript">
+            // Change JQueryUI plugin names to fix name collision with Bootstrap.
+            $.widget.bridge('uitooltip', $.ui.tooltip);
+            $.widget.bridge('uibutton', $.ui.button);
+        </script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
 
-	<script>
+        <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+        <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>*@
+    <script src="~/js/tags.js"></script>
+    <script src="~/js/details.js"></script>
+    <script src="~/js/appInsights.js"></script>
+    <script src="~/js/results.js"></script>
+    <script src="~/js/facets.js"></script>
+    <script src="~/js/search.js"></script>
+    <script src="~/js/site.js"></script>
+    <script src="~/js/entityMap.js"></script>
+
+    <script>
         $(function () {
             $('.advancedAutoComplete').autocomplete({
                 source: "/home/suggest",
@@ -133,8 +109,8 @@
 
         apiUrl = '@AppConfig.ApiConfig.Url';
         customizable = '@AppConfig.Customizable';
-	</script>
+    </script>
 
-	@RenderSection("Scripts", required: false)
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

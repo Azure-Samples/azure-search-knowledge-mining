@@ -64,30 +64,9 @@
             </form>
         </div>
     </div>
-
-    <div class="card m-5">
-        <h4 class="card-header">Customize the footer</h4>
-        <div class="card-body">
-            <p>
-                Using the options below, you can set the background and text colors for the footer.
-            </p>
-            <form asp-controller="Admin" asp-action="CustomizeFooter" asp-antiforgery="false"
-                  id="CustomizeFooter" enctype="multipart/form-data" method="post">
-                <div class="fallback">
-                    <label>Select a background color</label>
-                    <input name="footer-bg" type="color" value="@Model.Footer.BackgroundColor" />
-                    <br />
-                    <label>Select a text color</label>
-                    <input name="footer-text" type="color" value="@Model.Footer.TextColor" />
-                </div>
-                <br />
-                <input type="submit" value="Save Footer Settings" class="btn btn-primary" />
-            </form>
-        </div>
-    </div>
 </main>
 
-@*<script type="text/javascript">
+<script type="text/javascript">
 
     $(document).ready(function () {
 
@@ -96,4 +75,4 @@
         }
         
     });
-</script>*@
+</script>
