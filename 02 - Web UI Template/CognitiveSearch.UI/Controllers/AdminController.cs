@@ -15,10 +15,10 @@ namespace CognitiveSearch.UI.Controllers
     public class AdminController : Controller
     {
         private readonly IFileProvider _fileProvider;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly AppConfig _appConfig;
 
-        public AdminController(IFileProvider fileProvider, IHostingEnvironment hostingEnvironment, AppConfig appConfig)
+        public AdminController(IFileProvider fileProvider, IWebHostEnvironment hostingEnvironment, AppConfig appConfig)
         {
             _fileProvider = fileProvider;
             _hostingEnvironment = hostingEnvironment;

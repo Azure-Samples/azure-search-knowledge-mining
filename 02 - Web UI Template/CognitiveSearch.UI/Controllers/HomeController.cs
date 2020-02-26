@@ -297,7 +297,7 @@ namespace CognitiveSearch.UI.Controllers
         }
 
         [HttpPost]
-        public JObject GetGraphData(string query)
+        public ActionResult GetGraphData(string query)
         {
             string facetsList = _configuration.GetSection("GraphFacet")?.Value;
 
@@ -310,7 +310,7 @@ namespace CognitiveSearch.UI.Controllers
             FacetGraphGenerator graphGenerator = new FacetGraphGenerator(_docSearch);
             var graphJson = graphGenerator.GetFacetGraphNodes(query, facetNames.ToList<string>());
 
-            return graphJson;
+            return Content(graphJson.ToString(), "application/json");
         }
 
         [HttpPost, HttpGet]
