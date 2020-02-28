@@ -345,6 +345,10 @@ h1, h2, h3, h4, h5 {
     top: 2px;
 }
 
+.list-group-horizontal {
+    list-style-type: none;
+}
+
 .panel {
     border-radius: 0 !important;
 }
