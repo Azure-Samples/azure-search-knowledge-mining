@@ -117,7 +117,7 @@ function AuthenticateMap(result) {
 
             var latlon = result.geoLocation;
 
-            if (latlon !== null) {
+            if (latlon) {
 
                 if (latlon.isEmpty === false) {
 
@@ -265,7 +265,7 @@ function GetTranscriptHTML(result) {
     full_content = result.content.trim();
 
     // If we have merged content, let's use it.
-    if (result.merged_content != null && result.merged_content.length > 0) {
+    if (result.merged_content && result.merged_content.length > 0) {
         full_content = htmlDecode(result.merged_content.trim());
     }
 
