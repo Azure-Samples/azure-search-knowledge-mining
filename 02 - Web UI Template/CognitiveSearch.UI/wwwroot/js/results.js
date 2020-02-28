@@ -60,6 +60,18 @@ function AuthenticateResultsMap(results) {
                 }
             });
 
+            //Wait until the map resources are ready.
+            resultsMap.events.add('ready', function () {
+  
+                /* Construct a zoom control*/
+                var zoomControl = new atlas.control.ZoomControl();
+      
+                /* Add the zoom control to the map*/
+                resultsMap.controls.add(zoomControl, {
+                    position: "bottom-right"
+                    });
+                });
+
             AddMapPoints(results);
 
             return;
