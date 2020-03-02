@@ -25,4 +25,15 @@
             </ul>
         </div>
     </div>
+    @if (!string.IsNullOrWhiteSpace(ViewBag.Message))
+    {
+        @if (!string.IsNullOrWhiteSpace(ViewBag.Style))
+        {
+            <div class="alert @ViewBag.Style  mb-2 mt-5 mr-5 ml-5">@ViewBag.Message</div>
+        }
+        else
+        {
+            <div class="alert alert-info  mb-2 mt-5 mr-5 ml-5">@ViewBag.Message</div>
+        }
+    }
 </nav>
