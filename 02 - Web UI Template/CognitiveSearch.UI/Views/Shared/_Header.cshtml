@@ -1,7 +1,7 @@
 @using CognitiveSearch.UI.Configuration
 @inject AppConfig AppConfig
 
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
 <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-bg">
     <div class="container-fluid">
         <div class="content">
@@ -26,7 +26,19 @@
                     </ul>
                 </div>
             }
-            </div>
-            
         </div>
+
+    </div>
 </nav>
+
+@if (!string.IsNullOrWhiteSpace(ViewBag.Message))
+{
+    @if (!string.IsNullOrWhiteSpace(ViewBag.Style))
+    {
+        <div class="alert @ViewBag.Style  mb-2 mt-5 mr-5 ml-5">@ViewBag.Message</div>
+    }
+    else
+    {
+        <div class="alert alert-info  mb-2 mt-5 mr-5 ml-5">@ViewBag.Message</div>
+    }
+}

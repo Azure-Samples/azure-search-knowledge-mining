@@ -6,18 +6,6 @@
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
     <main role="main">
-        @if (!string.IsNullOrWhiteSpace(ViewBag.Message))
-        {
-            @if (!string.IsNullOrWhiteSpace(ViewBag.Style))
-            {
-                <div class="alert @ViewBag.Style  mb-2 mt-5 mr-5 ml-5">@ViewBag.Message</div>
-            }
-            else
-            {
-                <div class="alert alert-info  mb-2 mt-5 mr-5 ml-5">@ViewBag.Message</div>
-            }
-        }
-
         <div class="card m-5">
             <h4 class="card-header">Customize the navigation bar</h4>
             <div class="card-body">
