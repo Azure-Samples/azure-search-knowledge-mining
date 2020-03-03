@@ -19,12 +19,7 @@ function ShowDocument(id) {
 
             $('#result-id').val(id);
 
-            var path;
-
-            path = data.decodedPath;
-            path = path + data.token;
-
-            var fileContainerHTML = GetFileHTML(path);
+            var fileContainerHTML = GetFileHTML(data, result);
 
             // Transcript Tab Content
             var transcriptContainerHTML = GetTranscriptHTML(result);
@@ -117,7 +112,7 @@ function AuthenticateMap(result) {
 
             var latlon = result.geoLocation;
 
-            if (latlon !== null) {
+            if (latlon) {
 
                 if (latlon.isEmpty === false) {
 
@@ -175,15 +170,18 @@ function GetMatches(string, regex, index) {
     return matches;
 }
 
-function GetFileHTML(path) {
+function GetFileHTML(data, result) {
+    var filename = result.metadata_storage_name; // blob filename
+    var path = data.decodedPath + data.token; // direct path to blob with auth token
 
     if (path != null) {
         var pathLower = path.toLowerCase();
 
         if (pathLower.includes(".pdf")) {
-            fileContainerHTML =
-                `<object class="file-container" data="${path}" type="application/pdf">
-                </object>`;
+            var expectedType = encodeURIComponent("application/pdf");
+            var encodedFilename = encodeURIComponent(filename);
+            var previewPath = `/preview/${encodedFilename}/${expectedType}`;
+            fileContainerHTML = `<iframe class="file-container" src="${previewPath}"><p>Your browser does not support iframes.</p></iframe>`;
         }
         else if (pathLower.includes(".txt") || pathLower.includes(".json")) {
             var txtHtml = htmlDecode(result.content.trim());
@@ -265,8 +263,10 @@ function GetTranscriptHTML(result) {
     full_content = result.content.trim();
 
     // If we have merged content, let's use it.
-    if (result.merged_content != null && result.merged_content.length > 0) {
-        full_content = htmlDecode(result.merged_content.trim());
+    if (result.merged_content) {
+        if (result.merged_content.length > 0) {
+            full_content = htmlDecode(result.merged_content.trim());
+        }
     }
 
     if (full_content === null || full_content === "")

@@ -22,8 +22,9 @@ namespace CognitiveSearch.UI
         private SearchServiceClient _searchClient;
         private ISearchIndexClient _indexClient;
         private string searchServiceName { get; set; }
-        private string apiKey { get; set; } 
+        private string apiKey { get; set; }
         private string IndexName { get; set; }
+        private string IndexerName { get; set; }
 
         private string idField { get; set; }
 
@@ -43,6 +44,7 @@ namespace CognitiveSearch.UI
                 searchServiceName = configuration.GetSection("SearchServiceName")?.Value;
                 apiKey = configuration.GetSection("SearchApiKey")?.Value;
                 IndexName = configuration.GetSection("SearchIndexName")?.Value;
+                IndexerName = configuration.GetSection("SearchIndexerName")?.Value;
                 idField = configuration.GetSection("KeyField")?.Value;
                 telemetryClient.InstrumentationKey = configuration.GetSection("InstrumentationKey")?.Value;
 
@@ -244,5 +246,16 @@ namespace CognitiveSearch.UI
             return null;
         }
 
+        /// <summary>
+        /// Initiates a run of the search indexer.
+        /// </summary>
+        public async Task RunIndexer()
+        {
+            var indexStatus = await _searchClient.Indexers.GetStatusAsync(IndexerName);
+            if (indexStatus.LastResult.Status != IndexerExecutionStatus.InProgress)
+            {
+                _searchClient.Indexers.Run(IndexerName);
+            }
+        }
     }
 }
