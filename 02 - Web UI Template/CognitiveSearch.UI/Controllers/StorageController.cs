@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Auth;
 using System.Threading.Tasks;
+using System.IO;
+using System.Web;
 
 namespace CognitiveSearch.UI.Controllers
 {
@@ -42,6 +44,27 @@ namespace CognitiveSearch.UI.Controllers
             await _docSearch.RunIndexer();
 
             return new JsonResult("ok");
+        }
+
+        /// <summary>
+        ///  Returns the requested document with an 'inline' content disposition header.
+        ///  This hints to a browser to show the file instead of downloading it.
+        /// </summary>
+        /// <param name="fileName">The storage blob filename.</param>
+        /// <param name="mimeType">The expected mime content type.</param>
+        /// <returns>The file data with inline disposition header.</returns>
+        [HttpGet("preview/{fileName}/{mimeType}")]
+        public async Task<FileContentResult> GetDocument(string fileName, string mimeType)
+        {
+            var decodedFilename = HttpUtility.UrlDecode(fileName);
+            var container = GetStorageContainer();
+            var cloudBlockBlob = container.GetBlockBlobReference(decodedFilename);
+            using (var ms = new MemoryStream())
+            {
+                await cloudBlockBlob.DownloadToStreamAsync(ms);
+                Response.Headers.Add("Content-Disposition", "inline; filename=" + decodedFilename);
+                return File(ms.ToArray(), HttpUtility.UrlDecode(mimeType));
+            }
         }
 
         private CloudBlobContainer GetStorageContainer()

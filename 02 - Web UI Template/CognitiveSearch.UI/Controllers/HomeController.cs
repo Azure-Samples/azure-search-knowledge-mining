@@ -21,6 +21,7 @@ namespace CognitiveSearch.UI.Controllers
         private DocumentSearchClient _docSearch { get; set; }
         private string _idField { get; set; }
         bool _isPathBase64Encoded { get; set; }
+        private string _configurationError { get; set; }
 
         // data source information. Currently supporting 3 data sources indexed by different indexers
         private static string[] containerAddresses = null; 
@@ -32,13 +33,44 @@ namespace CognitiveSearch.UI.Controllers
         public HomeController(IConfiguration configuration)
         {
             _configuration = configuration;
-            _docSearch = new DocumentSearchClient(configuration);
-            _idField = _configuration.GetSection("KeyField")?.Value;
-            _isPathBase64Encoded = (_configuration.GetSection("IsPathBase64Encoded")?.Value == "True");
+            InitializeDocSearch();
+        }
+
+        private void InitializeDocSearch()
+        {
+            try
+            {
+                _docSearch = new DocumentSearchClient(_configuration);
+                _idField = _configuration.GetSection("KeyField")?.Value;
+                _isPathBase64Encoded = (_configuration.GetSection("IsPathBase64Encoded")?.Value == "True");
+            }
+            catch (Exception e)
+            {
+                _configurationError = $"The application settings are possibly incorrect. The server responded with this message: " + e.Message.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Checks that the search client was intiailized successfully.
+        /// If not, it will add the error reason to the ViewBag alert.
+        /// </summary>
+        /// <returns>A value indicating whether the search client was initialized succesfully.</returns>
+        public bool CheckDocSearchInitialized()
+        {
+            if (_docSearch == null)
+            {
+                ViewBag.Style = "alert-warning";
+                ViewBag.Message = _configurationError;
+                return false;
+            }
+
+            return true;
         }
 
         public IActionResult Index()
         {
+            CheckDocSearchInitialized();
+
             return View();
         }
 
@@ -55,7 +87,10 @@ namespace CognitiveSearch.UI.Controllers
         [HttpPost]
         public IActionResult Search(string q)
         {
-            var searchidId = _docSearch.GetSearchId().ToString();
+            var searchidId = string.Empty;
+
+            if (CheckDocSearchInitialized())
+                searchidId = _docSearch.GetSearchId().ToString();
 
             if (searchidId != string.Empty)
                 TempData["searchId"] = searchidId;
@@ -69,6 +104,11 @@ namespace CognitiveSearch.UI.Controllers
         [HttpPost]
         public IActionResult GetDocuments(string q = "", SearchFacet[] searchFacets = null, int currentPage = 1)
         {
+            if (!CheckDocSearchInitialized())
+            {
+                return View();
+            }
+
             var tokens = GetContainerSasUris();
 
             var selectFilter = _docSearch.Model.SelectFilter;
