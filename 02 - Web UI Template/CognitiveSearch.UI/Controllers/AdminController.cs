@@ -70,12 +70,14 @@ namespace CognitiveSearch.UI.Controllers
             }
 
             var hasBgColor = Request.Form.Keys.Any(k => k == "navbar-bg");
-            var bgColor = hasBgColor ? Request.Form["navbar-bg"].ToString() : "#ffffff";
-            cssString += $".navbar-bg{{background-color:{bgColor}}}";
+            var bgColorHead = hasBgColor ? Request.Form["navbar-bg"].ToString() : "#ffffff";
+            var bgColorFooter = hasBgColor ? Request.Form["navbar-bg"].ToString() : "#efefef";
+            cssString += $".navbar-bg{{background-color:{bgColorHead}}}";
+            cssString += $".footer-bg{{background-color:{bgColorFooter}}}";
 
             var hasTextColor = Request.Form.Keys.Any(k => k == "navbar-text");
-            var textColor = hasTextColor ? Request.Form["navbar-text"].ToString() : "#000000";
-            cssString += $".navbar-text{{color:{textColor}}}";
+            var textColor = hasTextColor ? Request.Form["navbar-text"].ToString() : "#4A4A4A";
+            cssString += $".navbar-text-color{{color:{textColor}}}";
 
             await WriteCss("navbar", cssString);
 

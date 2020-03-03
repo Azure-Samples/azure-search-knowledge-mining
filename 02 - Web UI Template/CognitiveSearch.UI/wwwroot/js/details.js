@@ -263,8 +263,10 @@ function GetTranscriptHTML(result) {
     full_content = result.content.trim();
 
     // If we have merged content, let's use it.
-    if (result.merged_content && result.merged_content.length > 0) {
-        full_content = htmlDecode(result.merged_content.trim());
+    if (result.merged_content) {
+        if (result.merged_content.length > 0) {
+            full_content = htmlDecode(result.merged_content.trim());
+        }
     }
 
     if (full_content === null || full_content === "")
