@@ -65,6 +65,11 @@ audio {
     width: 100px;
 }
 
+.container-fluid {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+}
+
 .recentsearch {
     color: #4A4A4A;
     font-weight: bold;
@@ -308,8 +313,8 @@ h1, h2, h3, h4, h5 {
 }
 
 .navbar {
-    margin-bottom: 0;
-    border-bottom: 1px solid #959595;
+    margin-bottom: 0 !important;
+    border-bottom: 1px solid #959595 !important;
 }
 
 .navbar-brand {
@@ -345,8 +350,26 @@ h1, h2, h3, h4, h5 {
     top: 2px;
 }
 
-.list-group-horizontal {
+.navbar-nav {
     list-style-type: none;
+}
+
+.navbar-bg {
+    background-color: #ffffff;
+}
+
+.navbar-text {
+    font-size: 16px;
+    float: left;
+    vertical-align: middle;
+    margin-top: 5px !important;
+    width: auto;
+    margin-bottom: 0 !important
+}
+
+.card {
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 .panel {
