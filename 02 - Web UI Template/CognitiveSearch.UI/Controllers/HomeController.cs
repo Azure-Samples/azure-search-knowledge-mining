@@ -64,41 +64,65 @@ namespace CognitiveSearch.UI.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        public IActionResult Search()
+        public IActionResult Search([FromQuery]string q, [FromQuery]string facets = "", [FromQuery]int page = 1)
         {
-            return View();
+            // Split the facets.
+            //  Expected format: &facets=key1_val1,key1_val2,key2_val1
+            var searchFacets = facets
+                // Split by individual keys
+                .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                // Split key/values
+                .Select(f => f.Split("_", StringSplitOptions.RemoveEmptyEntries))
+                // Group by keys
+                .GroupBy(f => f[0])
+                // Select grouped key/values into SearchFacet array
+                .Select(g => new SearchFacet { Key = g.Key, Value = g.Select(f => f[1]).ToArray() })
+                .ToArray();
+
+            var viewModel = SearchView(new SearchParameters
+            {
+                q = q,
+                searchFacets = searchFacets,
+                currentPage = page
+            });
+
+            return View(viewModel);
+        }
+
+        public class SearchParameters
+        {
+            public string q { get; set; }
+            public SearchFacet[] searchFacets { get; set; }
+            public int currentPage { get; set; }
         }
 
         [HttpPost]
-        public IActionResult Search(string q)
+
+        public SearchResultViewModel SearchView([FromForm]SearchParameters searchParams)
         {
-            var searchidId = string.Empty;
+            if (searchParams.q == null)
+                searchParams.q = "*";
+            if (searchParams.searchFacets == null)
+                searchParams.searchFacets = new SearchFacet[0];
+            if (searchParams.currentPage == 0)
+                searchParams.currentPage = 1;
+
+            string searchidId = null;
 
             if (CheckDocSearchInitialized())
                 searchidId = _docSearch.GetSearchId().ToString();
 
-            if (searchidId != string.Empty)
-                TempData["searchId"] = searchidId;
-
-            TempData["query"] = q;
-            TempData["applicationInstrumentationKey"] = _configuration.GetSection("InstrumentationKey")?.Value;
-
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult GetDocuments(string q = "", SearchFacet[] searchFacets = null, int currentPage = 1)
-        {
-            if (!CheckDocSearchInitialized())
+            var viewModel = new SearchResultViewModel
             {
-                return View();
-            }
-
-            DocumentResult result = _docSearch.GetDocuments(q, searchFacets, currentPage);
-
-            return new JsonResult(result);
+                documentResult = _docSearch.GetDocuments(searchParams.q, searchParams.searchFacets, searchParams.currentPage),
+                query = searchParams.q,
+                selectedFacets = searchParams.searchFacets,
+                currentPage = searchParams.currentPage,
+                searchId = searchidId ?? null,
+                applicationInstrumentationKey = _configuration.GetSection("InstrumentationKey")?.Value
+            };
+            return viewModel;
         }
-
 
         [HttpPost]
         public IActionResult GetDocumentById(string id = "")

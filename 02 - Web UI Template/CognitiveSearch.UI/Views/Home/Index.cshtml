@@ -9,8 +9,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
 <div class="home-page-background">
     <div class="content">
-        @using (Html.BeginForm("Search", "Home", FormMethod.Post))
-        {
+        <form method="get" asp-controller="Home" asp-action="Search">
             <div class="form-group">
                 <label id="search-label">Search</label>
                 <div id="search-input-group" class="input-group">
@@ -20,7 +19,7 @@
                     </span>
                 </div>
             </div>
-        }
+        </form>
     </div>
 </div>
 <div class="content row">
