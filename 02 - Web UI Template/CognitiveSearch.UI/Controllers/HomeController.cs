@@ -97,7 +97,6 @@ namespace CognitiveSearch.UI.Controllers
         }
 
         [HttpPost]
-
         public SearchResultViewModel SearchView([FromForm]SearchParameters searchParams)
         {
             if (searchParams.q == null)
