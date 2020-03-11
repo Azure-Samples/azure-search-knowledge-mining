@@ -23,31 +23,32 @@ function UpdateResults(data) {
 
     for (var i = 0; i < data.results.length; i++) {
 
-        var result = data.results[i].document;
+        var result = data.results[i];
+        var document = result.document;
+        document.idx = i;
+
         var name;
-        var title; 
-
-        result.idx = i;
-
-        var id = result[data.idField]; 
-
-        var tags = GetTagsHTML(result);
+        var title;
+        var content = result.highlights ? result.highlights.content[0] : document.content?.substring(0, 400);
+        var icon = " ms-Icon--Page";
+        var id = document[data.idField]; 
+        var tags = GetTagsHTML(document);
         var path;
 
         // get path
         if (data.isPathBase64Encoded) {
-            path = Base64Decode(result.metadata_storage_path) + token;
+            path = Base64Decode(document.metadata_storage_path) + token;
         }
         else {
-            path = result.metadata_storage_path + token;
+            path = document.metadata_storage_path + token;
         }
 
-        if (result["metadata_storage_name"] !== undefined) {
-            name = result.metadata_storage_name.split(".")[0];
+        if (document["metadata_storage_name"] !== undefined) {
+            name = document.metadata_storage_name.split(".")[0];
         }
         
-        if (result["metadata_title"] !== undefined && result["metadata_title"] !== null) {
-            title = result.metadata_title;
+        if (document["metadata_title"] !== undefined && document["metadata_title"] !== null) {
+            title = document.metadata_title;
         }
         else {
             // Bring up the name to the top
@@ -55,81 +56,67 @@ function UpdateResults(data) {
             name = "";
         }
 
+
         if (path !== null) {
             var classList = "results-div ";
             if (i === 0) classList += "results-sizer";
 
             var pathLower = path.toLowerCase();
 
+            if (pathLower.includes(".pdf")) {
+                icon = "ms-Icon--PDF";
+            }
+            else if (pathLower.includes(".htm")) {
+                icon = "ms-Icon--FileHTML";
+            }
+            else if (pathLower.includes(".xml")) {
+                icon = "ms-Icon--FileCode";
+            }
+            else if (pathLower.includes(".doc")) {
+                icon = "ms-Icon--WordDocument";
+            }
+            else if (pathLower.includes(".ppt")) {
+                icon = "ms-Icon--PowerPointDocument";
+            }
+            else if (pathLower.includes(".xls")) {
+                icon = "ms-Icon--ExcelDocument";
+            }
+
+            var resultContent = "";
+
             if (pathLower.includes(".jpg") || pathLower.includes(".png")) {
-                resultsHtml += `<div class="${classList}" onclick="ShowDocument('${id}');">
-                                    <div class="search-result">
-                                        <img class="img-result" style='max-width:100%;' src="${path}"/>
-                                        <div class="results-header">
-                                            <h4>${name}</h4>
-                                        </div>
-                                        <div>${tags}</div>
-                                    </div>
-                                </div>`;
+                icon = "ms-Icon--FileImage";
+                resultContent = `<img class="img-result" style='max-width:100%;' src="${path}"/>`;
             }
             else if (pathLower.includes(".mp3")) {
-                resultsHtml += `<div class="${classList}" onclick="ShowDocument('${id}');">
-                                    <div class="search-result">
-                                        <div class="audio-result-div">
-                                            <audio controls>
-                                                <source src="${path}" type="audio/mp3">
-                                                Your browser does not support the audio tag.
-                                            </audio>
-                                        </div>
-                                        <div class="results-header">
-                                            <h4>${name}</h4>
-                                        </div>
-                                        <div>${tags}</div>                               
-                                    </div>
+                icon = "ms-Icon--MusicInCollection";
+                resultContent = `<div class="audio-result-div">
+                                    <audio controls>
+                                        <source src="${path}" type="audio/mp3">
+                                        Your browser does not support the audio tag.
+                                    </audio>
                                 </div>`;
             }
             else if (pathLower.includes(".mp4")) {
-                resultsHtml += `<div class="${classList}" onclick="ShowDocument('${id}');">
-                                    <div class="search-result">
-                                        <div class="video-result-div">
-                                            <video controls class="video-result">
-                                                <source src="${path}" type="video/mp4">
-                                                Your browser does not support the video tag.
-                                            </video>
-                                        </div>
-                                        <hr />
-                                        <div class="results-header">
-                                            <h4>${name}</h4>
-                                        </div>
-                                        <div>${tags}</div>                                 
-                                    </div>
+                icon = "ms-Icon--Video";
+                resultContent = `<div class="video-result-div">
+                                    <video controls class="video-result">
+                                        <source src="${path}" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
                                 </div>`;
             }
-            else {
-                var icon = " ms-Icon--Page";
 
-                if (pathLower.includes(".pdf")) {
-                    icon = "ms-Icon--PDF";
-                }
-                else if (pathLower.includes(".htm")) {
-                    icon = "ms-Icon--FileHTML";
-                }
-                else if (pathLower.includes(".xml")) {
-                    icon = "ms-Icon--FileCode";
-                }
-                else if (pathLower.includes(".doc")) {
-                    icon = "ms-Icon--WordDocument";
-                }
-                else if (pathLower.includes(".ppt")) {
-                    icon = "ms-Icon--PowerPointDocument";
-                }
-                else if (pathLower.includes(".xls")) {
-                    icon = "ms-Icon--ExcelDocument";
-                }
+            var tagsContent = tags ? `<div class="results-body col-md-12">
+                                    <div class="col-md-1">
+                                        <img id="tagimg${i}" src="/images/expand.png" height="30px" onclick="event.stopPropagation(); ShowHideTags(${i});">
+                                    </div>
+                                    <div id="tagdiv${i}" class="tag-container col-md-11" style="margin-top:10px;display:none">${tags}</div>
+                                </div>` : "";
 
-                resultsHtml += `<div class="${classList}" onclick="ShowDocument('${id}');">
+            resultsHtml += `<div id="resultdiv${i}" class="${classList}" onclick="ShowDocument('${id}');">
                                     <div class="search-result">
-                                       <div class="results-icon col-md-1">
+                                        <div class="results-icon col-md-1">
                                             <div class="ms-CommandButton-icon">
                                                 <i class="html-icon ms-Icon ${icon}"></i>
                                             </div>
@@ -137,11 +124,12 @@ function UpdateResults(data) {
                                         <div class="results-body col-md-11">
                                             <h4>${title}</h4>
                                             <h5>${name}</h5>
-                                            <div style="margin-top:10px;">${tags}</div>
+                                            <div>${content}</div>
+                                            ${resultContent}
                                         </div>
+                                        ${tagsContent}
                                     </div>
                                 </div>`;
-            }
         }
         else {
             resultsHtml += `<div class="${classList}" );">
@@ -155,4 +143,19 @@ function UpdateResults(data) {
     }
 
     $("#doc-details-div").html(resultsHtml);
+}
+
+function ShowHideTags(i) {
+    var node = document.getElementById("tagdiv" + i);
+    var image = document.getElementById("tagimg" + i);
+    if (node.style.display === "none") {
+        node.style.display = "block";
+        image.src = "/images/collapse.png";
+    }
+    else {
+        node.style.display = "none";
+        image.src = "/images/expand.png";
+    }
+
+    $grid.masonry('layout');
 }

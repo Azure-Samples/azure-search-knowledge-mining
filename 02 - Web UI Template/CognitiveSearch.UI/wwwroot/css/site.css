@@ -404,7 +404,7 @@ pre {
 }
 
 .results-div {
-    width: 50%;
+    width: 100%;
 }
 
 .results-body {
@@ -483,6 +483,13 @@ pre {
 }
 .tag.tag-attachments_descriptions {
     background-color: #7a2f7e;
+}
+
+.tag-container {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+    width: 100%;
 }
 
 .tag {
@@ -642,4 +649,10 @@ body {
     background-color: lightgray;
     border: 1px dotted black;
     margin-bottom: 10px;
+}
+
+mark {
+    padding: 0px !important;
+    color: #000 !important;
+    background: #ff0 !important;
 }

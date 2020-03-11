@@ -97,7 +97,10 @@ namespace CognitiveSearch.UI
                 IncludeTotalResultCount = true,
                 QueryType = QueryType.Full,
                 Select = selectFilter,
-                Facets = Model.Facets.Select(f => f.Name).ToList()
+                Facets = Model.Facets.Select(f => f.Name).ToList(),
+                HighlightFields = Model.SearchableFields,
+                HighlightPreTag = "<mark>",
+                HighlightPostTag = "</mark>"
             };
 
             string filter = null;

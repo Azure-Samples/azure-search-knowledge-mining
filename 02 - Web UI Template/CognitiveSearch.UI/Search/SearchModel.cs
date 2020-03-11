@@ -47,6 +47,8 @@ namespace CognitiveSearch.UI
 
         public string[] SelectFilter { get; set; }
 
+        public string[] SearchableFields { get; set; }
+
         public Dictionary<string, string[]> SearchFacets { get; set; }
 
         public SearchModel(SearchSchema schema)
@@ -100,6 +102,8 @@ namespace CognitiveSearch.UI
                     Tags.Add(field.Value);
                 }
             }
+
+            SearchableFields = schema.Fields.Where(f => f.Value.IsSearchable).Select(f => f.Key).ToArray();
         }
     }
 }
