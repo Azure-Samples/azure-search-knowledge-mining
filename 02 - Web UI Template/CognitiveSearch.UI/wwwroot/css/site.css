@@ -243,10 +243,8 @@ h1, h2, h3, h4, h5 {
 }
 
 .img-result {
-    margin-bottom: 20px;
+    margin: 20px auto;
     display: block;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 #index-search-input:focus {
@@ -412,6 +410,15 @@ pre {
     padding-right: 0;
 }
 
+.max-lines {
+    display: block;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    overflow: hidden;
+    max-height: 4em;
+    line-height: 1.8em;
+}
+
 .results-icon {
     padding-left: 0;
     padding-right: 0;
@@ -420,6 +427,10 @@ pre {
     height: 40px;
     margin-top: 10px;
     line-height: 1.1;
+}
+
+i.ms-Icon {
+    font-size: 26px;
 }
 
 .results-type {

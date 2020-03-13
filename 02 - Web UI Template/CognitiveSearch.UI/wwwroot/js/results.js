@@ -29,7 +29,10 @@ function UpdateResults(data) {
 
         var name;
         var title;
-        var content = result.highlights ? result.highlights.content[0] : document.content?.substring(0, 400);
+        var content = (result.highlights
+                            ? result.highlights.content[0]
+                            : document.content?.substring(0, 400))
+                            || "";
         var icon = " ms-Icon--Page";
         var id = document[data.idField]; 
         var tags = GetTagsHTML(document);
@@ -107,12 +110,13 @@ function UpdateResults(data) {
                                 </div>`;
             }
 
-            var tagsContent = tags ? `<div class="results-body col-md-12">
-                                    <div class="col-md-1">
-                                        <img id="tagimg${i}" src="/images/expand.png" height="30px" onclick="event.stopPropagation(); ShowHideTags(${i});">
-                                    </div>
-                                    <div id="tagdiv${i}" class="tag-container col-md-11" style="margin-top:10px;display:none">${tags}</div>
-                                </div>` : "";
+            var tagsContent = tags ? `<div class="results-body">
+                                        <div id="tagdiv${i}" class="tag-container max-lines" style="margin-top:10px;">${tags}</div>
+                                    </div>` : "";
+            // display:none
+            // <div class="col-md-1"><img id="tagimg${i}" src="/images/expand.png" height="30px" onclick="event.stopPropagation(); ShowHideTags(${i});"></div>
+
+            var contentPreview = content ? `<p class="max-lines">${content}</p>` : "";
 
             resultsHtml += `<div id="resultdiv${i}" class="${classList}" onclick="ShowDocument('${id}');">
                                     <div class="search-result">
@@ -123,11 +127,11 @@ function UpdateResults(data) {
                                         </div>
                                         <div class="results-body col-md-11">
                                             <h4>${title}</h4>
+                                            ${contentPreview}
                                             <h5>${name}</h5>
-                                            <div>${content}</div>
+                                            ${tagsContent}
                                             ${resultContent}
                                         </div>
-                                        ${tagsContent}
                                     </div>
                                 </div>`;
         }
