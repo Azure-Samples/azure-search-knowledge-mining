@@ -50,6 +50,7 @@ function AuthenticateResultsMap(results) {
             resultsMap = new atlas.Map('myMap', {
                 center: coordinates,
                 zoom: 9,
+                visibility: "visible",
                 width: "500px",
                 height: "500px",
                 style: "grayscale_dark",
