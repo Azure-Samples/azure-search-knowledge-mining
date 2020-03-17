@@ -24,6 +24,7 @@
     </div>
 
     <div id="upload-message" class="alert alert-success mb-2 mt-2 mr-5 ml-5" style="display:none;"></div>
+
 </main>
 
 <script type="text/javascript">
@@ -33,6 +34,7 @@
         if (customizable === 'False') {
             window.location.replace("/Admin/NotAvailable");
         }
+
 
         $('#upload-dropzone').dropzone({
             url: '/upload', //'https://localhost:44311/api/Documents/upload',
@@ -60,3 +62,4 @@
         $('#upload-dropzone').addClass('dropzone');
     });
 </script>
+

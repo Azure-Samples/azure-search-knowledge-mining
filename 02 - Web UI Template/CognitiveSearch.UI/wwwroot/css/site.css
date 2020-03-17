@@ -244,9 +244,9 @@ h1, h2, h3, h4, h5 {
 
 .img-result {
     margin-bottom: 20px;
-    display: block;
     margin-left: auto;
     margin-right: auto;
+    display: block;
 }
 
 #index-search-input:focus {
@@ -404,12 +404,21 @@ pre {
 }
 
 .results-div {
-    width: 50%;
+    width: 100%;
 }
 
 .results-body {
     padding-left: 0;
     padding-right: 0;
+}
+
+.max-lines {
+    display: block;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    overflow: hidden;
+    max-height: 4em;
+    line-height: 1.8em;
 }
 
 .results-icon {
@@ -483,6 +492,13 @@ pre {
 }
 .tag.tag-attachments_descriptions {
     background-color: #7a2f7e;
+}
+
+.tag-container {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+    width: 100%;
 }
 
 .tag {
