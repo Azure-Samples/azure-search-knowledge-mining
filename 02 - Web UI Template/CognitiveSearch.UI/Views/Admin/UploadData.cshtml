@@ -4,13 +4,11 @@
     ViewData["Title"] = "Upload your data";
 }
 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script type="text/javascript" src="~/lib/dropzone/dist/js/dropzone.min.js"></script>
 <script type="text/javascript" src="~/lib/dropzone/dist/js/dropzone-amd-module.min.js"></script>
 <link rel="stylesheet" href="~/lib/dropzone/dist/css/basic.min.css" />
 <link rel="stylesheet" href="~/lib/dropzone/dist/css/dropzone.min.css" />
 <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-
 
 <main role="main">
 
@@ -20,47 +18,48 @@
             <p>
                 You can used the area below to upload files into your Azure Blob Storage account. Once uploaded, the files will be indexed by Azure Search, and within a few minutes will be available for searching using this tool.
             </p>
-            <div id="upload-dropzone">Drag and drop files into this zone to add them to the upload list, or click anywhere in this block to open a file dialog.</div>
+            <div id="upload-dropzone" class="justify-content-center">Drag and drop files into this zone to add them to the upload list, or click anywhere in this block to open a file dialog.</div>
 
         </div>
     </div>
 
     <div id="upload-message" class="alert alert-success mb-2 mt-2 mr-5 ml-5" style="display:none;"></div>
 
-    <script type="text/javascript">
-
-        $(document).ready(function () {
-
-            if (customizable === 'False') {
-                window.location.replace("/Admin/NotAvailable");
-            }
-
-
-            $('#upload-dropzone').dropzone({
-                url: '/upload', //'https://localhost:44311/api/Documents/upload',
-                method: 'POST',
-                parallelUploads: 10,
-                maxFilesize: 50, // MB
-                uploadMultiple: true,
-                maxFiles: 10,
-                success: function (file, response) {
-                    file.previewElement.classList.add('dz-success');
-                    var $message = $('#upload-message');
-                    $message.text("Files uploaded successfully.");
-                    $message.attr('style', 'display:block;');
-                },
-                error: function (file, response) {
-                    file.previewElement.classList.add('dz-error');
-                    var $message = $('#upload-message');
-                    $message.text("Files uploaded successfully.");
-                    $message.removeClass('alert-success');
-                    $message.addClass('alert-warning');
-                    $message.attr('style', 'display:block;');
-                }
-            });
-
-            $('#upload-dropzone').addClass('dropzone');
-        });
-    </script>
-
 </main>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        if (customizable === 'False') {
+            window.location.replace("/Admin/NotAvailable");
+        }
+
+
+        $('#upload-dropzone').dropzone({
+            url: '/upload', //'https://localhost:44311/api/Documents/upload',
+            method: 'POST',
+            parallelUploads: 10,
+            maxFilesize: 50, // MB
+            uploadMultiple: true,
+            maxFiles: 10,
+            success: function (file, response) {
+                file.previewElement.classList.add('dz-success');
+                var $message = $('#upload-message');
+                $message.text("Files uploaded successfully.");
+                $message.attr('style', 'display:block;');
+            },
+            error: function (file, response) {
+                file.previewElement.classList.add('dz-error');
+                var $message = $('#upload-message');
+                $message.text("Files uploaded successfully.");
+                $message.removeClass('alert-success');
+                $message.addClass('alert-warning');
+                $message.attr('style', 'display:block;');
+            }
+        });
+
+        $('#upload-dropzone').addClass('dropzone');
+    });
+</script>
+
