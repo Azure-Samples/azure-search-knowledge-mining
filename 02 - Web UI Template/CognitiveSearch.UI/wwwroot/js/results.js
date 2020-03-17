@@ -212,10 +212,18 @@ function UpdateResults(data) {
 
         var name;
         var title;
-        var content = (result.highlights
-                            ? result.highlights.content[0]
-                            : document.content?.substring(0, 400))
-                            || "";
+        var content;
+
+        if (result.highlights) {
+            if (result.highlights?.merged_content) {
+                content = result.highlights?.merged_content[0];
+            } else if (result.highlights?.content) {
+                content = result.highlights?.content[0];
+            }
+        } else {
+            content = "";
+        }
+
         var icon = " ms-Icon--Page";
         var id = document[data.idField]; 
         var tags = GetTagsHTML(document);
