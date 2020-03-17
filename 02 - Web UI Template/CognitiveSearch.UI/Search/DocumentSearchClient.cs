@@ -110,8 +110,8 @@ namespace CognitiveSearch.UI
                 Select = selectFilter,
                 Facets = Model.Facets.Select(f => f.Name).ToList(),
                 HighlightFields = Model.SearchableFields,
-                HighlightPreTag = "<mark>",
-                HighlightPostTag = "</mark>"
+                HighlightPreTag = "<b>",
+                HighlightPostTag = "</b>"
             };
 
             string filter = null;

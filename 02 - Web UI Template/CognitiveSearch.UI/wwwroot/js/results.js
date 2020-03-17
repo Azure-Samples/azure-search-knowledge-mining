@@ -86,10 +86,11 @@ function UpdateResults(data) {
             }
 
             var resultContent = "";
+            var imageContent = "";
 
             if (pathLower.includes(".jpg") || pathLower.includes(".png")) {
                 icon = "ms-Icon--FileImage";
-                resultContent = `<img class="img-result" style='max-width:100%;' src="${path}"/>`;
+                imageContent = `<img class="img-result" style='max-width:100%;' src="${path}"/>`;
             }
             else if (pathLower.includes(".mp3")) {
                 icon = "ms-Icon--MusicInCollection";
@@ -120,9 +121,10 @@ function UpdateResults(data) {
 
             resultsHtml += `<div id="resultdiv${i}" class="${classList}" onclick="ShowDocument('${id}');">
                                     <div class="search-result">
+                                        ${imageContent}
                                         <div class="results-icon col-md-1">
                                             <div class="ms-CommandButton-icon">
-                                                <i class="html-icon ms-Icon ${icon}"></i>
+                                                <i class="html-icon ms-Icon ${icon}" style="font-size: 26px;"></i>
                                             </div>
                                         </div>
                                         <div class="results-body col-md-11">

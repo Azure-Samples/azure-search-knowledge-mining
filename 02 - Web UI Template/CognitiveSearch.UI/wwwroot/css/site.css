@@ -243,7 +243,9 @@ h1, h2, h3, h4, h5 {
 }
 
 .img-result {
-    margin: 20px auto;
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
     display: block;
 }
 
@@ -427,10 +429,6 @@ pre {
     height: 40px;
     margin-top: 10px;
     line-height: 1.1;
-}
-
-i.ms-Icon {
-    font-size: 26px;
 }
 
 .results-type {
@@ -660,10 +658,4 @@ body {
     background-color: lightgray;
     border: 1px dotted black;
     margin-bottom: 10px;
-}
-
-mark {
-    padding: 0px !important;
-    color: #000 !important;
-    background: #ff0 !important;
 }
