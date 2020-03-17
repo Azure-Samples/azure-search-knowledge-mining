@@ -167,8 +167,6 @@ audio {
 
 #maps-viewer {
     height: 100%;
-    overflow-y: scroll;
-    margin: 10px;
     border: 1px solid #ccc;
 }
 
@@ -658,4 +656,17 @@ body {
     background-color: lightgray;
     border: 1px dotted black;
     margin-bottom: 10px;
+}
+/* Map Styles */
+/* CSS styles used by custom popup template */
+.customInfobox {
+    max-width: 480px;
+    padding: 10px;
+    font-size: 12px;
+}
+
+.customInfobox .name {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
 }
