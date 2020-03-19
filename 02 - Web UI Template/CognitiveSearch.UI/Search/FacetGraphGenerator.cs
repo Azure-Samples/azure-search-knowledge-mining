@@ -16,6 +16,7 @@ namespace CognitiveSearch.UI
         }
         public int Index { get; set; }
         public int ColorId { get; set; }
+        public int Age { get; set; }
     }
 
     public class FacetGraphGenerator
@@ -31,17 +32,17 @@ namespace CognitiveSearch.UI
         {
             // Calculate nodes for 3 levels
             JObject dataset = new JObject();
-            int MaxEdges = 50;
+            int MaxEdges = 10;
             int MaxLevels = 3;
-            int CurrentLevel = 1;
             int CurrentNodes = 0;
+            int originalDistance = 100;
 
             List<FDGraphEdges> FDEdgeList = new List<FDGraphEdges>();
             // Create a node map that will map a facet to a node - nodemap[0] always equals the q term
 
-            Dictionary<string, NodeInfo> NodeMap = new Dictionary<string, NodeInfo>();
+            var NodeMap = new Dictionary<string, NodeInfo>();
             
-            NodeMap[q] = new NodeInfo(CurrentNodes, 0);
+            NodeMap[q] = new NodeInfo(CurrentNodes, 0) { Age = originalDistance };
 
             // If blank search, assume they want to search everything
             if (string.IsNullOrWhiteSpace(q))
@@ -49,46 +50,58 @@ namespace CognitiveSearch.UI
                 q = "*";
             }
 
+            List<string> currentLevelTerms = new List<string>();
+
             List<string> NextLevelTerms = new List<string>();
             NextLevelTerms.Add(q);
 
-            // Iterate through the nodes up to 3 levels deep to build the nodes or when I hit max number of nodes
-            while ((NextLevelTerms.Count() > 0) && (CurrentLevel <= MaxLevels) && (FDEdgeList.Count() < MaxEdges))
+            // Iterate through the nodes up to MaxLevels deep to build the nodes or when I hit max number of nodes
+            for (var CurrentLevel = 0; CurrentLevel <= MaxLevels && MaxEdges > 0; ++CurrentLevel, MaxEdges /= 2)
             {
-                q = NextLevelTerms.First();
-                NextLevelTerms.Remove(q);
-                if (NextLevelTerms.Count() == 0)
+                currentLevelTerms = NextLevelTerms.ToList();
+                NextLevelTerms.Clear();
+                var levelFacetCount = 0;
+
+                foreach (var k in NodeMap)
+                    k.Value.Age *= 2;
+
+                foreach (var t in currentLevelTerms)
                 {
-                    CurrentLevel++;
-                }
-                DocumentSearchResult<Document> response = _searchHelper.GetFacets(q, facetNames, 10);
-                if (response != null)
-                {
-                    int facetColor = 0;
-                    
-                    foreach (var facetName in facetNames)
+                    if (levelFacetCount >= MaxEdges)
+                        break;
+
+                    DocumentSearchResult<Document> response = _searchHelper.GetFacets(t, facetNames, 10);
+                    if (response != null)
                     {
-                        IList<FacetResult> facetVals = (response.Facets)[facetName];
-                        facetColor++;
+                        int facetColor = 0;
 
-                        foreach (FacetResult facet in facetVals)
+                        foreach (var facetName in facetNames)
                         {
-                            NodeInfo nodeInfo = new NodeInfo(-1,-1);
-                            if (NodeMap.TryGetValue(facet.Value.ToString(), out nodeInfo) == false)
-                            {
-                                // This is a new node
-                                CurrentNodes++;
-                                int node = CurrentNodes;
-                                NodeMap[facet.Value.ToString()] =  new NodeInfo(node, facetColor);
-                            }
+                            var facetVals = (response.Facets)[facetName];
+                            facetColor++;
 
-                            // Add this facet to the fd list
-                            if (NodeMap[q] != NodeMap[facet.Value.ToString()])
+                            var facetIds = new List<int>();
+                            foreach (FacetResult facet in facetVals)
                             {
-                                FDEdgeList.Add(new FDGraphEdges { source = NodeMap[q].Index, target = NodeMap[facet.Value.ToString()].Index });
-                                if (CurrentLevel < MaxLevels)
+                                var facetValue = facet.Value.ToString();
+                                NodeInfo nodeInfo = new NodeInfo(-1, -1);
+                                if (NodeMap.TryGetValue(facetValue, out nodeInfo) == false)
                                 {
-                                    NextLevelTerms.Add(facet.Value.ToString());
+                                    // This is a new node
+                                    ++levelFacetCount;
+                                    NodeMap[facetValue] = new NodeInfo(++CurrentNodes, facetColor) { Age = originalDistance };
+
+                                    if (CurrentLevel < MaxLevels)
+                                    {
+                                        NextLevelTerms.Add(facetValue);
+                                    }
+                                }
+
+                                // Add this facet to the fd list
+                                if (NodeMap[t] != NodeMap[facetValue])
+                                {
+                                    var newNode = NodeMap[facetValue];
+                                    FDEdgeList.Add(new FDGraphEdges { source = NodeMap[t].Index, target = newNode.Index, distance = newNode.Age });
                                 }
                             }
                         }
@@ -109,7 +122,7 @@ namespace CognitiveSearch.UI
             JArray edges = new JArray();
             foreach (FDGraphEdges entry in FDEdgeList)
             {
-                edges.Add(JObject.Parse("{source: " + entry.source + ", target: " + entry.target + "}"));
+                edges.Add(JObject.Parse("{source: " + entry.source + ", target: " + entry.target + ", distance: " + entry.distance + "}"));
             }
 
             dataset.Add(new JProperty("links", edges));
@@ -122,6 +135,7 @@ namespace CognitiveSearch.UI
         {
             public int source { get; set; }
             public int target { get; set; }
+            public int distance { get; set; }
         }
     }
 }

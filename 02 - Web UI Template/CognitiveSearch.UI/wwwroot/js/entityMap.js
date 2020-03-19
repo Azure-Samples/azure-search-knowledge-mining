@@ -3,10 +3,8 @@
 
 // Graph Configuration
 var nodeRadius = 15;
-var nodeSeparationFactor = 1;
-var nodeChargeStrength = -100;
-var nodeChargeAccuracy = 0.4;
-var nodeDistance = 100;
+var nodeChargeStrength = -300;
+var nodeChargeAccuracy = 0.8;
 
 function SearchEntities() {
     if (currentPage > 1) {
@@ -84,6 +82,7 @@ function Unload() {
     svg.selectAll(".edgepath").remove();
     svg.selectAll(".node").remove();
     svg.selectAll(".edgelabel").remove();
+    svg.selectAll(".text").remove();
 }
 
 var colors = d3.scaleOrdinal(d3.schemeCategory10);
@@ -92,32 +91,46 @@ var svg = d3.select("svg"),
     height = +svg.attr("height"),
     node,
     link;
+    
 
-svg.append('defs').append('marker')
-    .attrs({
-        'id': 'arrowhead',
-        'viewBox': '-0 -5 10 10',
-        'refX': 13,
-        'refY': 0,
-        'orient': 'auto',
-        'markerWidth': 10,
-        'markerHeight': 10,
-        'xoverflow': 'visible'
-    })
-    .append('svg:path')
-    .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
-    .attr('fill', '#999')
-    .style('stroke', 'none');
+function nodeBounds() {
+    var nodes;
 
-var simulation = d3.forceSimulation()
-    .force("link", d3.forceLink()
-        .id(function (d) { return d.id; })
-        .distance(300).strength(.5))
-    .force("charge", d3.forceManyBody()
-        .strength(nodeChargeStrength)
-        .theta(nodeChargeAccuracy))
-    .force("center", d3.forceCenter(width / 2, height / 2))
-    .force("collide", d3.forceCollide(nodeRadius));
+    function force() {
+        var i,
+            n = nodes.length,
+            node;
+
+        for (i = 0; i < n; ++i) {
+            node = nodes[i];
+            var clampedx = Math.max(nodeRadius, Math.min(width - nodeRadius, node.x));
+            var clampedy = Math.max(nodeRadius, Math.min(height - nodeRadius, node.y));
+            node.x = clampedx;
+            node.y = clampedy;
+        }
+    }
+
+    force.initialize = function (_) {
+        nodes = _;
+    };
+
+    return force;
+};
+
+function setupSimulation(simulation) {
+    return simulation
+        .force("link", d3.forceLink()
+            .id(function (d) { return d.id; })
+            .distance(function (d) { return d.distance; })
+            .strength(.5))
+        .force("charge", d3.forceManyBody()
+            .strength(nodeChargeStrength)
+            .theta(nodeChargeAccuracy))
+        .force("center", nodeBounds())
+        .force("collide", d3.forceCollide(nodeRadius * 2))
+        ;
+}
+var simulation = setupSimulation(d3.forceSimulation());
 
 
 function update(links, nodes) {
@@ -126,12 +139,12 @@ function update(links, nodes) {
     var svg = d3.select("svg"),
         width = +svg.attr("width"),
         height = +svg.attr("height");
-
+        
     svg.append('defs').append('marker')
         .attrs({
             'id': 'arrowhead',
             'viewBox': '-0 -5 10 10',
-            'refX': 13,
+            'refX': 10 + nodeRadius,
             'refY': 0,
             'orient': 'auto',
             'markerWidth': 10,
@@ -143,25 +156,13 @@ function update(links, nodes) {
         .attr('fill', '#999')
         .style('stroke', 'none');
 
-    simulation = d3.forceSimulation()
-        .force("link", d3.forceLink()
-            .id(function (d) { return d.id; })
-            .distance(300).strength(.5))
-        .force("charge", d3.forceManyBody()
-            .strength(nodeChargeStrength)
-            .theta(nodeChargeAccuracy))
-        .force("center", d3.forceCenter(width / 2, height / 2))
-        .force("collide", d3.forceCollide(nodeRadius));
-
+    simulation = setupSimulation(d3.forceSimulation());
 
     link = svg.selectAll(".link")
         .data(links)
         .enter()
         .append("line")
         .attr("class", "link");
-    //.attr('marker-end', 'url(#arrowhead)')
-    link.append("title")
-        .text(function (d) { return d.type; });
 
     node = svg.selectAll(".node")
         .data(nodes)
@@ -171,27 +172,38 @@ function update(links, nodes) {
         .call(d3.drag()
             .on("start", dragstarted)
             .on("drag", dragged)
-            //.on("end", dragended)
+            .on("end", dragended)
         );
+
     node.append("circle")
         .attr("r", nodeRadius)
-        .style("fill", function (d, i)
-        {
+        .style("fill", function (d, i) {
             return colors(d.color);
-        }
-        );
+        })
+        .on("click", function (d) {
+            $("#e").val(d.name);
+            SearchEntities();
+        })
+        .append("svg:title")
+        .text(function (d) {
+            // Determine an initial position
+            if (d.id == 0) {
+                // Root element is on the left side of the screen
+                d.fx = width * 0.15;
+                d.fy = height * 0.5;
+            }
+            else {
+                // Arrange other nodes along the right side of the screen. 
+                //  start them some varyin offset so the simulation is stable on start.
+                d.x = width * 0.8;
+                d.y = height * (d.id /100);
+            }
+            return d.name;
+        });
+
     node.append("title")
         .text(d => d.id);
 
-    // Text Attributes for nodes
-    node.append("text")
-        .attr("dx", 15)
-        .attr("dy", ".35em")
-        .attr("font-family", "sans-serif")
-        .attr("font-size", "20px")
-        .attr("font-weight", "bold")
-        .attr("fill", "black")
-        .text(d => d.name);
 
     edgepaths = svg.selectAll(".edgepath")
         .data(links)
@@ -201,9 +213,24 @@ function update(links, nodes) {
             'class': 'edgepath',
             'fill-opacity': 0,
             'stroke-opacity': 0,
-            'id': function (d, i) { return 'edgepath' + i; }
+            'marker-end': 'url(#arrowhead)'
         })
         .style("pointer-events", "none");
+
+    // Render text in a second pass so it's on top of all the gfx.
+    texts = svg.selectAll(".text")
+        .data(nodes)
+        .enter()
+        .append("g")
+            .attr("class", "text")
+        .append("text")
+            .attr("dx", 15)
+            .attr("dy", ".35em")
+            .attr("font-family", "sans-serif")
+            .attr("font-size", "20px")
+            .attr("font-weight", "bold")
+            .attr("fill", "black")
+            .text(d => d.name);
 
 
     simulation
@@ -213,10 +240,15 @@ function update(links, nodes) {
         .links(links);
     document.getElementById("entity-loading-indicator").style.display = "none";
 
+    // Step the simulation to let it settle
+    for (var i = 0; i < 30; ++i)
+        simulation.tick();
 }
 
 function ticked() {
     node
+        .attr("transform", function (d) { return "translate(" + d.x + ", " + d.y + ")"; });
+    texts
         .attr("transform", function (d) { return "translate(" + d.x + ", " + d.y + ")"; });
 
     link
@@ -246,8 +278,12 @@ function dragged(d) {
     d.fy = Math.max(nodeRadius, Math.min(height - nodeRadius, d3.event.y));
 }
 
-//function dragended(d) {
-//    if (!d3.event.active) simulation.alphaTarget(0);
-//    d.fx = undefined;
-//    d.fy = undefined;
-//}
+function dragended(d) {
+    //if (!d3.event.active) simulation.alphaTarget(0);
+
+    //// Dont unlock the node if it's the root
+    //if (d.id != 0) {
+    //    d.fx = undefined;
+    //    d.fy = undefined;
+    //}
+}
