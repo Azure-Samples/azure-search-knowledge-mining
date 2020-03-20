@@ -31,10 +31,10 @@ namespace CognitiveSearch.UI
 
         public JObject GetFacetGraphNodes(string q, List<string> facetNames)
         {
-            // Calculate nodes for 3 levels
+            // Calculate nodes for N levels
             JObject dataset = new JObject();
             int MaxEdges = 10;
-            int MaxLevels = 3;
+            int MaxLevels = 4;
             int CurrentNodes = 0;
             int originalDistance = 100;
 
@@ -61,7 +61,7 @@ namespace CognitiveSearch.UI
             NextLevelTerms.Add(q);
 
             // Iterate through the nodes up to MaxLevels deep to build the nodes or when I hit max number of nodes
-            for (var CurrentLevel = 0; CurrentLevel <= MaxLevels && MaxEdges > 0; ++CurrentLevel, MaxEdges /= 2)
+            for (var CurrentLevel = 0; CurrentLevel < MaxLevels && MaxEdges > 0; ++CurrentLevel, MaxEdges /= 2)
             {
                 currentLevelTerms = NextLevelTerms.ToList();
                 NextLevelTerms.Clear();
