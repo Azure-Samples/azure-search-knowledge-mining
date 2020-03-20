@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 // Graph Configuration
-var nodeRadius = 15;
+var nodeRadius = 30;
 var nodeChargeStrength = -300;
 var nodeChargeAccuracy = 0.8;
 
@@ -11,6 +11,62 @@ $("#e").keyup(function (e) {
         SearchEntities();
     }
 });
+
+// adapted from here: https://stackoverflow.com/a/31675514
+function applySaturationToHexColor(hex, saturationPercent) {
+    if (!/^#([0-9a-f]{6})$/i.test(hex)) {
+        throw ('Unexpected color format');
+    }
+
+    var saturationFloat = Math.max(0, Math.min(saturationPercent, 1)),
+        rgbIntensityFloat = [
+            parseInt(hex.substr(1, 2), 16) / 255,
+            parseInt(hex.substr(3, 2), 16) / 255,
+            parseInt(hex.substr(5, 2), 16) / 255
+        ];
+
+    var rgbIntensityFloatSorted = rgbIntensityFloat.slice(0).sort(function (a, b) { return a - b; }),
+        maxIntensityFloat = rgbIntensityFloatSorted[2],
+        mediumIntensityFloat = rgbIntensityFloatSorted[1],
+        minIntensityFloat = rgbIntensityFloatSorted[0];
+
+    if (maxIntensityFloat == minIntensityFloat) {
+        // All colors have same intensity, which means 
+        // the original color is gray, so we can't change saturation.
+        return hex;
+    }
+
+    // New color max intensity wont change. Lets find medium and weak intensities.
+    var newMediumIntensityFloat,
+        newMinIntensityFloat = maxIntensityFloat * (1 - saturationFloat);
+
+    if (mediumIntensityFloat == minIntensityFloat) {
+        // Weak colors have equal intensity.
+        newMediumIntensityFloat = newMinIntensityFloat;
+    }
+    else {
+        // Calculate medium intensity with respect to original intensity proportion.
+        var intensityProportion = (maxIntensityFloat - mediumIntensityFloat) / (mediumIntensityFloat - minIntensityFloat);
+        newMediumIntensityFloat = (intensityProportion * newMinIntensityFloat + maxIntensityFloat) / (intensityProportion + 1);
+    }
+
+    var newRgbIntensityFloat = [],
+        newRgbIntensityFloatSorted = [newMinIntensityFloat, newMediumIntensityFloat, maxIntensityFloat];
+
+    // We've found new intensities, but we have then sorted from min to max.
+    // Now we have to restore original order.
+    rgbIntensityFloat.forEach(function (originalRgb) {
+        var rgbSortedIndex = rgbIntensityFloatSorted.indexOf(originalRgb);
+        newRgbIntensityFloat.push(newRgbIntensityFloatSorted[rgbSortedIndex]);
+    });
+
+    var floatToHex = function (val) { return ('0' + Math.round(val * 255).toString(16)).substr(-2); },
+        rgb2hex = function (rgb) { return '#' + floatToHex(rgb[0]) + floatToHex(rgb[1]) + floatToHex(rgb[2]); };
+
+    var newHex = rgb2hex(newRgbIntensityFloat);
+
+    return newHex;
+}
 
 function SearchEntities() {
     if (currentPage > 1) {
@@ -99,7 +155,6 @@ var svg = d3.select("svg"),
     height = +svg.attr("height"),
     node,
     link;
-    
 
 function nodeBounds() {
     var nodes;
@@ -135,7 +190,7 @@ function setupSimulation(simulation) {
             .strength(nodeChargeStrength)
             .theta(nodeChargeAccuracy))
         .force("center", nodeBounds())
-        .force("collide", d3.forceCollide(nodeRadius * 2))
+        .force("collide", d3.forceCollide(nodeRadius))
         ;
 }
 var simulation = setupSimulation(d3.forceSimulation());
@@ -152,7 +207,7 @@ function update(links, nodes) {
         .attrs({
             'id': 'arrowhead',
             'viewBox': '-0 -5 10 10',
-            'refX': 10 + nodeRadius,
+            'refX': 10,
             'refY': 0,
             'orient': 'auto',
             'markerWidth': 10,
@@ -184,16 +239,7 @@ function update(links, nodes) {
         );
 
     node.append("circle")
-        .attr("r", nodeRadius)
-        .style("fill", function (d, i) {
-            return colors(d.color);
-        })
-        .on("click", function (d) {
-            $("#e").val(d.name);
-            SearchEntities();
-        })
-        .append("svg:title")
-        .text(function (d) {
+        .attr("r", function (d) {
             // Determine an initial position
             if (d.id == 0) {
                 // Root element is on the left side of the screen
@@ -204,13 +250,27 @@ function update(links, nodes) {
                 // Arrange other nodes along the right side of the screen. 
                 //  start them some varyin offset so the simulation is stable on start.
                 d.x = width * 0.8;
-                d.y = height * (d.id /100);
+                d.y = height * (d.id / 100);
             }
+
+            d.radius = nodeRadius / (d.layer + 1);
+
+            return d.radius;
+        })
+        .style("fill", function (d) {
+            return applySaturationToHexColor(colors(d.color), 1.0 - d.layer * 0.2);
+        })
+        .on("click", function (d) {
+            $("#e").val(d.name);
+            SearchEntities();
+        })
+        .append("svg:title")
+        .text(function (d) {
             return d.name;
         });
 
-    node.append("title")
-        .text(d => d.id);
+    //node.append("title")
+    //    .text(d => d.id);
 
 
     edgepaths = svg.selectAll(".edgepath")
@@ -237,7 +297,9 @@ function update(links, nodes) {
             .attr("font-family", "sans-serif")
             .attr("font-size", "20px")
             .attr("font-weight", "bold")
-            .attr("fill", "black")
+            .attr("fill", function (d) {
+                return d.layer > 1 ? "#808080" : "#000000";
+            })
             .text(d => d.name);
 
 
@@ -266,7 +328,16 @@ function ticked() {
         .attr("y2", function (d) { return d.target.y; });
 
     edgepaths.attr('d', function (d) {
-        return 'M ' + d.source.x + ' ' + d.source.y + ' L ' + d.target.x + ' ' + d.target.y;
+        var tx = d.target.x;
+        var ty = d.target.y;
+        var sx = d.source.x;
+        var sy = d.source.y;
+        var stx = sx - tx;
+        var sty = sy - ty;
+        var len = Math.sqrt(stx * stx + sty * sty);
+        var ox = stx / len * d.target.radius;
+        var oy = sty / len * d.target.radius;
+        return 'M ' + sx + ' ' + sy + ' L ' + (tx + ox) + ' ' + (ty + oy);
     });
 
 }
