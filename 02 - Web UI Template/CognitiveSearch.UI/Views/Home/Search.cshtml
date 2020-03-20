@@ -12,7 +12,7 @@
     aspViewModel = @Html.Raw(Json.Serialize(Model));
     q = @Html.Raw(Json.Serialize(Model.query));
     searchId = @Html.Raw(Json.Serialize((Model.searchId)));
-    applicationInstrumentationKey = @Html.Raw(Json.Serialize(Model.applicationInstrumentationKey));
+	applicationInstrumentationKey = @Html.Raw(Json.Serialize(Model.applicationInstrumentationKey));
 </script>
 <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
 
@@ -101,6 +101,7 @@
                 <span class="input-group-btn">
                     <button class="btn btn-default" onclick="SearchEntities();"><span class="ms-Icon ms-Icon--Search"></span></button>
                 </span>
+
                 <div style="display:inline;position: relative;top:-10px;left:10px;">
                     <span id="entity-loading-indicator" class="ms-Spinner ms-Spinner--large" style="display:none;"></span>
                 </div>
@@ -108,6 +109,25 @@
 
             <br />
             <button style="width:100%" class="btn btn-default" onclick="EntityMapClick()">Return to Search Results</button>
+        </div>
+        <div class="col-md-8"></div>
+        <div class="col-md-2">
+            <button class="btn btn-default dropdown-toggle" type="button"
+                    id="dropdownMenu1" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="true">
+                <span class="caret"></span>
+            </button>
+
+            <ul class="dropdown-menu checkbox-menu allow-focus dropdown-graphfields">
+                @foreach (var f in Model.searchableFields)
+                {
+                    <li>
+                        <label>
+                            <input value="@f" type="checkbox"> @f
+                        </label>
+                    </li>
+                }
+            </ul>
         </div>
         <svg width="1430" height="600"></svg>
     </div>

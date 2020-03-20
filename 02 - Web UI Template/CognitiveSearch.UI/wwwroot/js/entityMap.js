@@ -5,11 +5,28 @@
 var nodeRadius = 30;
 var nodeChargeStrength = -300;
 var nodeChargeAccuracy = 0.8;
+var nodeDesaturation = 0.1;
+
+var selectedGraphFields = {};
 
 $("#e").keyup(function (e) {
     if (e.keyCode === 13) {
         SearchEntities();
     }
+});
+
+$(".checkbox-menu").on("change", "input[type='checkbox']", function () {
+    $(this).closest("li").toggleClass("active", this.checked);
+    if (this.checked)
+        selectedGraphFields[this.value] = true;
+    else
+        delete selectedGraphFields[this.value];
+
+    SearchEntities();
+});
+
+$(document).on('click', '.allow-focus', function (e) {
+    e.stopPropagation();
 });
 
 // adapted from here: https://stackoverflow.com/a/31675514
@@ -103,7 +120,10 @@ function GetGraph(q) {
     $.ajax({
         type: "POST",
         url: "/Home/GetGraphData",
-        data: { query: q },
+        data: {
+            query: q,
+            fields: Object.keys(selectedGraphFields)
+        },
         success: function (data) {
             // Do something interesting here.
             update(data.links, data.nodes);
@@ -258,7 +278,7 @@ function update(links, nodes) {
             return d.radius;
         })
         .style("fill", function (d) {
-            return applySaturationToHexColor(colors(d.color), 1.0 - d.layer * 0.2);
+            return applySaturationToHexColor(colors(d.color), 1.0 - d.layer * nodeDesaturation);
         })
         .on("click", function (d) {
             $("#e").val(d.name);
@@ -268,9 +288,6 @@ function update(links, nodes) {
         .text(function (d) {
             return d.name;
         });
-
-    //node.append("title")
-    //    .text(d => d.id);
 
 
     edgepaths = svg.selectAll(".edgepath")
@@ -328,6 +345,7 @@ function ticked() {
         .attr("y2", function (d) { return d.target.y; });
 
     edgepaths.attr('d', function (d) {
+        // Set the end of the path back by the target radius so it just touches the edge
         var tx = d.target.x;
         var ty = d.target.y;
         var sx = d.source.x;
@@ -337,6 +355,8 @@ function ticked() {
         var len = Math.sqrt(stx * stx + sty * sty);
         var ox = stx / len * d.target.radius;
         var oy = sty / len * d.target.radius;
+
+        // create a path from source to target, less the target radius
         return 'M ' + sx + ' ' + sy + ' L ' + (tx + ox) + ' ' + (ty + oy);
     });
 
