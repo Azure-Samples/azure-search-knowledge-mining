@@ -6,6 +6,12 @@ var nodeRadius = 15;
 var nodeChargeStrength = -300;
 var nodeChargeAccuracy = 0.8;
 
+$("#e").keyup(function (e) {
+    if (e.keyCode === 13) {
+        SearchEntities();
+    }
+});
+
 function SearchEntities() {
     if (currentPage > 1) {
         if (q !== $("#e").val()) {
@@ -13,6 +19,8 @@ function SearchEntities() {
         }
     }
     q = $("#e").val();
+    $("#q").val(q);
+    UpdateLocationBar();
 
     Unload();
     document.getElementById("entity-loading-indicator").style.display = "block";

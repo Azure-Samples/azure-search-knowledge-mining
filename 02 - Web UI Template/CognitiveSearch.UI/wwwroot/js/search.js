@@ -43,6 +43,7 @@ function Search() {
         }
     }
     q = $("#q").val();
+    $("#e").val(q);
 
 
     //Pass the polygon filter to the query: mapPolygon.data.geometry.coordinates[0][1]
@@ -80,7 +81,8 @@ function Update(viewModel) {
 
     // Update UI controls to match view model incase we came from a direct link
     selectedFacets = viewModel.selectedFacets;
-    $("#q").val(viewModel.query);
+    q = viewModel.query;
+    $("#q").val(q);
     currentPage = viewModel.currentPage;
 
     var data = viewModel.documentResult;
@@ -111,14 +113,14 @@ function Update(viewModel) {
 
     InitLayout();
 
-    UpdateLocationBar(viewModel);
+    UpdateLocationBar();
 
     $('html, body').animate({ scrollTop: 0 }, 'fast');
 
     FabricInit();
 }
 
-function UpdateLocationBar(viewModel) {
+function UpdateLocationBar() {
     // Try to update the location to match the search.
     if (history.pushState) {
         // Get the existing url
@@ -140,10 +142,10 @@ function UpdateLocationBar(viewModel) {
             searchParams.delete("facets");
 
         // Add other parameters
-        searchParams.set("q", viewModel.query);
+        searchParams.set("q", q);
 
-        if (viewModel.currentPage > 1)
-            searchParams.set("page", viewModel.currentPage);
+        if (currentPage > 1)
+            searchParams.set("page", currentPage);
         else
             searchParams.delete("page");
 
