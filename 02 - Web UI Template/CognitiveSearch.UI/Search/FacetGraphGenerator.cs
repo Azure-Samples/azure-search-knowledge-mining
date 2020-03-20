@@ -68,7 +68,7 @@ namespace CognitiveSearch.UI
                 var levelFacetCount = 0;
 
                 foreach (var k in NodeMap)
-                    k.Value.Distance *= 2;
+                    k.Value.Distance += originalDistance;
 
                 foreach (var t in currentLevelTerms)
                 {
@@ -85,7 +85,6 @@ namespace CognitiveSearch.UI
                             var facetVals = (response.Facets)[facetName];
                             facetColor++;
 
-                            var facetIds = new List<int>();
                             foreach (FacetResult facet in facetVals)
                             {
                                 var facetValue = facet.Value.ToString();
