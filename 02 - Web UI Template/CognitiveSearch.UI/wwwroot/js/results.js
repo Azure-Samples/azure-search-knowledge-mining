@@ -288,6 +288,28 @@ function UpdateResults(data) {
                                     </div>
                                 </div>`;
             }
+
+            else if (result["video_indexer_url"] !== null) {
+                icon = " ms-Icon--VideoSearch";
+
+
+                resultsHtml += `<div class="${classList}" onclick="ShowDocument('${id}', '${q}');">
+                                    <div class="search-result">
+                                       <div class="results-icon col-md-1">
+                                            <div class="ms-CommandButton-icon">
+                                                <i class="html-icon ms-Icon ${icon}"></i>
+                                            </div>
+                                        </div>
+                                        <div class="results-body col-md-11">
+                                            <h4>${title}</h4>
+                                            <h5>${name}</h5>
+                                            <div style="margin-top:10px;">${tags}</div>
+                                        </div>
+                                    </div>
+                                </div>`;
+
+
+            }
             else {
                 var icon = " ms-Icon--Page";
 

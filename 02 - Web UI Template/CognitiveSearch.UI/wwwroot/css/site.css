@@ -615,3 +615,8 @@ body {
     font-weight: bold;
     margin-bottom: 5px;
 }
+
+iframe {
+    display: inline-block;
+    vertical-align: top;
+}

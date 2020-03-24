@@ -36,13 +36,13 @@ namespace CognitiveSearch.UI
 
         public static string errorMessage;
 
-        public DocumentSearchClient(IConfiguration configuration)
+        public DocumentSearchClient(IConfiguration configuration, bool videoIndexerTimeRefs = false)
         {
             try
             {
                 searchServiceName = configuration.GetSection("SearchServiceName")?.Value;
                 apiKey = configuration.GetSection("SearchApiKey")?.Value;
-                IndexName = configuration.GetSection("SearchIndexName")?.Value;
+                IndexName = videoIndexerTimeRefs ? configuration.GetSection("SearchIndexNameVideoIndexerTimeRef")?.Value : configuration.GetSection("SearchIndexName")?.Value;
                 idField = configuration.GetSection("KeyField")?.Value;
                 telemetryClient.InstrumentationKey = configuration.GetSection("InstrumentationKey")?.Value;
 
@@ -62,11 +62,11 @@ namespace CognitiveSearch.UI
             }
         }
 
-        public DocumentSearchResult<Document> Search(string searchText, SearchFacet[] searchFacets = null, string[] selectFilter = null, int currentPage = 1, string polygonString = null)
+        public DocumentSearchResult<Document> Search(string searchText, SearchFacet[] searchFacets = null, string[] selectFilter = null, int currentPage = 1, string polygonString = null, string filtersString = null, List<string> orderBy = null)
         {
             try
             {
-                SearchParameters sp = GenerateSearchParameters(searchFacets, selectFilter, currentPage, polygonString);
+                SearchParameters sp = GenerateSearchParameters(searchFacets, selectFilter, currentPage, polygonString, filtersString, orderBy);
 
                 if (!string.IsNullOrEmpty(telemetryClient.InstrumentationKey))
                 {
@@ -83,7 +83,7 @@ namespace CognitiveSearch.UI
             return null;
         }
 
-        public SearchParameters GenerateSearchParameters(SearchFacet[] searchFacets = null, string[] selectFilter = null, int currentPage = 1, string polygonString = null)
+        public SearchParameters GenerateSearchParameters(SearchFacet[] searchFacets = null, string[] selectFilter = null, int currentPage = 1, string polygonString = null, string filtersString = null, List<string> orderBy = null)
         {
             // For more information on search parameters visit: 
             // https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.search.models.searchparameters?view=azure-dotnet
@@ -149,6 +149,20 @@ namespace CognitiveSearch.UI
                     sp.Filter = geoQuery; 
                 }
             }
+
+            if (filtersString != null && filtersString.Length > 0)
+            {
+                if (sp.Filter != null && sp.Filter.Length > 0)
+                {
+                    sp.Filter += " and " + filtersString;
+                }
+                else
+                {
+                    sp.Filter = filtersString;
+                }
+            }
+
+            sp.OrderBy = orderBy;
 
             return sp;
         }

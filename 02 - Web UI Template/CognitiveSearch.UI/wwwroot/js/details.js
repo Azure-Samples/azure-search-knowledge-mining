@@ -2,10 +2,11 @@
 // Licensed under the MIT License.
 
 // Details
-function ShowDocument(id) {
+function ShowDocument(id, q) {
     $.post('/home/getdocumentbyid',
         {
-            id: id
+            id: id,
+            query: q
         },
         function (data) {
             result = data.result;
@@ -19,12 +20,7 @@ function ShowDocument(id) {
 
             $('#result-id').val(id);
 
-            var path;
-
-            path = data.decodedPath;
-            path = path + data.token;
-
-            var fileContainerHTML = GetFileHTML(path);
+            var fileContainerHTML = GetFileHTML(data);
 
             // Transcript Tab Content
             var transcriptContainerHTML = GetTranscriptHTML(result);
@@ -117,7 +113,7 @@ function AuthenticateMap(result) {
 
             var latlon = result.geoLocation;
 
-            if (latlon !== null) {
+            if (latlon !== null && latlon !== undefined) {
 
                 if (latlon.isEmpty === false) {
 
@@ -175,9 +171,34 @@ function GetMatches(string, regex, index) {
     return matches;
 }
 
-function GetFileHTML(path) {
+function GetFileHTML(data) {
 
-    if (path != null) {
+    var path;
+
+    path = data.decodedPath;
+    path = path + data.token;
+
+    video_indexer_url = data.result.video_indexer_url;
+
+    if (video_indexer_url !== null) {//Implement check on metadata to identify video coming from video indexer
+        srcPlayer = video_indexer_url;
+        time_reference = data.result.time_reference ? data.result.time_reference : 0;
+        srcPlayer += '?t=' + time_reference;
+
+        srcInsights = video_indexer_url.replace("https://weu.videoindexer.ai/embed/player/", "https://weu.videoindexer.ai/embed/insights/");
+
+        //fileContainerHTML = `<iframe class="file-container" src="${src}" frameborder = "0" allowfullscreen></iframe>`;
+
+        fileContainerHTML = `<iframe class="col-md-7 col-sm-12" src="${srcPlayer}" frameborder="0" allowfullscreen style="height: 50%"></iframe>
+            <iframe class="col-md-5 col-sm-12" src="${srcInsights}" frameborder="0" allowfullscreen style="height: 100%"></iframe>
+            <script src="https://breakdown.blob.core.windows.net/public/vb.widgets.mediator.js"></script>`;
+
+        $("#details-pivot").removeClass("col-md-8");
+        $("#details-pivot").addClass("col-md-12");
+        $("#tags-panel").hide();
+    }
+
+    else if (path !== null) {
         var pathLower = path.toLowerCase();
 
         if (pathLower.includes(".pdf")) {
@@ -186,7 +207,7 @@ function GetFileHTML(path) {
                 </object>`;
         }
         else if (pathLower.includes(".txt") || pathLower.includes(".json")) {
-            var txtHtml = htmlDecode(result.content.trim());
+            var txtHtml = htmlDecode(result.content?.trim());
             fileContainerHTML = `<pre id="file-viewer-pre"> ${txtHtml} </pre>`;
         }
         else if (pathLower.includes(".las")) {
@@ -271,7 +292,7 @@ function GetTranscriptHTML(result) {
     else
     {
         // otherwise, let's try getting the content -- although it won't have any image data.
-        full_content = result.content.trim();
+        full_content = result.content?.trim();
     }
 
     if (full_content === null || full_content === "")
@@ -339,7 +360,7 @@ function GetMetadataHTML(result) {
                         value = "LAT:" + value.latitude + "<br/>" + "LON:" + value.longitude;
                     }
 
-                    if (value != "" && value != null)
+                    if (value !== "" && value !== null)
                     {
                         metadataContainerHTML += '<tr><td class="key"  style="width:50%" >' + key + '</td><td class="wrapword"  style="width:50%" >' + value + '</td></tr>';
                     }

@@ -19,6 +19,7 @@ namespace CognitiveSearch.UI.Controllers
     {
         private IConfiguration _configuration { get; set; }
         private DocumentSearchClient _docSearch { get; set; }
+        private DocumentSearchClient _timeReferenceSearch { get; set; }
         private string _idField { get; set; }
         bool _isPathBase64Encoded { get; set; }
 
@@ -33,6 +34,7 @@ namespace CognitiveSearch.UI.Controllers
         {
             _configuration = configuration;
             _docSearch = new DocumentSearchClient(configuration);
+            _timeReferenceSearch = configuration.GetSection("SearchIndexNameVideoIndexerTimeRef")?.Value != "" ? new DocumentSearchClient(configuration, true) : null;
             _idField = _configuration.GetSection("KeyField")?.Value;
             _isPathBase64Encoded = (_configuration.GetSection("IsPathBase64Encoded")?.Value == "True");
         }
@@ -196,17 +198,41 @@ namespace CognitiveSearch.UI.Controllers
             return System.Text.Encoding.Default.GetString(charArray);
         }
 
+        private static string Base64DecodeSimple(string input)
+        {
+            string base64Decoded;
+            byte[] data = System.Convert.FromBase64String(input);
+            base64Decoded = System.Text.ASCIIEncoding.ASCII.GetString(data);
+            return base64Decoded;
+        }        
+
 
         [HttpPost]
-        public IActionResult GetDocumentById(string id = "")
+        public IActionResult GetDocumentById(string id = "", string query = "")
         {
             var response = _docSearch.LookUp(id);
+
+            if (query != "")
+            {
+                string videoId = response.GetValueOrDefault("id", response.GetValueOrDefault("Id",0)).ToString();
+                string filter = "video_id eq '" + videoId + "'";
+                List<string> orderBy = new List<string>();
+                orderBy.Add("startTime asc");
+                var timeReferences = _timeReferenceSearch.Search(query,filtersString: filter, orderBy: orderBy);
+                string timeReference = timeReferences.Results[0].Document.GetValueOrDefault("startTime", 0).ToString(); ; // ContainsKey("startTime");
+                if (timeReference != "0")
+                    response.Add("time_reference", timeReference);
+            }
 
             var decodedPath = id;
 
             if (_isPathBase64Encoded)
             {
                 decodedPath = Base64Decode(id);
+                if (decodedPath == null)
+                {
+                    decodedPath = Base64DecodeSimple(id);
+                }
             }
 
             string tokenToUse = GetToken(decodedPath);
