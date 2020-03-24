@@ -71,17 +71,20 @@ function ShowDocument(id, q) {
                 $('#maps-viewer').html(mapsContainerHTML);
             }
 
+            // Set visibility for search bar in File panel
+            fileSearchBar = data.result.video_indexer_url ? false : true;
+            SearchBarVisibility(fileSearchBar);
 
-            pivotLinksHTML += '<li id="file-pivot-link" class="ms-Pivot-link is-selected" data-content="file" title="File" tabindex="1">' + fileName + '</li>';
+            pivotLinksHTML += '<li id="file-pivot-link" class="ms-Pivot-link is-selected" data-content="file" title="File" tabindex="1" onclick="SearchBarVisibility(' + fileSearchBar + ')">' + fileName + '</li>';
 
             if (transcriptContainerHTML !== null) {
-                pivotLinksHTML += '<li id="transcript-pivot-link" class="ms-Pivot-link " data-content="transcript" title="Transcript" tabindex="1">Transcript</li>';
+                pivotLinksHTML += '<li id="transcript-pivot-link" class="ms-Pivot-link " data-content="transcript" title="Transcript" tabindex="1" onclick="SearchBarVisibility(true)">Transcript</li>';
             }
 
-            pivotLinksHTML += '<li id="metadata-pivot-link" class="ms-Pivot-link" data-content="metadata" title="Metadata" tabindex="1">Metadata</li>';
+            pivotLinksHTML += '<li id="metadata-pivot-link" class="ms-Pivot-link" data-content="metadata" title="Metadata" tabindex="1" onclick="SearchBarVisibility(false)">Metadata</li>';
 
             if (result.geoLocation !== null) {
-                pivotLinksHTML += '<li id="maps-pivot-link" class="ms-Pivot-link" data-content="maps" title="Maps" tabindex="1">Maps</li>';
+                pivotLinksHTML += '<li id="maps-pivot-link" class="ms-Pivot-link" data-content="maps" title="Maps" tabindex="1" onclick="SearchBarVisibility(false)">Maps</li>';
             }
 
             var tagContainerHTML = GetTagsHTML(result);
@@ -192,10 +195,6 @@ function GetFileHTML(data) {
         fileContainerHTML = `<iframe class="col-md-7 col-sm-12" src="${srcPlayer}" frameborder="0" allowfullscreen style="height: 50%"></iframe>
             <iframe class="col-md-5 col-sm-12" src="${srcInsights}" frameborder="0" allowfullscreen style="height: 100%"></iframe>
             <script src="https://breakdown.blob.core.windows.net/public/vb.widgets.mediator.js"></script>`;
-
-        $("#details-pivot").removeClass("col-md-8");
-        $("#details-pivot").addClass("col-md-12");
-        $("#tags-panel").hide();
     }
 
     else if (path !== null) {
@@ -395,3 +394,18 @@ function SearchTranscript(searchText) {
         GetReferences(searchText, false);
     }
 }
+
+function SearchBarVisibility(visibility) {
+    if (visibility === true) {
+        $("#details-pivot").removeClass("col-md-12");
+        $("#details-pivot").addClass("col-md-8");
+        $("#tags-panel").show();
+    }
+    else {
+        $("#details-pivot").removeClass("col-md-8");
+        $("#details-pivot").addClass("col-md-12");
+        $("#tags-panel").hide();
+    } 
+}
+
+
