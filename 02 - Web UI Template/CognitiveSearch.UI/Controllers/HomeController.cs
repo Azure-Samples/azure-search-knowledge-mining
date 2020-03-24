@@ -62,7 +62,7 @@ namespace CognitiveSearch.UI.Controllers
             if (searchidId != string.Empty)
                 TempData["searchId"] = searchidId;
 
-            TempData["query"] = q;
+            TempData["query"] = q ?? "*";
             TempData["applicationInstrumentationKey"] = _configuration.GetSection("InstrumentationKey")?.Value;
 
             return View();
