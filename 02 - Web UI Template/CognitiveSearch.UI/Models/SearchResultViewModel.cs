@@ -14,6 +14,6 @@
 
         public string applicationInstrumentationKey { get; set; }
 
-        public string[] searchableFields { get; set; }
+        public string[] facetableFields { get; set; }
     }
 }

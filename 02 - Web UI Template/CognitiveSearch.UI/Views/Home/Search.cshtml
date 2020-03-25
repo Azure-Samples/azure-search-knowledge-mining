@@ -110,7 +110,15 @@
             <br />
             <button style="width:100%" class="btn btn-default" onclick="EntityMapClick()">Return to Search Results</button>
         </div>
-        <div class="col-md-8"></div>
+        <div class="col-md-2"></div>
+        <div class="col-md-2">
+            <label for="slider-max-levels">Max Levels</label>
+            <input type="range" class="custom-range" min="1" max="5" id="slider-max-levels" onchange="changeMaxLevels(this.value)">
+        </div>
+        <div class="col-md-2">
+            <label for="slider-max-nodes">Max Nodes</label>
+            <input type="range" class="custom-range" min="10" max="40" id="slider-max-nodes" onchange="changeMaxNodes(this.value)">
+        </div>
         <div class="col-md-2">
             <button class="btn btn-default dropdown-toggle" type="button"
                     id="dropdownMenu1" data-toggle="dropdown"
@@ -119,7 +127,7 @@
             </button>
 
             <ul class="dropdown-menu checkbox-menu allow-focus dropdown-graphfields">
-                @foreach (var f in Model.searchableFields)
+                @foreach (var f in Model.facetableFields)
                 {
                     <li>
                         <label>

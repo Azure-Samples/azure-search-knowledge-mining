@@ -13,11 +13,14 @@ namespace CognitiveSearch.UI
         {
             Index = index;
             ColorId = colorId;
+            LayerCornerStone = -1;
         }
         public int Index { get; set; }
         public int ColorId { get; set; }
         public int Layer { get; set; }
         public int Distance { get; set; }
+        public int ChildCount { get; set; }
+        public int LayerCornerStone { get; set; }
     }
 
     public class FacetGraphGenerator
@@ -29,12 +32,10 @@ namespace CognitiveSearch.UI
             _searchHelper = searchClient;
         }
 
-        public JObject GetFacetGraphNodes(string q, List<string> facetNames)
+        public JObject GetFacetGraphNodes(string q, List<string> facetNames, int maxLevels, int maxNodes)
         {
             // Calculate nodes for N levels
             JObject dataset = new JObject();
-            int MaxEdges = 10;
-            int MaxLevels = 4;
             int CurrentNodes = 0;
             int originalDistance = 100;
 
@@ -61,18 +62,21 @@ namespace CognitiveSearch.UI
             NextLevelTerms.Add(q);
 
             // Iterate through the nodes up to MaxLevels deep to build the nodes or when I hit max number of nodes
-            for (var CurrentLevel = 0; CurrentLevel < MaxLevels && MaxEdges > 0; ++CurrentLevel, MaxEdges /= 2)
+            for (var CurrentLevel = 0; CurrentLevel < maxLevels && maxNodes > 0; ++CurrentLevel, maxNodes /= 2)
             {
                 currentLevelTerms = NextLevelTerms.ToList();
                 NextLevelTerms.Clear();
-                var levelFacetCount = 0;
+                var levelNodeCount = 0;
+
+                NodeInfo densestNodeThisLayer = null;
+                var density = 0;
 
                 foreach (var k in NodeMap)
                     k.Value.Distance += originalDistance;
 
                 foreach (var t in currentLevelTerms)
                 {
-                    if (levelFacetCount >= MaxEdges)
+                    if (levelNodeCount >= maxNodes)
                         break;
 
                     DocumentSearchResult<Document> response = _searchHelper.GetFacets(t, facetNames, 10);
@@ -92,26 +96,34 @@ namespace CognitiveSearch.UI
                                 if (NodeMap.TryGetValue(facetValue, out nodeInfo) == false)
                                 {
                                     // This is a new node
-                                    ++levelFacetCount;
+                                    ++levelNodeCount;
                                     NodeMap[facetValue] = new NodeInfo(++CurrentNodes, facetColor)
                                     {
                                         Distance = originalDistance,
                                         Layer = CurrentLevel + 1
                                     };
 
-                                    if (CurrentLevel < MaxLevels)
+                                    if (CurrentLevel < maxLevels)
                                     {
                                         NextLevelTerms.Add(facetValue);
                                     }
                                 }
 
                                 // Add this facet to the fd list
-                                if (NodeMap[t] != NodeMap[facetValue])
+                                var newNode = NodeMap[facetValue];
+                                var oldNode = NodeMap[t];
+                                if (oldNode != newNode)
                                 {
-                                    var newNode = NodeMap[facetValue];
+                                    oldNode.ChildCount += 1;
+                                    if (densestNodeThisLayer == null || oldNode.ChildCount > density)
+                                    {
+                                        density = oldNode.ChildCount;
+                                        densestNodeThisLayer = oldNode;
+                                    }
+
                                     FDEdgeList.Add(new FDGraphEdges
                                     {
-                                        source = NodeMap[t].Index,
+                                        source = oldNode.Index,
                                         target = newNode.Index,
                                         distance = newNode.Distance
                                     });
@@ -120,6 +132,9 @@ namespace CognitiveSearch.UI
                         }
                     }
                 }
+
+                if (densestNodeThisLayer != null)
+                    densestNodeThisLayer.LayerCornerStone = CurrentLevel;
             }
 
             // Create nodes
@@ -131,7 +146,8 @@ namespace CognitiveSearch.UI
                     name = entry.Key,
                     id = entry.Value.Index,
                     color = entry.Value.ColorId,
-                    layer = entry.Value.Layer
+                    layer = entry.Value.Layer,
+                    cornerStone = entry.Value.LayerCornerStone
                 }));
             }
 

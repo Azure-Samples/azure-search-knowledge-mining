@@ -7,6 +7,10 @@ var nodeChargeStrength = -300;
 var nodeChargeAccuracy = 0.8;
 var nodeDesaturation = 0.1;
 
+currentMaxLevels = 3;
+currentMaxNodes = 10;
+currentDistance = 1;
+
 var selectedGraphFields = {};
 
 $("#e").keyup(function (e) {
@@ -29,62 +33,6 @@ $(document).on('click', '.allow-focus', function (e) {
     e.stopPropagation();
 });
 
-// adapted from here: https://stackoverflow.com/a/31675514
-function applySaturationToHexColor(hex, saturationPercent) {
-    if (!/^#([0-9a-f]{6})$/i.test(hex)) {
-        throw ('Unexpected color format');
-    }
-
-    var saturationFloat = Math.max(0, Math.min(saturationPercent, 1)),
-        rgbIntensityFloat = [
-            parseInt(hex.substr(1, 2), 16) / 255,
-            parseInt(hex.substr(3, 2), 16) / 255,
-            parseInt(hex.substr(5, 2), 16) / 255
-        ];
-
-    var rgbIntensityFloatSorted = rgbIntensityFloat.slice(0).sort(function (a, b) { return a - b; }),
-        maxIntensityFloat = rgbIntensityFloatSorted[2],
-        mediumIntensityFloat = rgbIntensityFloatSorted[1],
-        minIntensityFloat = rgbIntensityFloatSorted[0];
-
-    if (maxIntensityFloat == minIntensityFloat) {
-        // All colors have same intensity, which means 
-        // the original color is gray, so we can't change saturation.
-        return hex;
-    }
-
-    // New color max intensity wont change. Lets find medium and weak intensities.
-    var newMediumIntensityFloat,
-        newMinIntensityFloat = maxIntensityFloat * (1 - saturationFloat);
-
-    if (mediumIntensityFloat == minIntensityFloat) {
-        // Weak colors have equal intensity.
-        newMediumIntensityFloat = newMinIntensityFloat;
-    }
-    else {
-        // Calculate medium intensity with respect to original intensity proportion.
-        var intensityProportion = (maxIntensityFloat - mediumIntensityFloat) / (mediumIntensityFloat - minIntensityFloat);
-        newMediumIntensityFloat = (intensityProportion * newMinIntensityFloat + maxIntensityFloat) / (intensityProportion + 1);
-    }
-
-    var newRgbIntensityFloat = [],
-        newRgbIntensityFloatSorted = [newMinIntensityFloat, newMediumIntensityFloat, maxIntensityFloat];
-
-    // We've found new intensities, but we have then sorted from min to max.
-    // Now we have to restore original order.
-    rgbIntensityFloat.forEach(function (originalRgb) {
-        var rgbSortedIndex = rgbIntensityFloatSorted.indexOf(originalRgb);
-        newRgbIntensityFloat.push(newRgbIntensityFloatSorted[rgbSortedIndex]);
-    });
-
-    var floatToHex = function (val) { return ('0' + Math.round(val * 255).toString(16)).substr(-2); },
-        rgb2hex = function (rgb) { return '#' + floatToHex(rgb[0]) + floatToHex(rgb[1]) + floatToHex(rgb[2]); };
-
-    var newHex = rgb2hex(newRgbIntensityFloat);
-
-    return newHex;
-}
-
 function SearchEntities() {
     if (currentPage > 1) {
         if (q !== $("#e").val()) {
@@ -95,7 +43,6 @@ function SearchEntities() {
     $("#q").val(q);
     UpdateLocationBar();
 
-    Unload();
     document.getElementById("entity-loading-indicator").style.display = "block";
 
     GetGraph(q);
@@ -122,10 +69,13 @@ function GetGraph(q) {
         url: "/Home/GetGraphData",
         data: {
             query: q,
-            fields: Object.keys(selectedGraphFields)
+            fields: Object.keys(selectedGraphFields),
+            maxLevels: currentMaxLevels,
+            maxNodes: currentMaxNodes
         },
         success: function (data) {
-            // Do something interesting here.
+
+            Unload();
             update(data.links, data.nodes);
         }
     });
@@ -261,10 +211,14 @@ function update(links, nodes) {
     node.append("circle")
         .attr("r", function (d) {
             // Determine an initial position
-            if (d.id == 0) {
+            if (d.cornerStone > -1) {
                 // Root element is on the left side of the screen
-                d.fx = width * 0.15;
-                d.fy = height * 0.5;
+                var spreadWidth = .8;
+                var margin = (1 - spreadWidth) * .5;
+                d.fx = width * (margin + spreadWidth / currentMaxLevels * d.cornerStone);
+
+                var shift = d.cornerStone % 2 ? -0.1 : 0.1;
+                d.fy = height * (0.5 + shift);
             }
             else {
                 // Arrange other nodes along the right side of the screen. 
@@ -314,6 +268,7 @@ function update(links, nodes) {
             .attr("font-family", "sans-serif")
             .attr("font-size", "20px")
             .attr("font-weight", "bold")
+            .attr("pointer-events", "none")
             .attr("fill", function (d) {
                 return d.layer > 1 ? "#808080" : "#000000";
             })
@@ -385,4 +340,71 @@ function dragended(d) {
     //    d.fx = undefined;
     //    d.fy = undefined;
     //}
+}
+
+// adapted from here: https://stackoverflow.com/a/31675514
+function applySaturationToHexColor(hex, saturationPercent) {
+    if (!/^#([0-9a-f]{6})$/i.test(hex)) {
+        throw ('Unexpected color format');
+    }
+
+    var saturationFloat = Math.max(0, Math.min(saturationPercent, 1)),
+        rgbIntensityFloat = [
+            parseInt(hex.substr(1, 2), 16) / 255,
+            parseInt(hex.substr(3, 2), 16) / 255,
+            parseInt(hex.substr(5, 2), 16) / 255
+        ];
+
+    var rgbIntensityFloatSorted = rgbIntensityFloat.slice(0).sort(function (a, b) { return a - b; }),
+        maxIntensityFloat = rgbIntensityFloatSorted[2],
+        mediumIntensityFloat = rgbIntensityFloatSorted[1],
+        minIntensityFloat = rgbIntensityFloatSorted[0];
+
+    if (maxIntensityFloat == minIntensityFloat) {
+        // All colors have same intensity, which means 
+        // the original color is gray, so we can't change saturation.
+        return hex;
+    }
+
+    // New color max intensity wont change. Lets find medium and weak intensities.
+    var newMediumIntensityFloat,
+        newMinIntensityFloat = maxIntensityFloat * (1 - saturationFloat);
+
+    if (mediumIntensityFloat == minIntensityFloat) {
+        // Weak colors have equal intensity.
+        newMediumIntensityFloat = newMinIntensityFloat;
+    }
+    else {
+        // Calculate medium intensity with respect to original intensity proportion.
+        var intensityProportion = (maxIntensityFloat - mediumIntensityFloat) / (mediumIntensityFloat - minIntensityFloat);
+        newMediumIntensityFloat = (intensityProportion * newMinIntensityFloat + maxIntensityFloat) / (intensityProportion + 1);
+    }
+
+    var newRgbIntensityFloat = [],
+        newRgbIntensityFloatSorted = [newMinIntensityFloat, newMediumIntensityFloat, maxIntensityFloat];
+
+    // We've found new intensities, but we have then sorted from min to max.
+    // Now we have to restore original order.
+    rgbIntensityFloat.forEach(function (originalRgb) {
+        var rgbSortedIndex = rgbIntensityFloatSorted.indexOf(originalRgb);
+        newRgbIntensityFloat.push(newRgbIntensityFloatSorted[rgbSortedIndex]);
+    });
+
+    var floatToHex = function (val) { return ('0' + Math.round(val * 255).toString(16)).substr(-2); },
+        rgb2hex = function (rgb) { return '#' + floatToHex(rgb[0]) + floatToHex(rgb[1]) + floatToHex(rgb[2]); };
+
+    var newHex = rgb2hex(newRgbIntensityFloat);
+
+    return newHex;
+}
+
+
+function changeMaxLevels(value) {
+    currentMaxLevels = value;
+    SearchEntities();
+}
+
+function changeMaxNodes(value) {
+    currentMaxNodes = value;
+    SearchEntities();
 }

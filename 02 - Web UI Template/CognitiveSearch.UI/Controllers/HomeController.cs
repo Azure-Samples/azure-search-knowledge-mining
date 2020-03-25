@@ -120,7 +120,7 @@ namespace CognitiveSearch.UI.Controllers
                 currentPage = searchParams.currentPage,
                 searchId = searchidId ?? null,
                 applicationInstrumentationKey = _configuration.GetSection("InstrumentationKey")?.Value,
-                searchableFields = _docSearch.Model.SearchableFields
+                facetableFields = _docSearch.Model.Facets.Select(k => k.Name).ToArray()
             };
             return viewModel;
         }
@@ -152,7 +152,7 @@ namespace CognitiveSearch.UI.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetGraphData(string query, string[] fields)
+        public ActionResult GetGraphData(string query, string[] fields, int maxLevels, int maxNodes)
         {
             string[] facetNames = fields;
 
@@ -169,7 +169,7 @@ namespace CognitiveSearch.UI.Controllers
             }
 
             FacetGraphGenerator graphGenerator = new FacetGraphGenerator(_docSearch);
-            var graphJson = graphGenerator.GetFacetGraphNodes(query, facetNames.ToList<string>());
+            var graphJson = graphGenerator.GetFacetGraphNodes(query, facetNames.ToList<string>(), maxLevels, maxNodes);
 
             return Content(graphJson.ToString(), "application/json");
         }
