@@ -213,9 +213,9 @@ function update(links, nodes) {
             // Determine an initial position
             if (d.cornerStone > -1) {
                 // Root element is on the left side of the screen
-                var spreadWidth = .8;
-                var margin = (1 - spreadWidth) * .5;
-                d.fx = width * (margin + spreadWidth / currentMaxLevels * d.cornerStone);
+                var spreadStride = .2;
+                var margin = (1 - spreadStride * (currentMaxLevels-1)) * .5;
+                d.fx = width * (margin + spreadStride * d.cornerStone);
 
                 var shift = d.cornerStone % 2 ? -0.1 : 0.1;
                 d.fy = height * (0.5 + shift);
