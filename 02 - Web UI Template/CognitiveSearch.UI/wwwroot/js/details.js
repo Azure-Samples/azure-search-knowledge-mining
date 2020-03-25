@@ -180,7 +180,7 @@ function GetFileHTML(data, result) {
         if (pathLower.includes(".pdf")) {
             var expectedType = encodeURIComponent("application/pdf");
             var encodedFilename = encodeURIComponent(filename);
-            var previewPath = `/preview/${encodedFilename}/${expectedType}`;
+            var previewPath = `/preview/${data.storageIndex}/${encodedFilename}/${expectedType}`;
             fileContainerHTML = `<iframe class="file-container" src="${previewPath}"><p>Your browser does not support iframes.</p></iframe>`;
         }
         else if (pathLower.includes(".txt") || pathLower.includes(".json")) {
