@@ -30,7 +30,7 @@ namespace CognitiveSearch.UI
         {
             "metadata_storage_path",
             "metadata_storage_name",
-            "metadata_title"
+            "metadata_title",
 
             // Add fields needed to display results cards
 
@@ -39,7 +39,7 @@ namespace CognitiveSearch.UI
             //"people",
             //"locations",
             //"organizations",
-            //"keyphrases",
+            "keyPhrases"
             //"geoLocation"
         };
 
@@ -47,6 +47,8 @@ namespace CognitiveSearch.UI
         public List<SearchField> Tags { get; set; }
 
         public string[] SelectFilter { get; set; }
+
+        public string[] SearchableFields { get; set; }
 
         public Dictionary<string, string[]> SearchFacets { get; set; }
 
@@ -101,6 +103,8 @@ namespace CognitiveSearch.UI
                     Tags.Add(field.Value);
                 }
             }
+
+            SearchableFields = schema.Fields.Where(f => f.Value.IsSearchable).Select(f => f.Key).ToArray();
         }
     }
 }

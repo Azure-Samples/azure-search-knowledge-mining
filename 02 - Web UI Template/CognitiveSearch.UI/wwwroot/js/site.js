@@ -16,10 +16,8 @@ var isGridInitialized = false;
 var $grid = $('#doc-details-div');
 
 $(document).ready(function () {
-    if (q) {
-        document.getElementById('q').value = q;
-        Search();
-    }
+    if (typeof aspViewModel !== 'undefined' && aspViewModel)
+        Update(aspViewModel);
 });
 
 function InitLayout() {

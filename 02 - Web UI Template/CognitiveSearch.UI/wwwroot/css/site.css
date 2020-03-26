@@ -65,6 +65,11 @@ audio {
     width: 100px;
 }
 
+.container-fluid {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+}
+
 .recentsearch {
     color: #4A4A4A;
     font-weight: bold;
@@ -237,9 +242,9 @@ h1, h2, h3, h4, h5 {
 
 .img-result {
     margin-bottom: 20px;
-    display: block;
     margin-left: auto;
     margin-right: auto;
+    display: block;
 }
 
 #index-search-input:focus {
@@ -247,35 +252,40 @@ h1, h2, h3, h4, h5 {
 }
 
 .modal-body {
-    height: 100%;
-    width: 100%;
+    height: 100% !important;
+    width: 100% !important;
 }
 
 .modal-content {
-    border-radius: 0;
-    height: 100%;
+    border-radius: 0 !important;
+    height: 100% !important;
 }
 
 .modal-control-group {
-    position: absolute;
-    top: 15px;
-    right: 15px;
+    position: absolute !important;
+    top: 15px !important;
+    right: 15px !important;
 }
 
 .modal-control {
-    font-size: 18px;
-    cursor: pointer;
-    margin: 5px;
-    color: #0078d7;
+    font-size: 18px !important;
+    cursor: pointer !important;
+    margin: 5px !important;
+    color: #0078d7 !important;
 }
 
 .modal-dialog {
     /*width: 100vw;
     height: 100vh;
     margin: 0 !important;*/
-    width: calc(100vw - 40px);
-    height: calc(100vh - 40px);
-    margin: 20px;
+    width: calc(100vw - 40px) !important;
+    height: calc(100vh - 40px) !important;
+    margin: 20px !important;
+}
+
+.modal-backdrop {
+    opacity: .2;
+
 }
 
 .ms-Pivot {
@@ -306,8 +316,8 @@ h1, h2, h3, h4, h5 {
 }
 
 .navbar {
-    margin-bottom: 0;
-    border-bottom: 1px solid #959595;
+    margin-bottom: 0 !important;
+    border-bottom: 1px solid #959595 !important;
 }
 
 .navbar-brand {
@@ -343,6 +353,28 @@ h1, h2, h3, h4, h5 {
     top: 2px;
 }
 
+.navbar-nav {
+    list-style-type: none;
+}
+
+.navbar-bg {
+    background-color: #ffffff;
+}
+
+.navbar-text {
+    font-size: 16px;
+    float: left;
+    vertical-align: middle;
+    margin-top: 5px !important;
+    width: auto;
+    margin-bottom: 0 !important
+}
+
+.card {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
 .panel {
     border-radius: 0 !important;
 }
@@ -370,12 +402,21 @@ pre {
 }
 
 .results-div {
-    width: 50%;
+    width: 100%;
 }
 
 .results-body {
     padding-left: 0;
     padding-right: 0;
+}
+
+.max-lines {
+    display: block;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    overflow: hidden;
+    max-height: 4em;
+    line-height: 1.8em;
 }
 
 .results-icon {
@@ -449,6 +490,13 @@ pre {
 }
 .tag.tag-attachments_descriptions {
     background-color: #7a2f7e;
+}
+
+.tag-container {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+    width: 100%;
 }
 
 .tag {
@@ -602,6 +650,13 @@ body {
     scrollbar-track-color: transparent;
 }
 
+#upload-dropzone {
+    width: 100%;
+    height: 300px;
+    background-color: lightgray;
+    border: 1px dotted black;
+    margin-bottom: 10px;
+}
 /* Map Styles */
 /* CSS styles used by custom popup template */
 .customInfobox {
