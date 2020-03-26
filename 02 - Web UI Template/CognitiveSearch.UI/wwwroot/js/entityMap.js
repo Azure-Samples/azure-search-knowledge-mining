@@ -42,6 +42,7 @@ function SearchEntities() {
     q = $("#e").val();
     $("#q").val(q);
     UpdateLocationBar();
+    UpdateGraphParameterUI();
 
     document.getElementById("entity-loading-indicator").style.display = "block";
 
@@ -86,9 +87,9 @@ function LoadEntityMap() {
     document.getElementById("details-modal").style.display = "none";
     document.getElementById("entity-map").style.display = "block";
     document.getElementById("entity-loading-indicator").style.display = "block";
-    GetGraph(q);
+
     document.getElementById("e").value = q;
-    q = q;
+    SearchEntities();
 }
 
 function UnloadEntityMap() {
@@ -399,12 +400,29 @@ function applySaturationToHexColor(hex, saturationPercent) {
 }
 
 
-function changeMaxLevels(value) {
-    currentMaxLevels = value;
-    SearchEntities();
+function changeMaxLevels(value, commit) {
+    if (currentMaxLevels != value || commit) {
+        currentMaxLevels = value;
+        if (commit)
+            SearchEntities();
+        else
+            UpdateGraphParameterUI(); // Preview
+    }
 }
 
-function changeMaxNodes(value) {
-    currentMaxNodes = value;
-    SearchEntities();
+function changeMaxNodes(value, commit) {
+    if (currentMaxNodes != value || commit) {
+        currentMaxNodes = value;
+        if (commit)
+            SearchEntities();
+        else
+            UpdateGraphParameterUI(); // Preview
+    }
+}
+
+function UpdateGraphParameterUI() {
+    $("#lbl-currentMaxLevels").text(currentMaxLevels);
+    $("#slider-currentMaxLevels").val(currentMaxLevels);
+    $("#lbl-currentMaxNodes").text(currentMaxNodes);
+    $("#slider-currentMaxNodes").val(currentMaxNodes);
 }

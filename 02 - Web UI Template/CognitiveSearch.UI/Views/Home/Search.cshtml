@@ -110,16 +110,18 @@
             <br />
             <button style="width:100%" class="btn btn-default" onclick="EntityMapClick()">Return to Search Results</button>
         </div>
-        <div class="col-md-4"></div>
+        <div class="col-md-5"></div>
         <div class="col-md-2">
-            <label for="slider-max-levels">Max Levels</label>
-            <input type="range" class="custom-range" min="1" max="5" id="slider-max-levels" onchange="changeMaxLevels(this.value)">
+            <label for="slider-currentMaxNodes">Max Levels</label>
+            <label id="lbl-currentMaxLevels" style="float:right">0</label>
+            <input type="range" class="custom-range" min="1" max="5" id="slider-currentMaxLevels" oninput="changeMaxLevels(this.value, false)" onchange="changeMaxLevels(this.value, true)">
         </div>
         <div class="col-md-2">
-            <label for="slider-max-nodes">Max Nodes</label>
-            <input type="range" class="custom-range" min="10" max="40" id="slider-max-nodes" onchange="changeMaxNodes(this.value)">
+            <label for="slider-currentMaxNodes">Max Nodes</label>
+            <label id="lbl-currentMaxNodes" style="float:right">0</label>
+            <input type="range" class="custom-range" min="10" max="40" id="slider-currentMaxNodes" oninput="changeMaxNodes(this.value, false)" onchange="changeMaxNodes(this.value, true)">
         </div>
-        <div class="col-md-2">
+        <div class="col-md-1">
             <button class="btn btn-default dropdown-toggle" type="button"
                     id="dropdownMenu1" data-toggle="dropdown"
                     aria-haspopup="true" aria-expanded="true">
