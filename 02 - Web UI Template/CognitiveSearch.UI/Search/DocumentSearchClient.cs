@@ -344,16 +344,16 @@ namespace CognitiveSearch.UI
             }
         }
 
-        private string GetToken(string decodedPath)
+        private string GetToken(string decodedPath, out int storageIndex)
         {
             // Initialize tokens and containers if not already initialized
             GetContainerSasUris();
 
             // Determine which token to use.
             string tokenToUse;
-            if (decodedPath.ToLower().Contains(containerAddresses[1])) { tokenToUse = tokens[1]; }
-            else if (decodedPath.ToLower().Contains(containerAddresses[2])) { tokenToUse = tokens[2]; }
-            else { tokenToUse = tokens[0]; }
+            if (decodedPath.ToLower().Contains(containerAddresses[1])) { tokenToUse = tokens[1]; storageIndex = 1; }
+            else if (decodedPath.ToLower().Contains(containerAddresses[2])) { tokenToUse = tokens[2]; storageIndex = 2; }
+            else { tokenToUse = tokens[0]; storageIndex = 0; }
 
             return tokenToUse;
         }
@@ -411,12 +411,14 @@ namespace CognitiveSearch.UI
                 decodedPath = Base64Decode(id);
             }
 
-            string tokenToUse = GetToken(decodedPath);
+            int storageIndex;
+            string tokenToUse = GetToken(decodedPath, out storageIndex);
 
             var result = new DocumentResult
             {
                 Result = response,
                 Token = tokenToUse,
+                StorageIndex = storageIndex,
                 DecodedPath = decodedPath,
                 IdField = idField,
                 IsPathBase64Encoded = _isPathBase64Encoded

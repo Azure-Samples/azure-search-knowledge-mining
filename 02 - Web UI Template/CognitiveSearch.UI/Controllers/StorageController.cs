@@ -29,7 +29,7 @@ namespace CognitiveSearch.UI.Controllers
         {
             if (Request.Form.Files.Any())
             {
-                var container = GetStorageContainer();
+                var container = GetStorageContainer(0);
 
                 foreach (var formFile in Request.Form.Files)
                 {
@@ -50,14 +50,15 @@ namespace CognitiveSearch.UI.Controllers
         ///  Returns the requested document with an 'inline' content disposition header.
         ///  This hints to a browser to show the file instead of downloading it.
         /// </summary>
+        /// <param name="storageIndex">The storage connection string index.</param>
         /// <param name="fileName">The storage blob filename.</param>
         /// <param name="mimeType">The expected mime content type.</param>
         /// <returns>The file data with inline disposition header.</returns>
-        [HttpGet("preview/{fileName}/{mimeType}")]
-        public async Task<FileContentResult> GetDocument(string fileName, string mimeType)
+        [HttpGet("preview/{storageIndex}/{fileName}/{mimeType}")]
+        public async Task<FileContentResult> GetDocumentInline(int storageIndex, string fileName, string mimeType)
         {
             var decodedFilename = HttpUtility.UrlDecode(fileName);
-            var container = GetStorageContainer();
+            var container = GetStorageContainer(storageIndex);
             var cloudBlockBlob = container.GetBlockBlobReference(decodedFilename);
             using (var ms = new MemoryStream())
             {
@@ -67,11 +68,15 @@ namespace CognitiveSearch.UI.Controllers
             }
         }
 
-        private CloudBlobContainer GetStorageContainer()
+        private CloudBlobContainer GetStorageContainer(int storageIndex)
         {
             string accountName = _configuration.GetSection("StorageAccountName")?.Value;
             string accountKey = _configuration.GetSection("StorageAccountKey")?.Value;
-            var containerAddress = _configuration.GetSection("StorageContainerAddress")?.Value.ToLower();
+
+            var containerKey = "StorageContainerAddress";
+            if (storageIndex > 0)
+                containerKey += (storageIndex+1).ToString();
+            var containerAddress = _configuration.GetSection(containerKey)?.Value.ToLower();
 
             var container = new CloudBlobContainer(new Uri(containerAddress), new StorageCredentials(accountName, accountKey));
             return container;
