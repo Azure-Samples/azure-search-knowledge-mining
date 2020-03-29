@@ -95,6 +95,7 @@ namespace CognitiveSearch.UI.Controllers
             public string q { get; set; }
             public SearchFacet[] searchFacets { get; set; }
             public int currentPage { get; set; }
+            public string polygonString { get; set; }
         }
 
         [HttpPost]
@@ -114,7 +115,7 @@ namespace CognitiveSearch.UI.Controllers
 
             var viewModel = new SearchResultViewModel
             {
-                documentResult = _docSearch.GetDocuments(searchParams.q, searchParams.searchFacets, searchParams.currentPage),
+                documentResult = _docSearch.GetDocuments(searchParams.q, searchParams.searchFacets, searchParams.currentPage, searchParams.polygonString),
                 query = searchParams.q,
                 selectedFacets = searchParams.searchFacets,
                 currentPage = searchParams.currentPage,
