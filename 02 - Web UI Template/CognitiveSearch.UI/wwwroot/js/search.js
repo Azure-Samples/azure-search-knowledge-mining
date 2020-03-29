@@ -65,7 +65,6 @@ function Search() {
     $.post('/home/searchview',
         {
             q: q !== undefined ? q : "*",
-            q: q,
             searchFacets: selectedFacets,
             currentPage: currentPage,
             polygonString: polygonString
