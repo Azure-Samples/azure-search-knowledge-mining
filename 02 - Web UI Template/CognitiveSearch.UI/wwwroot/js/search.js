@@ -45,28 +45,28 @@ function Search() {
     q = $("#q").val();
     $("#e").val(q);
 
+    UpdateResultsView();
+}
+
+function UpdateResultsView() {
+    // Get center of map to use to score the search results
 
     //Pass the polygon filter to the query: mapPolygon.data.geometry.coordinates[0][1]
     var polygonString = "";
 
-    if (mapPolygon !== null && mapPolygon.data !== null && mapPolygon.data.geometry !== null && mapPolygon.data.geometry.coordinates !== null)
-    {
+    if (mapPolygon !== null && mapPolygon.data !== null && mapPolygon.data.geometry !== null && mapPolygon.data.geometry.coordinates !== null) {
         var pointArray = mapPolygon.data.geometry.coordinates[0];
 
-        for (var i = 0; i < pointArray.length; i++)
-        {            
-            if (polygonString.length > 0)
-            { polygonString += ","; }
+        for (var i = 0; i < pointArray.length; i++) {
+            if (polygonString.length > 0) { polygonString += ","; }
 
             polygonString += pointArray[i][0] + " " + pointArray[i][1];
         }
     }
 
-    // Get center of map to use to score the search results
     $.post('/home/searchview',
         {
             q: q !== undefined ? q : "*",
-            q: q,
             searchFacets: selectedFacets,
             currentPage: currentPage,
             polygonString: polygonString

@@ -62,7 +62,7 @@ namespace CognitiveSearch.UI
             NextLevelTerms.Add(q);
 
             // Iterate through the nodes up to MaxLevels deep to build the nodes or when I hit max number of nodes
-            for (var CurrentLevel = 0; CurrentLevel < maxLevels && maxNodes > 0; ++CurrentLevel, maxNodes /= 2)
+            for (var CurrentLevel = 0; CurrentLevel < maxLevels && maxNodes > 0; ++CurrentLevel)
             {
                 currentLevelTerms = NextLevelTerms.ToList();
                 NextLevelTerms.Clear();

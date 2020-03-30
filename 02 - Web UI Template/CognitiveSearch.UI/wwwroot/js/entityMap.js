@@ -49,15 +49,7 @@ function SearchEntities() {
     GetGraph(q);
 
     // Get center of map to use to score the search results
-    $.post('/home/getdocuments',
-        {
-            q: q !== undefined ? q : "*",
-            searchFacets: selectedFacets,
-            currentPage: currentPage
-        },
-        function (data) {
-            Update(data);
-        });
+    UpdateResultsView();
 }
 
 // Load Graph with Search data
@@ -77,7 +69,9 @@ function GetGraph(q) {
         success: function (data) {
 
             Unload();
-            update(data.links, data.nodes);
+            viewParams.nodes = data.nodes;
+            viewParams.links = data.links;
+            UpdateEntityGraph();
         }
     });
 }
@@ -120,12 +114,23 @@ function Unload() {
     svg.selectAll(".text").remove();
 }
 
+// debounce resize events
+var resizeSearchToken;
+$(window).resize(function () {
+    clearTimeout(resizeSearchToken);
+    resizeSearchToken = setTimeout(SearchEntities, 200); // after debounce timeout, re Search the entity graph
+}); 
+
 var colors = d3.scaleOrdinal(d3.schemeCategory10);
-var svg = d3.select("svg"),
-    width = +svg.attr("width"),
-    height = +svg.attr("height"),
-    node,
-    link;
+var svg = d3.select("svg");
+var viewParams = {
+    width: 10, // Safe Defaults
+    height: 10, // Safe Defaults
+    nodes: null,
+    links: null
+};
+var node;
+var link;
 
 function nodeBounds() {
     var nodes;
@@ -137,8 +142,8 @@ function nodeBounds() {
 
         for (i = 0; i < n; ++i) {
             node = nodes[i];
-            var clampedx = Math.max(nodeRadius, Math.min(width - nodeRadius, node.x));
-            var clampedy = Math.max(nodeRadius, Math.min(height - nodeRadius, node.y));
+            var clampedx = Math.max(nodeRadius, Math.min(viewParams.width - nodeRadius, node.x));
+            var clampedy = Math.max(nodeRadius, Math.min(viewParams.height - nodeRadius, node.y));
             node.x = clampedx;
             node.y = clampedy;
         }
@@ -167,12 +172,21 @@ function setupSimulation(simulation) {
 var simulation = setupSimulation(d3.forceSimulation());
 
 
-function update(links, nodes) {
+function UpdateEntityGraph() {
     // Graph implementation
     var colors = d3.scaleOrdinal(d3.schemeCategory10);
-    var svg = d3.select("svg"),
-        width = +svg.attr("width"),
-        height = +svg.attr("height");
+
+    // calculate size
+    var svgElement = $("svg");
+    viewParams.width = +svgElement.parent().width(); // Get the parent width with jquery instead of d3.
+    viewParams.height = +svgElement.height();
+
+    // set svg size
+    var svg = d3.select("svg");
+    svg.attrs({
+        width: viewParams.width,
+        height: viewParams.height
+    });
         
     svg.append('defs').append('marker')
         .attrs({
@@ -193,13 +207,13 @@ function update(links, nodes) {
     simulation = setupSimulation(d3.forceSimulation());
 
     link = svg.selectAll(".link")
-        .data(links)
+        .data(viewParams.links)
         .enter()
         .append("line")
         .attr("class", "link");
 
     node = svg.selectAll(".node")
-        .data(nodes)
+        .data(viewParams.nodes)
         .enter()
         .append("g")
         .attr("class", "node")
@@ -216,16 +230,16 @@ function update(links, nodes) {
                 // Root element is on the left side of the screen
                 var spreadStride = .2;
                 var margin = (1 - spreadStride * (currentMaxLevels-1)) * .5;
-                d.fx = width * (margin + spreadStride * d.cornerStone);
+                d.fx = viewParams.width * (margin + spreadStride * d.cornerStone);
 
                 var shift = d.cornerStone % 2 ? -0.1 : 0.1;
-                d.fy = height * (0.5 + shift);
+                d.fy = viewParams.height * (0.5 + shift);
             }
             else {
                 // Arrange other nodes along the right side of the screen. 
                 //  start them some varyin offset so the simulation is stable on start.
-                d.x = width * 0.8;
-                d.y = height * (d.id / 100);
+                d.x = viewParams.width * 0.8;
+                d.y = viewParams.height * (d.id / 100);
             }
 
             d.radius = nodeRadius / (d.layer + 1);
@@ -246,7 +260,7 @@ function update(links, nodes) {
 
 
     edgepaths = svg.selectAll(".edgepath")
-        .data(links)
+        .data(viewParams.links)
         .enter()
         .append('path')
         .attrs({
@@ -259,7 +273,7 @@ function update(links, nodes) {
 
     // Render text in a second pass so it's on top of all the gfx.
     texts = svg.selectAll(".text")
-        .data(nodes)
+        .data(viewParams.nodes)
         .enter()
         .append("g")
             .attr("class", "text")
@@ -277,10 +291,10 @@ function update(links, nodes) {
 
 
     simulation
-        .nodes(nodes)
+        .nodes(viewParams.nodes)
         .on("tick", ticked);
     simulation.force("link")
-        .links(links);
+        .links(viewParams.links);
     document.getElementById("entity-loading-indicator").style.display = "none";
 
     // Step the simulation to let it settle
@@ -329,8 +343,8 @@ function dragstarted(d) {
 function dragged(d) {
 
     // Check if movement beyond svg width/height and set to node
-    d.fx = Math.max(nodeRadius, Math.min(width - nodeRadius, d3.event.x));
-    d.fy = Math.max(nodeRadius, Math.min(height - nodeRadius, d3.event.y));
+    d.fx = Math.max(nodeRadius, Math.min(viewParams.width - nodeRadius, d3.event.x));
+    d.fy = Math.max(nodeRadius, Math.min(viewParams.height - nodeRadius, d3.event.y));
 }
 
 function dragended(d) {
