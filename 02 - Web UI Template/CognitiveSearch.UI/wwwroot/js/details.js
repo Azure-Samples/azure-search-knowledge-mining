@@ -188,7 +188,7 @@ function GetFileHTML(data) {
         time_reference = data.result.time_reference ? data.result.time_reference : 0;
         srcPlayer += '?t=' + time_reference;
 
-        srcInsights = video_indexer_url.replace("https://weu.videoindexer.ai/embed/player/", "https://weu.videoindexer.ai/embed/insights/");
+        srcInsights = video_indexer_url.replace("videoindexer.ai/embed/player/", "videoindexer.ai/embed/insights/");
 
         //fileContainerHTML = `<iframe class="file-container" src="${src}" frameborder = "0" allowfullscreen></iframe>`;
 
