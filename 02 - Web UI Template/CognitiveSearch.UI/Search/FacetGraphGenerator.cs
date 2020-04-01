@@ -62,7 +62,7 @@ namespace CognitiveSearch.UI
             NextLevelTerms.Add(q);
 
             // Iterate through the nodes up to MaxLevels deep to build the nodes or when I hit max number of nodes
-            for (var CurrentLevel = 0; CurrentLevel < maxLevels && maxNodes > 0; ++CurrentLevel)
+            for (var CurrentLevel = 0; CurrentLevel < maxLevels && maxNodes > 0; ++CurrentLevel, maxNodes /= 2)
             {
                 currentLevelTerms = NextLevelTerms.ToList();
                 NextLevelTerms.Clear();
@@ -79,7 +79,12 @@ namespace CognitiveSearch.UI
                     if (levelNodeCount >= maxNodes)
                         break;
 
-                    DocumentSearchResult<Document> response = _searchHelper.GetFacets(t, facetNames, 10);
+                    int facetsToGrab = 10;
+                    if (maxNodes < 10)
+                    {
+                        facetsToGrab = maxNodes;
+                    }
+                    DocumentSearchResult<Document> response = _searchHelper.GetFacets(t, facetNames, facetsToGrab);
                     if (response != null)
                     {
                         int facetColor = 0;

@@ -119,13 +119,14 @@
         <div class="col-md-2">
             <label for="slider-currentMaxNodes">Max Nodes</label>
             <label id="lbl-currentMaxNodes" style="float:right">0</label>
-            <input type="range" class="custom-range" min="10" max="40" id="slider-currentMaxNodes" oninput="changeMaxNodes(this.value, false)" onchange="changeMaxNodes(this.value, true)">
+            <input type="range" class="custom-range" min="3" max="30" id="slider-currentMaxNodes" oninput="changeMaxNodes(this.value, false)" onchange="changeMaxNodes(this.value, true)">
         </div>
         <div class="col-md-1">
             <button class="btn btn-default dropdown-toggle" type="button"
                     id="dropdownMenu1" data-toggle="dropdown"
                     aria-haspopup="true" aria-expanded="true"
                     float="right">
+                <strong>Select Facets</strong>
                 <span class="caret"></span>
             </button>
 
