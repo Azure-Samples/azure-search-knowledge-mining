@@ -12,6 +12,13 @@ var searchId;
 var searchServiceName = "";
 var indexName = "";
 var scoringProfile = "";
+var resultsMap = null;
+var mapDataSource = null;
+var showMap = true;
+
+// variables related to polygon selection on map
+var drawingTools;
+var mapPolygon = null;
 
 // When 'Enter' clicked from Search Box, execute Search()
 $("#q").keyup(function (e) {
@@ -36,21 +43,49 @@ function Search() {
         }
     }
     q = $("#q").val();
+    $("#e").val(q);
 
+    UpdateResultsView();
+}
+
+function UpdateResultsView() {
     // Get center of map to use to score the search results
-    $.post('/home/getdocuments',
+
+    //Pass the polygon filter to the query: mapPolygon.data.geometry.coordinates[0][1]
+    var polygonString = "";
+
+    if (mapPolygon !== null && mapPolygon.data !== null && mapPolygon.data.geometry !== null && mapPolygon.data.geometry.coordinates !== null) {
+        var pointArray = mapPolygon.data.geometry.coordinates[0];
+
+        for (var i = 0; i < pointArray.length; i++) {
+            if (polygonString.length > 0) { polygonString += ","; }
+
+            polygonString += pointArray[i][0] + " " + pointArray[i][1];
+        }
+    }
+
+    $.post('/home/searchview',
         {
-            q: q != undefined ? q : "*",
+            q: q !== undefined ? q : "*",
             searchFacets: selectedFacets,
-            currentPage: currentPage
+            currentPage: currentPage,
+            polygonString: polygonString
         },
-        function (data) {
+        function (viewModel) {
             $('#loading-indicator').css("display", "none");
-            Update(data);
+            Update(viewModel);
         });
 }
 
-function Update(data) {
+function Update(viewModel) {
+
+    // Update UI controls to match view model incase we came from a direct link
+    selectedFacets = viewModel.selectedFacets;
+    q = viewModel.query;
+    $("#q").val(q);
+    currentPage = viewModel.currentPage;
+
+    var data = viewModel.documentResult;
     results = data.results;
     facets = data.facets;
     tags = data.tags;
@@ -64,6 +99,9 @@ function Update(data) {
     //Results List
     UpdateResults(data);
 
+    //Map
+    UpdateMap(data);
+
     //Pagination
     UpdatePagination(data.count);
 
@@ -75,9 +113,47 @@ function Update(data) {
 
     InitLayout();
 
+    UpdateLocationBar();
+
     $('html, body').animate({ scrollTop: 0 }, 'fast');
 
     FabricInit();
+}
+
+function UpdateLocationBar() {
+    // Try to update the location to match the search.
+    if (history.pushState) {
+        // Get the existing url
+        var searchParams = new URLSearchParams(window.location.search);
+
+        var facetStrings = [];
+        var includeFacetsInUrl = true;
+        if (includeFacetsInUrl) {
+            // Concatenate facet keys.
+            for (var s of selectedFacets)
+                for (var f of s.value)
+                    facetStrings.push(s.key + "_" + f);
+        }
+
+        // Update or clear facets
+        if (facetStrings.length)
+            searchParams.set("facets", facetStrings.join(","));
+        else
+            searchParams.delete("facets");
+
+        // Add other parameters
+        searchParams.set("q", q);
+
+        if (currentPage > 1)
+            searchParams.set("page", currentPage);
+        else
+            searchParams.delete("page");
+
+        //  Using history instead of location so it doesnt cause a redirect.
+        var paramsStr = "?" + searchParams.toString();
+        var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + paramsStr;
+        window.history.pushState({ path: newurl }, '', newurl);
+    }
 }
 
 function UpdatePagination(docCount) {
