@@ -16,6 +16,6 @@ This project provides the following custom skills:
 * [**ImageStore**](https://github.com/Azure-Samples/azure-search-power-skills/blob/master/Vision/ImageStore/README.md): stores and fetches base64-encoded images to and from blob storage.
 * [**HocrGenerator**](https://github.com/Azure-Samples/azure-search-power-skills/blob/master/Vision/HocrGenerator/README.md): transforms the result of OCR into the hOCR format.
 * [**AnalyzeForm**](https://github.com/Azure-Samples/azure-search-power-skills/blob/master/Vision/AnalyzeForm/README.md): recognizes form fields in a document.
-* [**CustomEntityLookup**](https://github.com/Azure-Samples/azure-search-power-skills/blob/master//Text/CustomEntityLookup): finds custom entity names in text.
+* [**CustomEntityLookup**](https://github.com/Azure-Samples/azure-search-power-skills/blob/master/Text/CustomEntitySearch/README.md): finds custom entity names in text.
 * [**Tokenizer**](https://github.com/Azure-Samples/azure-search-power-skills/blob/master/Text/Tokenizer/README.md): extracts non-stop words from a text.
 * [**Distinct**](https://github.com/Azure-Samples/azure-search-power-skills/blob/master/Text/Distinct/README.md): de-duplicates a list of terms.
