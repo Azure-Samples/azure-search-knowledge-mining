@@ -43,25 +43,27 @@ function Search() {
         }
     }
     q = $("#q").val();
+    $("#e").val(q);
 
+    UpdateResultsView();
+}
+
+function UpdateResultsView() {
+    // Get center of map to use to score the search results
 
     //Pass the polygon filter to the query: mapPolygon.data.geometry.coordinates[0][1]
     var polygonString = "";
 
-    if (mapPolygon !== null && mapPolygon.data !== null && mapPolygon.data.geometry !== null && mapPolygon.data.geometry.coordinates !== null)
-    {
+    if (mapPolygon !== null && mapPolygon.data !== null && mapPolygon.data.geometry !== null && mapPolygon.data.geometry.coordinates !== null) {
         var pointArray = mapPolygon.data.geometry.coordinates[0];
 
-        for (var i = 0; i < pointArray.length; i++)
-        {            
-            if (polygonString.length > 0)
-            { polygonString += ","; }
+        for (var i = 0; i < pointArray.length; i++) {
+            if (polygonString.length > 0) { polygonString += ","; }
 
             polygonString += pointArray[i][0] + " " + pointArray[i][1];
         }
     }
 
-    // Get center of map to use to score the search results
     $.post('/home/searchview',
         {
             q: q !== undefined ? q : "*",
@@ -79,7 +81,8 @@ function Update(viewModel) {
 
     // Update UI controls to match view model incase we came from a direct link
     selectedFacets = viewModel.selectedFacets;
-    $("#q").val(viewModel.query);
+    q = viewModel.query;
+    $("#q").val(q);
     currentPage = viewModel.currentPage;
 
     var data = viewModel.documentResult;
@@ -110,14 +113,14 @@ function Update(viewModel) {
 
     InitLayout();
 
-    UpdateLocationBar(viewModel);
+    UpdateLocationBar();
 
     $('html, body').animate({ scrollTop: 0 }, 'fast');
 
     FabricInit();
 }
 
-function UpdateLocationBar(viewModel) {
+function UpdateLocationBar() {
     // Try to update the location to match the search.
     if (history.pushState) {
         // Get the existing url
@@ -139,10 +142,10 @@ function UpdateLocationBar(viewModel) {
             searchParams.delete("facets");
 
         // Add other parameters
-        searchParams.set("q", viewModel.query);
+        searchParams.set("q", q);
 
-        if (viewModel.currentPage > 1)
-            searchParams.set("page", viewModel.currentPage);
+        if (currentPage > 1)
+            searchParams.set("page", currentPage);
         else
             searchParams.delete("page");
 

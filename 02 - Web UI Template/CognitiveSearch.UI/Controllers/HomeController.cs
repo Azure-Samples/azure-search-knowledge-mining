@@ -120,7 +120,8 @@ namespace CognitiveSearch.UI.Controllers
                 selectedFacets = searchParams.searchFacets,
                 currentPage = searchParams.currentPage,
                 searchId = searchidId ?? null,
-                applicationInstrumentationKey = _configuration.GetSection("InstrumentationKey")?.Value
+                applicationInstrumentationKey = _configuration.GetSection("InstrumentationKey")?.Value,
+                facetableFields = _docSearch.Model.Facets.Select(k => k.Name).ToArray()
             };
             return viewModel;
         }
@@ -152,18 +153,24 @@ namespace CognitiveSearch.UI.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetGraphData(string query)
+        public ActionResult GetGraphData(string query, string[] fields, int maxLevels, int maxNodes)
         {
-            string facetsList = _configuration.GetSection("GraphFacet")?.Value;
+            string[] facetNames = fields;
 
-            string[] facetNames = facetsList.Split(new char[] {',',' '}, StringSplitOptions.RemoveEmptyEntries);
+            if (facetNames == null || facetNames.Length == 0)
+            {
+                string facetsList = _configuration.GetSection("GraphFacet")?.Value;
+
+                facetNames = facetsList.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            }
 
             if (query == null)
             {
                 query = "*";
             }
+
             FacetGraphGenerator graphGenerator = new FacetGraphGenerator(_docSearch);
-            var graphJson = graphGenerator.GetFacetGraphNodes(query, facetNames.ToList<string>());
+            var graphJson = graphGenerator.GetFacetGraphNodes(query, facetNames.ToList<string>(), maxLevels, maxNodes);
 
             return Content(graphJson.ToString(), "application/json");
         }

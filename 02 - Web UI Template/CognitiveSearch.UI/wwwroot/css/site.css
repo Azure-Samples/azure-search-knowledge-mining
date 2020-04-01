@@ -670,3 +670,7 @@ body {
     font-weight: bold;
     margin-bottom: 5px;
 }
+
+.dropdown-graphfields {
+    width: 200px;
+}
