@@ -12,8 +12,7 @@ In just a few steps, you can configure this template UI to query your search ind
 
 
 ## Prerequisites
-1. Visual Studio 2017 or newer
-
+1. Visual Studio 2018 or newer
 ## 1. Update appsettings.json
 
 Update the following fields in the *appsettings.json* file to connect the web app to your storage account, search index, and app insights account:
