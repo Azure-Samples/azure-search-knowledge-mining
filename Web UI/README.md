@@ -11,7 +11,6 @@ In just a few steps, you can configure this template UI to query your search ind
 ![web user interface](../images/WebUI.jpg)
 
 
-
 ## Prerequisites
 1. Visual Studio 2017 or newer
 
