@@ -2,7 +2,7 @@
 
 The steps below will walk you through creating a search index in the Azure Portal using the [import data wizard](https://docs.microsoft.com/en-us/azure/search/search-import-data-portal). For more detailed information on each of the steps, see the the [Blob Storage Quickstart](https://docs.microsoft.com/en-us/azure/search/cognitive-search-quickstart-blob).
 
-The web app you spin up in the next step requires some particular settings to work properly. Be sure to follow the requirements outlined below to avoid any problems setting up the web app.
+The web app you'll spin up in the next step expects to receive several fields to work properly. Because of this, be sure to follow the requirements outlined below to avoid any problems during setup.
 
 ## Requirements
 
@@ -25,44 +25,45 @@ Follow the steps and screenshots below to create your index.
 ### 1.0 Navigate to you Search Service
 
 Start by navigating to your search service in the Azure Portal:
-![screenshot](../images/createindex-step0.png)
+
+![screenshot](../images/createindex-step0.PNG)
 
 ### 2.0 Select Import data
 
-![Navigate to search service](../images/createindex-step1.png)
+![Navigate to search service](../images/createindex-step1.PNG)
 
 ### 3.0 Import Data
 
 #### 3.1 Select Azure Blob Storage
 
-![screenshot](../images/createindex-step2.png)
+![screenshot](../images/createindex-step2.PNG)
 
 #### 3.2 Follow the wizard to connect to your storage account
 
-![screenshot](../images/createindex-step3.png)
+![screenshot](../images/createindex-step3.PNG)
 
 ### 4.0 Add Cognitive Skills
 
 #### 4.1 Attach Cognitive Services
 
-![screenshot](../images/createindex-step4.png)
+![screenshot](../images/createindex-step4.PNG)
 
 #### 4.2 Add enrichments
 
-![screenshot](../images/createindex-step5.png)
+![screenshot](../images/createindex-step5.PNG)
 
 #### 4.3 Save enrichments to knowledge store
 
-![screenshot](../images/createindex-step6.png)
+![screenshot](../images/createindex-step6.PNG)
 
 ### 5.0 Customize target index
 
-> **Note:** This step is essential to properly configuring your index. Make sure your index looks similar to the screenshot before proceeding to the next step. 
+> **Note:** This step is essential to properly configuring your index. Make sure your index looks similar to the screenshot before proceeding to the next step.
 
-![screenshot](../images/createindex-step7.png)
+![screenshot](../images/createindex-step7.PNG)
 
 ### 6.0 Create an indexer
 
-![screenshot](../images/createindex-step8.png)
+![screenshot](../images/createindex-step8.PNG)
 
 Congratulations! You should be all set to move onto the next folder.
