@@ -97,7 +97,7 @@ function Deploy
     function PrepareSubscription
     {
         # Register RPs
-        $resourceProviders = @("microsoft.cognitiveservices", "microsoft.documentdb", "microsoft.insights", "microsoft.search", "microsoft.sql", "microsoft.storage");
+        $resourceProviders = @("microsoft.cognitiveservices", "microsoft.insights", "microsoft.search", "microsoft.storage");
         if ($resourceProviders.length) {
             Write-Host "Registering resource providers"
             foreach ($resourceProvider in $resourceProviders) {
