@@ -2,10 +2,16 @@
 # Licensed under the MIT License.
 
 Write-Host "Ensuring Azure dependencies are installed."
-Install-Module -Name Az
-Import-Module -Name Az
-Install-Module -Name Az.Search
-Import-Module -Name Az.Search
+if (!(Get-Module -Name Az)) {
+    Write-Host "Installing Az PowerShell..."
+    Install-Module -Name Az
+    Import-Module -Name Az
+}
+if (!(Get-Module -Name Az.Search)) {
+    Write-Host "Installing Az.Search PowerShell..."
+    Install-Module -Name Az.Search
+    Import-Module -Name Az.Search
+}
 
 Write-Host @"
 
@@ -155,26 +161,16 @@ function Deploy
             -Name $storageContainerName `
             -Context $storageContext `
             -Permission Off
+
+        Write-Host "Uploading sample_documents directory";
+        Push-Location "../sample_documents"
+        ls -File -Recurse | Set-AzStorageBlobContent -Container $storageContainerName -Context $storageContext -Force
+        Pop-Location
 	}
 
     CreateStorageAccountAndContainer;
     
 
-    function UploadSampleDocuments
-    {
-        Write-Host "Uploading sample_documents directory";
-        
-        # Note: These use the "Azure" api instead of the "Az" api.
-        $storageContext = New-AzureStorageContext `
-            -StorageAccountName $storageAccountName `
-            -StorageAccountKey $global:storageAccountKey
-        
-        Push-Location "../sample_documents"
-        ls -File -Recurse | Set-AzureStorageBlobContent -Container $storageContainerName -Context $storageContext -Force
-        Pop-Location
-	}
-
-    UploadSampleDocuments;
     
 
     function CreateSearchServices
@@ -193,10 +189,9 @@ function Deploy
         # Create a new search service
         # Alternatively, you can now use the Az.Search module: https://docs.microsoft.com/en-us/azure/search/search-manage-powershell 
         Write-Host "Creating Search Service";
-        $searchService = New-AzResourceGroupDeployment `
+        $searchService = New-AzSearchService  `
             -ResourceGroupName $resourceGroupName `
-            -TemplateUri "https://gallery.azure.com/artifact/20151001/Microsoft.Search.1.0.9/DeploymentTemplates/searchServiceDefaultTemplate.json" `
-            -NameFromTemplate $searchServiceName `
+            -Name $searchServiceName `
             -Sku $searchSku -Location $location `
             -PartitionCount 1 `
             -ReplicaCount 1
@@ -301,29 +296,21 @@ function Deploy
 
     CreateWebApp;
 
-    
-    function WriteAppSettings
+    function PrintAppsettings
     {
-        Write-Host "Writing App Settings";
-        
-        # Read the existing settings.
-        $filePath = "..\02 - Web UI Template\CognitiveSearch.UI\appsettings.json"
-        $file = ([System.IO.File]::ReadAllText($filePath)  | ConvertFrom-Json)
-
-        # Update the values.
-        $file.SearchServiceName = $searchServiceName
-        $file.SearchApiKey = $global:searchServiceKey
-        $file.SearchIndexName = $indexName
-        $file.SearchIndexerName = $indexerName
-        $file.StorageAccountName = $storageAccountName
-        $file.StorageAccountKey = $global:storageAccountKey
-        $file.StorageContainerAddress = ("https://"+$storageAccountName+".blob.core.windows.net/"+$storageContainerName)
-
-        # Write the settings to the file.
-        $file | ConvertTo-Json | Out-File -FilePath $filePath -Encoding utf8 -Force
+        Write-Host "Copy and paste the following values to update the appsettings.json file described in the next folder:";
+        Write-Host "------------------------------------------------------------";
+        Write-Host "SearchServiceName: '$searchServiceName'";
+        Write-Host "SearchApiKey: '$global:searchServiceKey'";
+        Write-Host "SearchIndexName: '$indexName'";
+        Write-Host "SearchIndexerName: '$indexerName'";
+        Write-Host "StorageAccountName: '$storageAccountName'";
+        Write-Host "StorageAccountKey: '$global:storageAccountKey'";
+        $StorageContainerAddress = ("https://"+$storageAccountName+".blob.core.windows.net/"+$storageContainerName)
+        Write-Host "StorageContainerAddress: '$StorageContainerAddress'";
+        Write-Host "------------------------------------------------------------";
 	}
-
-    WriteAppSettings;
+    PrintAppsettings;
 }
 
 Deploy;

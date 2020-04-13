@@ -9,7 +9,7 @@ There are two options for deploying the resources to Azure for this solution acc
     1. Provision the required Azure resources
     2. Upload sample data to your storage account
     3. Create a search index
-    4. Update your web app's settings to connect to your new Azure Services
+    4. Print out the values and keys needed for the web app's *appsettings.json*
 
     If you choose to run this script, you can skip the Search Index Creation in the next folder.
 
@@ -17,11 +17,11 @@ There are two options for deploying the resources to Azure for this solution acc
 
     To deploy this ARM Template, simply press the button below:
 
+    > Please note that this will only deploy the resources. You'll then need to create a search index in the next step.
+
     <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure-Samples%2Fazure-search-knowledge-mining%2Fmaster%2Fazuredeploy.json" target="_blank">
         <img src="http://azuredeploy.net/deploybutton.png"/>
     </a>
-
-    > Please note that this will only deploy the resources. You'll then need to create a search index in the next step.
 
 ## Prerequisites
 
