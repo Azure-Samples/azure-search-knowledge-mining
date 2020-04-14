@@ -609,7 +609,6 @@ ul.breadcrumb li {
 
 .ms-Icon {
     position: relative;
-    top: 1px;
     display: inline-block;
     font-style: normal;
     font-weight: normal;
@@ -669,4 +668,8 @@ body {
     font-size: 14px;
     font-weight: bold;
     margin-bottom: 5px;
+}
+
+.dropdown-graphfields {
+    width: 200px;
 }
