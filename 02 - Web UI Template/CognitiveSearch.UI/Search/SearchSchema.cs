@@ -57,7 +57,7 @@ namespace CognitiveSearch.UI
             else if ((string)field.Type == (string)DataType.Collection(DataType.GeographyPoint)) type = typeof(Microsoft.Spatial.GeographyPoint[]);
             else if ((string)field.Type == (string)DataType.Collection(DataType.Double)) type = typeof(double[]);
             else if ((string)field.Type == (string)DataType.Collection(DataType.Boolean)) type = typeof(Boolean[]);
-            else if ((string)field.Type == (string)DataType.Collection(DataType.Int64)) type = typeof(Int32[]);
+            else if ((string)field.Type == (string)DataType.Collection(DataType.Int32)) type = typeof(Int32[]);
             else if ((string)field.Type == (string)DataType.Collection(DataType.Int64)) type = typeof(Int64[]);
             else
             {
