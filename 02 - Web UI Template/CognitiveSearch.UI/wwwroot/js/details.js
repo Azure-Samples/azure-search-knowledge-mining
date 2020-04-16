@@ -183,7 +183,7 @@ function GetFileHTML(data) {
 
     video_indexer_url = data.result.video_indexer_url;
 
-    if (video_indexer_url !== null) {//Implement check on metadata to identify video coming from video indexer
+    if (video_indexer_url !== null && video_indexer_url !== undefined) {//Implement check on metadata to identify video coming from video indexer
         srcPlayer = video_indexer_url;
         time_reference = data.result.time_reference ? data.result.time_reference : 0;
         srcPlayer += '?t=' + time_reference;
