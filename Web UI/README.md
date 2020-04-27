@@ -1,3 +1,7 @@
+Copyright (c) Microsoft Corporation. All rights reserved.
+
+Licensed under the MIT License.
+
 # Cognitive Search UI Template
 This folder contains a basic web front end that can be used to quickly create a view of your search results.  With just a few simple steps, you can configure this template UI to query your newly created search index.
 

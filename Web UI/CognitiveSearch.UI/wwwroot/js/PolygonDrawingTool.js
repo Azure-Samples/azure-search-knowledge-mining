@@ -1,4 +1,7 @@
-﻿/**
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+/**
 * A tool for drawing polygons on the map using a mouse.
 * @param map An Azure Maps map instance to attach the drawing tool too. 
 * @param beforeLayer The layer or name of a layer to render the drawing layer before.
