@@ -94,19 +94,69 @@ function AddMapPoints(results) {
     }
     else {
         //Create a data source to add it to the map 
-        mapDataSource = new atlas.source.DataSource();
+        mapDataSource = new atlas.source.DataSource(null, {
+            //Tell the data source to cluster point data.
+            cluster: true,
+
+            //The radius in pixels to cluster points together.
+            clusterRadius: 45,
+
+            //The maximium zoom level in which clustering occurs.
+            //If you zoom in more than this, all points are rendered as symbols.
+            clusterMaxZoom: 15
+        });
         coordinates = UpdatePOIs(results, mapDataSource);
-        
+
         //Wait until the map resources are ready for first set up.
         resultsMap.events.add('ready', function () {
 
             //take the last coordinates.
-            if (coordinates) { resultsMap.setCamera ({ center: coordinates }); }
+            if (coordinates) { resultsMap.setCamera({ center: coordinates }); }
 
             //Add data source and create a symbol layer.
             resultsMap.sources.add(mapDataSource);
-            var symbolLayer = new atlas.layer.SymbolLayer(mapDataSource);
-            resultsMap.layers.add(symbolLayer);
+
+            //Create a bubble layer for rendering clustered data points.
+            var clusterBubbleLayer = new atlas.layer.BubbleLayer(mapDataSource, null, {
+                //Scale the size of the clustered bubble based on the number of points inthe cluster.
+                radius: [
+                    'step',
+                    ['get', 'point_count'],
+                    20,         //Default of 20 pixel radius.
+                    2, 30,    //If point_count >= 2, radius is 30 pixels.
+                    4, 40     //If point_count >= 4, radius is 40 pixels.
+                ],
+
+                //Change the color of the cluster based on the value on the point_cluster property of the cluster.
+                color: [
+                    'step',
+                    ['get', 'point_count'],
+                    'blue',            //Default to lime green. 
+                    2, 'lime',     //If the point_count >= 2, color is lime.
+                    4, 'yellow'        //If the point_count >= 4, color is yellow.
+                ],
+                strokeWidth: 0,
+                filter: ['has', 'point_count'] //Only rendered data points which have a point_count property, which clusters do.
+            });
+
+            var symbolLayer = new atlas.layer.SymbolLayer(mapDataSource, null, {
+                filter: ['!', ['has', 'point_count']] //Filter out clustered points from this layer.
+            });
+
+            resultsMap.layers.add([
+                clusterBubbleLayer,
+                //Create a symbol layer to render the count of locations in a cluster.
+                new atlas.layer.SymbolLayer(mapDataSource, null, {
+                    iconOptions: {
+                        image: 'none' //Hide the icon image.
+                    },
+                    textOptions: {
+                        textField: ['get', 'point_count_abbreviated'],
+                        offset: [0, 0.4]
+                    }
+                }),
+                symbolLayer
+            ]);
 
             //Create a popup but leave it closed so we can update it and display it later.
             popup = new atlas.Popup({
