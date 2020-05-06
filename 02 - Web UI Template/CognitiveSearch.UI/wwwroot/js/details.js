@@ -178,10 +178,12 @@ function GetFileHTML(data, result) {
         var pathLower = path.toLowerCase();
 
         if (pathLower.includes(".pdf")) {
-            var expectedType = encodeURIComponent("application/pdf");
-            var encodedFilename = encodeURIComponent(filename);
-            var previewPath = `/preview/${data.storageIndex}/${encodedFilename}/${expectedType}`;
-            fileContainerHTML = `<iframe class="file-container" src="${previewPath}"><p>Your browser does not support iframes.</p></iframe>`;
+              fileContainerHTML =
+                `<object class="file-container" data="${path}" type="application/pdf">
+                    <iframe class="file-container" src="${path}" type="application/pdf">
+                        This browser does not support PDFs. Please download the XML to view it: <a href="${path}">Download PDF</a>"
+                    </iframe>
+                </object>`;
         }
         else if (pathLower.includes(".txt") || pathLower.includes(".json")) {
             var txtHtml = htmlDecode(result.content.trim());
