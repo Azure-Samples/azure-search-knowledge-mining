@@ -1,4 +1,4 @@
-﻿using Microsoft.Azure.Search.Models;
+﻿using Azure.Search.Documents.Models;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -84,7 +84,7 @@ namespace CognitiveSearch.UI
                     {
                         facetsToGrab = maxNodes;
                     }
-                    DocumentSearchResult<Document> response = _searchHelper.GetFacets(t, facetNames, facetsToGrab);
+                    SearchResults<SearchDocument> response = _searchHelper.GetFacets(t, facetNames, facetsToGrab);
                     if (response != null)
                     {
                         int facetColor = 0;
@@ -96,7 +96,7 @@ namespace CognitiveSearch.UI
 
                             foreach (FacetResult facet in facetVals)
                             {
-                                var facetValue = facet.Value.ToString();
+                                var facetValue = facet.Values.ToString();
                                 NodeInfo nodeInfo = new NodeInfo(-1, -1);
                                 if (NodeMap.TryGetValue(facetValue, out nodeInfo) == false)
                                 {

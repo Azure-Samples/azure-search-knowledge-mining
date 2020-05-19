@@ -80,7 +80,7 @@ namespace CognitiveSearch.UI.Controllers
                 .Select(g => new SearchFacet { Key = g.Key, Value = g.Select(f => f[1]).ToArray() })
                 .ToArray();
 
-            var viewModel = SearchView(new SearchParameters
+            var viewModel = SearchView(new SearchOptions
             {
                 q = q,
                 searchFacets = searchFacets,
@@ -90,7 +90,7 @@ namespace CognitiveSearch.UI.Controllers
             return View(viewModel);
         }
 
-        public class SearchParameters
+        public class SearchOptions
         {
             public string q { get; set; }
             public SearchFacet[] searchFacets { get; set; }
@@ -99,7 +99,7 @@ namespace CognitiveSearch.UI.Controllers
         }
 
         [HttpPost]
-        public SearchResultViewModel SearchView([FromForm]SearchParameters searchParams)
+        public SearchResultViewModel SearchView([FromForm]SearchOptions searchParams)
         {
             if (searchParams.q == null)
                 searchParams.q = "*";
