@@ -78,10 +78,15 @@ The following code will create a search index for you based on the json files in
 To run the [PowerShell script](./deploy.ps1):
 
 1. Open PowerShell and navigate to this folder.
+
+    ```cmd
+    cd "00 - Resource Deployment"
+    ```
+
 2. Run the following command:
 
     ```cmd
-        ./deploy.ps1
+    ./deploy.ps1
     ```
 
 3. After running the script, you'll be prompted to login and provide additional information.

@@ -33,6 +33,7 @@ function Deploy
 {
     # Read parameters from user.
     Write-Host "Press enter to use [default] value."
+    Write-Host "For uniqueName, please enter a string with 10 or less characters."
     while (!($uniqueName = Read-Host "uniqueName")) { Write-Host "You must provide a uniqueName."; }
     while (!($resourceGroupName = Read-Host "resourceGroupName")) { Write-Host "You must provide a resourceGroupName."; }
     while (!($subscriptionId = Read-Host "subscriptionId")) { Write-Host "You must provide a subscriptionId."; }
@@ -47,7 +48,7 @@ function Deploy
     $webappname = $uniqueName + "app";
     $cogServicesName = $uniqueName + "cog";
     $appInsightsName = $uniqueName + "insights";
-    $storageAccountName = $uniqueName + "storage";
+    $storageAccountName = $uniqueName + "str";
     $storageContainerName = "documents";
         
     $dataSourceName = $uniqueName + "-datasource";

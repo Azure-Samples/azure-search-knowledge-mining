@@ -26,6 +26,7 @@ There are two options for deploying the resources to Azure for this solution acc
 ## Prerequisites
 
 1. Access to an Azure Subscription
+2. If you're running the PowerShell script, you'll also need to install the [Az PowerShell Module](https://docs.microsoft.com/powershell/azure/install-az-ps)
 
 ## Running the PowerShell Script
 
@@ -34,10 +35,15 @@ There are two options for deploying the resources to Azure for this solution acc
 To run the [PowerShell script](./deploy.ps1):
 
 1. Open PowerShell and navigate to this folder.
+
+    ```cmd
+    cd "00 - Resource Deployment"
+    ```
+
 2. Run the following command:
 
     ```cmd
-        ./deploy.ps1
+    ./deploy.ps1
     ```
 
 3. After running the script, you'll be prompted to login and provide additional information.
