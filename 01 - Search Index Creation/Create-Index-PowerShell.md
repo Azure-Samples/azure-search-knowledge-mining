@@ -9,7 +9,7 @@ The following code will create a search index for you based on the json files in
 
     # Generate derivative parameters.
     $searchServiceName = $uniqueName + "search";
-    $storageAccountName = $uniqueName + "storage";
+    $storageAccountName = $uniqueName + "str";
     $storageContainerName = "documents";
 
     $dataSourceName = $uniqueName + "-datasource";
@@ -71,6 +71,10 @@ The following code will create a search index for you based on the json files in
     CreateSearchIndex;
 ```
 
+## Prerequisites
+
+2. To run the PowerShell script, you'll need to install the [Az PowerShell Module](https://docs.microsoft.com/powershell/azure/install-az-ps)
+
 ## Running the PowerShell Script
 
 > If you're new to PowerShell, you can follow the instructions on [How to run PowerShell script file on Windows 10](https://www.windowscentral.com/how-create-and-run-your-first-powershell-script-file-windows-10) to help you get started.
@@ -78,10 +82,15 @@ The following code will create a search index for you based on the json files in
 To run the [PowerShell script](./deploy.ps1):
 
 1. Open PowerShell and navigate to this folder.
+
+    ```cmd
+    cd "00 - Resource Deployment"
+    ```
+
 2. Run the following command:
 
     ```cmd
-        ./deploy.ps1
+    ./deploy.ps1
     ```
 
 3. After running the script, you'll be prompted to login and provide additional information.
