@@ -89,7 +89,7 @@
     },
     "variables": {
         "hostingPlanName": "[concat(parameters('resourcePrefix'), '-plan')]",
-        "storageAccountName": "[concat(parameters('resourcePrefix'), 'storage')]",
+        "storageAccountName": "[concat(parameters('resourcePrefix'), 'str')]",
         "websiteName": "[concat(parameters('resourcePrefix'), '-site')]",
         "appInsightsName": "[concat(parameters('resourcePrefix'), '-app-insights')]",
         "searchServiceName": "[concat(parameters('resourcePrefix'), '-search-service')]",
