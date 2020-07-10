@@ -9,7 +9,7 @@ The following code will create a search index for you based on the json files in
 
     # Generate derivative parameters.
     $searchServiceName = $uniqueName + "search";
-    $storageAccountName = $uniqueName + "storage";
+    $storageAccountName = $uniqueName + "str";
     $storageContainerName = "documents";
 
     $dataSourceName = $uniqueName + "-datasource";
@@ -70,6 +70,10 @@ The following code will create a search index for you based on the json files in
 
     CreateSearchIndex;
 ```
+
+## Prerequisites
+
+2. To run the PowerShell script, you'll need to install the [Az PowerShell Module](https://docs.microsoft.com/powershell/azure/install-az-ps)
 
 ## Running the PowerShell Script
 
