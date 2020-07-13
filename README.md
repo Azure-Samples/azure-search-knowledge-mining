@@ -93,7 +93,7 @@ This folder contains a self paced workshop that teaches you everything you need 
 + [Module 4 - Learning the Object Model](https://github.com/Azure-Samples/azure-search-knowledge-mining/blob/master/Module%204.md)
 + [Module 5 - Advanced Azure Cognitive Search: Analyzers and Scoring Profiles](https://github.com/Azure-Samples/azure-search-knowledge-mining/workshops/Module%205.md)
 + [Module 6 - Analyzing Your Data with PowerBI](https://github.com/Azure-Samples/azure-search-knowledge-mining/blob/master/workshops/Module%206.md)
-+ [Module 7 - Using Azure Cognitive Search to index structured data](./workshops/Module%207.md) (Optional)
++ [Module 7 - Using Azure Cognitive Search to index structured data](https://github.com/Azure-Samples/azure-search-knowledge-mining/blob/master/workshops/Module%207.md) (Optional)
 
 ## License
 
