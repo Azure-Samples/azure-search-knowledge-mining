@@ -164,13 +164,7 @@
                 "name": "S0"
             },
             "kind": "CognitiveServices",
-            "location": "eastus",
-            "properties": {
-                "apiProperties": {
-                    "statisticsEnabled": false
-                },
-                "publicNetworkAccess": "Enabled"
-            }
+            "location": "[toLower(replace(parameters('location'),' ', ''))]"
         },
         {
             "apiVersion": "2016-03-01",
