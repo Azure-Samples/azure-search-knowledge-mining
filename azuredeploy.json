@@ -159,12 +159,12 @@
         {
             "name": "[variables('cognitiveServicesAccountName')]",
             "type": "Microsoft.CognitiveServices/accounts",
-            "apiVersion": "2016-02-01-preview",
+            "apiVersion": "2017-04-18",
             "sku": {
                 "name": "S0"
             },
             "kind": "CognitiveServices",
-            "location": "[parameters('location')]",
+            "location": "[toLower(replace(parameters('location'),' ', ''))]",
             "properties": {}
         },
         {
