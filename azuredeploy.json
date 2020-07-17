@@ -164,7 +164,8 @@
                 "name": "S0"
             },
             "kind": "CognitiveServices",
-            "location": "[toLower(replace(parameters('location'),' ', ''))]"
+            "location": "[toLower(replace(parameters('location'),' ', ''))]",
+            "properties": {}
         },
         {
             "apiVersion": "2016-03-01",
