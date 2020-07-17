@@ -165,7 +165,12 @@
             },
             "kind": "CognitiveServices",
             "location": "[parameters('location')]",
-            "properties": {}
+            "properties": {
+                "apiProperties": {
+                    "statisticsEnabled": false
+                },
+                "publicNetworkAccess": "Enabled"
+            }
         },
         {
             "apiVersion": "2016-03-01",
