@@ -11,22 +11,22 @@ There are two options for deploying the resources to Azure for this solution acc
     3. Create a search index
     4. Print out the values and keys needed for the web app's *appsettings.json*
 
-    If you choose to run this script, you can skip the Search Index Creation in the next folder.
+    If you choose to run this script, **you can skip the Search Index Creation** in the next folder.
 
-2. **Using an ARM Template**: `azuredeploy.json`
+1. **Using an ARM Template**: `azuredeploy.json`
 
     To deploy this ARM Template, simply press the button below:
 
     > Please note that this will only deploy the resources. You'll then need to create a search index in the next step.
 
     <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure-Samples%2Fazure-search-knowledge-mining%2Fmaster%2Fazuredeploy.json" target="_blank">
-        <img src="http://azuredeploy.net/deploybutton.png"/>
+        <img src="https://azuredeploy.net/deploybutton.png"/>
     </a>
 
 ## Prerequisites
 
 1. Access to an Azure Subscription
-2. If you're running the PowerShell script, you'll also need to install the [Az PowerShell Module](https://docs.microsoft.com/powershell/azure/install-az-ps)
+1. If you're running the PowerShell script, you'll also need to install the [Az PowerShell Module](https://docs.microsoft.com/powershell/azure/install-az-ps)
 
 ## Running the PowerShell Script
 

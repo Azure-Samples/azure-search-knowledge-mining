@@ -4,8 +4,8 @@ A PowerBI Template file has been created so you can quickly spin up reports base
 
 ## Prerequisites
 
-1. Application Insights is used to capture the telemetry data for these reports.  If you chose to not provision Application Insights and update the *InstrumentationKey* in the web app's *appsettings.json* file, you will not have data available to run the reports in this repository.
-2. PowerBI Desktop installed on your computer
+1. Application Insights is used to capture the telemetry data for these reports. If you chose to not provision Application Insights and update the *InstrumentationKey* in the web app's *appsettings.json* file, you will not have data available to run the reports in this repository.
+1. PowerBI Desktop installed on your computer
 
 ## Getting Started
 
