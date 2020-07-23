@@ -17,6 +17,7 @@ If you choose to create your index via the Azure Portal, set your search field p
 |locations				| List of strings with the locations identified in the document. Should be **facetable, filterable, searchable and retrievable**.  |
 |organizations			| List of strings with the organizations identified in the document. Should be **facetable, filterable, searchable and retrievable**.  |
 |keyPhrases				| List of strings with the key phrases identified in the document. Should be **facetable, filterable, searchable and retrievable**.  |
+|language				| String containing the main language of the document. Should be **facetable, filterable, searchable and retrievable**.  |
 
 ## Instructions
 
@@ -40,15 +41,21 @@ Start by navigating to your search service in the Azure Portal:
 
 #### 3.2 Follow the wizard to connect to your storage account
 
+Keep the defaults and use `Choose an existing connection` to connect to your storage container with your data:
+
 ![screenshot](../images/createindex-step3.PNG)
 
 ### 4.0 Add Cognitive Skills
 
 #### 4.1 Attach Cognitive Services
 
+An Cognitive Services reosurce should have been automatically provisioned, just select it. If it has not been provisioned successfully, use the `Create new Cognitive Services resource` link and create one:
+
 ![screenshot](../images/createindex-step4.PNG)
 
 #### 4.2 Add enrichments
+
+Select the enrichments you want to add. Please note that the `Extract personally identifiable information` skill currently does only support English documents. Some of the sample data is currently in different languages, hence do not enable it when you use the [sample documents](../sample_documents) from this repo. 
 
 ![screenshot](../images/createindex-step5.PNG)
 

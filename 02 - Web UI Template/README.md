@@ -12,7 +12,7 @@ In just a few steps, you can configure this template UI to query your search ind
 
 ## Prerequisites
 
-1. Visual Studio 2017 or newer
+1. Visual Studio 2019 or newer - [Download](https://visualstudio.microsoft.com/downloads/)
 
 ## 1. Update appsettings.json
 

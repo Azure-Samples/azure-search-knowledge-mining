@@ -32,7 +32,7 @@ Once you're finished, you'll have a web app ready to search your data.
 In order to successfully complete your solution, you'll need to gain access and provision the following resources:
 
 * Azure subscription - [Create one for free](https://azure.microsoft.com/free/)
-* [Visual Studio 2017 or later](https://visualstudio.microsoft.com/downloads/)
+* [Visual Studio 2019 or later](https://visualstudio.microsoft.com/downloads/) - Community edition or higher
 * [Postman](https://www.getpostman.com/) for making API calls
 * Documents uploaded to any data source supported by Azure Search Indexers. For a list of these, see [Indexers in Azure Cognitive Search](https://docs.microsoft.com/azure/search/search-indexer-overview). This solution accelerator uses Azure Blob Storage as a container for source data files. You can find sample documents in the **sample_documents/** folder.
 
@@ -54,7 +54,7 @@ The contents of this folder show you how to deploy the required resources to you
 Alternatively, you can automatically deploy the required resources using this button:
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure-Samples%2Fazure-search-knowledge-mining%2Fmaster%2Fazuredeploy.json" target="_blank">
-    <img src="http://azuredeploy.net/deploybutton.png"/>
+    <img src="https://azuredeploy.net/deploybutton.png"/>
 </a>
 
 ### [01 - Search Index Creation](https://github.com/Azure-Samples/azure-search-knowledge-mining/tree/master/01%20-%20Search%20Index%20Creation)
