@@ -3,6 +3,8 @@
 
 using Azure;
 using Azure.Search.Documents;
+using Azure.Search.Documents.Indexes;
+using Azure.Search.Documents.Indexes.Models;
 using Azure.Search.Documents.Models;
 using Azure.Storage;
 using Azure.Storage.Blobs;
@@ -20,7 +22,7 @@ namespace CognitiveSearch.UI
     public class DocumentSearchClient
     {
         private IConfiguration _configuration { get; set; }
-        private SearchServiceClient _searchServiceClient;
+        private SearchIndexClient _searchIndexClient;
         private SearchClient _searchClient;
         private string searchServiceName { get; set; }
         private string apiKey { get; set; }
@@ -61,10 +63,10 @@ namespace CognitiveSearch.UI
                 telemetryClient.InstrumentationKey = configuration.GetSection("InstrumentationKey")?.Value;
 
                 // Create an HTTP reference to the catalog index
-                _searchServiceClient = new SearchServiceClient(new Uri($"https://{searchServiceName}.search.windows.net/"), new AzureKeyCredential(apiKey));
-                _searchClient = _searchServiceClient.GetSearchClient(IndexName);
+                _searchIndexClient = new SearchIndexClient(new Uri($"https://{searchServiceName}.search.windows.net/"), new AzureKeyCredential(apiKey));
+                _searchClient = _searchIndexClient.GetSearchClient(IndexName);
 
-                Schema = new SearchSchema().AddFields(_searchServiceClient.GetIndex(IndexName).Value.Fields);
+                Schema = new SearchSchema().AddFields(_searchIndexClient.GetIndex(IndexName).Value.Fields);
                 Model = new SearchModel(Schema);
 
                 _isPathBase64Encoded = (configuration.GetSection("IsPathBase64Encoded")?.Value == "True");
@@ -90,7 +92,7 @@ namespace CognitiveSearch.UI
                     _searchId = s.Result;
                 }
 
-                return _searchClient.Search(searchText, sp);
+                return _searchClient.Search<SearchDocument>(searchText, sp);
             }
             catch (Exception ex)
             {
@@ -183,7 +185,7 @@ namespace CognitiveSearch.UI
                     Size = 8
                 };
 
-                return _searchClient.Suggest(searchText, "sg", sp);
+                return _searchClient.Suggest<SearchDocument>(searchText, "sg", sp);
             }
             catch (Exception ex)
             {
@@ -219,7 +221,7 @@ namespace CognitiveSearch.UI
             // Execute geo search based on query string
             try
             {
-                return _searchClient.GetDocument(id);
+                return _searchClient.GetDocument<SearchDocument>(id);
             }
             catch (Exception ex)
             {
@@ -233,7 +235,7 @@ namespace CognitiveSearch.UI
         {
             var client = new SearchClient(new Uri($"https://{searchServiceName}.search.windows.net/"), IndexName, new AzureKeyCredential(apiKey));
             //var headers = new Dictionary<string, List<string>>() { { "x-ms-azs-return-searchid", new List<string>() { "true" } } };
-            var response = await client.SearchAsync(searchText: searchText, sp);
+            var response = await client.SearchAsync<SearchDocument>(searchText: searchText, sp);
             IEnumerable<string> headerValues;
             string searchId = string.Empty;
             if (response.GetRawResponse().Headers.TryGetValues("x-ms-azs-searchid", out headerValues))
@@ -270,7 +272,7 @@ namespace CognitiveSearch.UI
                     QueryType = SearchQueryType.Full
                 };
 
-                return _searchServiceClient.GetSearchClient(IndexName).Search(searchText, sp);
+                return _searchIndexClient.GetSearchClient(IndexName).Search<SearchDocument>(searchText, sp);
             }
             catch (Exception ex)
             {
@@ -340,10 +342,11 @@ namespace CognitiveSearch.UI
         /// </summary>
         public async Task RunIndexer()
         {
-            var indexStatus = await _searchServiceClient.GetIndexerStatusAsync(IndexerName);
+            SearchIndexerClient _searchIndexerClient = new SearchIndexerClient(new Uri($"https://{searchServiceName}.search.windows.net/"), new AzureKeyCredential(apiKey));
+            var indexStatus = await _searchIndexerClient.GetIndexerStatusAsync(IndexerName);
             if (indexStatus.Value.LastResult.Status != IndexerExecutionStatus.InProgress)
             {
-                _searchServiceClient.RunIndexer(IndexerName);
+                _searchIndexerClient.RunIndexer(IndexerName);
             }
         }
 

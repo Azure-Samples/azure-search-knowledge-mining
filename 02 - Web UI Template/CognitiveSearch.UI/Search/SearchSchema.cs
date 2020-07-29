@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Azure.Search.Documents.Indexes.Models;
 using Azure.Search.Documents.Models;
 using Microsoft.Spatial;
 using System;
@@ -39,7 +40,7 @@ namespace CognitiveSearch.UI
 
     public static partial class Extensions
     {
-        public static SearchField ToSearchField(this Azure.Search.Documents.Models.SearchField field)
+        public static SearchField ToSearchField(this Azure.Search.Documents.Indexes.Models.SearchField field)
         {
             Type type;
             if (field.Type == SearchFieldDataType.Boolean) type = typeof(Boolean);
@@ -77,7 +78,7 @@ namespace CognitiveSearch.UI
             };
         }
 
-        public static SearchSchema AddFields(this SearchSchema schema, IEnumerable<Azure.Search.Documents.Models.SearchField> fields)
+        public static SearchSchema AddFields(this SearchSchema schema, IList<Azure.Search.Documents.Indexes.Models.SearchField> fields)
         {
             foreach (var field in fields)
             {
