@@ -153,6 +153,14 @@ namespace CognitiveSearch.UI
                 using (var writer = new Utf8JsonWriter(stream, options))
                 {
                     writer.WriteStartObject();
+                    writer.WritePropertyName("links");
+                    writer.WriteStartArray();
+                    foreach (FDGraphEdges entry in FDEdgeList)
+                    {
+                        var jsonDocument = JsonDocument.Parse(JsonSerializer.Serialize(entry));
+                        jsonDocument.RootElement.WriteTo(writer);
+                    }
+                    writer.WriteEndArray();
                     writer.WritePropertyName("nodes");
                     writer.WriteStartArray();
                     foreach (KeyValuePair<string, NodeInfo> entry in NodeMap)
@@ -165,14 +173,6 @@ namespace CognitiveSearch.UI
                             layer = entry.Value.Layer,
                             cornerStone = entry.Value.LayerCornerStone
                         }));
-                        jsonDocument.RootElement.WriteTo(writer);
-                    }
-                    writer.WriteEndArray();
-                    writer.WritePropertyName("edges");
-                    writer.WriteStartArray();
-                    foreach (FDGraphEdges entry in FDEdgeList)
-                    {
-                        var jsonDocument = JsonDocument.Parse(JsonSerializer.Serialize(entry));
                         jsonDocument.RootElement.WriteTo(writer);
                     }
                     writer.WriteEndArray();
