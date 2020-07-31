@@ -278,7 +278,7 @@ namespace CognitiveSearch.UI
 
         public DocumentResult GetDocuments(string q, SearchFacet[] searchFacets, int currentPage, string polygonString = null)
         {
-            var s_tokens = GetContainerSasUris();
+            GetContainerSasUris();
 
             var selectFilter = Model.SelectFilter;
 
@@ -363,7 +363,7 @@ namespace CognitiveSearch.UI
         /// This will return up to 3 s_tokens for the storage accounts
         /// </summary>
         /// <returns></returns>
-        private string[] GetContainerSasUris()
+        private void GetContainerSasUris()
         {
             // We need to refresh the s_tokens every time or they will become invalid.
             s_tokens = new string[3];
@@ -402,7 +402,6 @@ namespace CognitiveSearch.UI
 
                 s_tokens[i] = sasUri.ToUri().ToString();
             }
-            return s_tokens;
         }
 
         public DocumentResult GetDocumentById(string id)
