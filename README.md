@@ -65,7 +65,7 @@ We recommend using this collection to create an initial search index and then it
 
 ### [02 - Web UI Template](https://github.com/Azure-Samples/azure-search-knowledge-mining/tree/master/02%20-%20Web%20UI%20Template)
 
-This folder contains a basic Web UI Template, written in .NET Core, which you can configure to query your search index. Follow the steps outlined in the [Web UI Template README file](https://github.com/Azure-Samples/azure-search-knowledge-mining/02%20-%20Web%20UI%20Template/README.md) to integrate your new search index into the web app.
+This folder contains a basic Web UI Template, written in .NET Core, which you can configure to query your search index. Follow the steps outlined in the [Web UI Template README file](https://github.com/Azure-Samples/azure-search-knowledge-mining/tree/master/02%20-%20Web%20UI%20Template) to integrate your new search index into the web app.
 
 ### [03 - Data Science & Custom Skills](https://github.com/Azure-Samples/azure-search-knowledge-mining/tree/master/03%20-%20Data%20Science%20and%20Custom%20Skills)
 
