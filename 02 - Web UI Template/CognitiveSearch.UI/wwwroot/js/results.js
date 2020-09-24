@@ -168,10 +168,10 @@ function UpdatePOIs(results, dataSource) {
     var coordinates;
     for (var i = 0; i < results.length; i++) {
         var result = results[i].document;
-        var latlon = result.geoLocation;
-        if (latlon !== null) {
-            if (latlon.isEmpty === false) {
-                coordinates = [latlon.longitude, latlon.latitude];
+        var latlon = result?.geoLocation;
+        if (latlon !== null && typeof latlon !== 'undefined') {
+            if (latlon.coordinates !== null) {
+                coordinates = [latlon.coordinates[0], latlon.coordinates[1]]; // longitude, latitude
                 //Add the symbol to the data source.
                 dataSource.add(new atlas.data.Feature(new atlas.data.Point(coordinates), {
                     name: result.metadata_storage_name,
