@@ -114,9 +114,9 @@ function AuthenticateMap(result) {
 
             if (latlon) {
 
-                if (latlon.isEmpty === false) {
+                if (latlon.coordinates !== null) {
 
-                    var coordinates = [latlon.longitude, latlon.latitude];
+                    var coordinates = [latlon.coordinates[0], latlon.coordinates[1]]; // longitude, latitude
 
                     // Authenticate the map using the key 
                     var map = new atlas.Map('myMap', {
