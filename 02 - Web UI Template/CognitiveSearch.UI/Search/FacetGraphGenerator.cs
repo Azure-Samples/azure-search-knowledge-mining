@@ -97,7 +97,8 @@ namespace CognitiveSearch.UI
 
                             foreach (FacetResult facet in facetVals)
                             {
-                                var facetValue = facet.Values.ToString();
+                                var facetValue = facet.Value.ToString();
+
                                 NodeInfo nodeInfo = new NodeInfo(-1, -1);
                                 if (NodeMap.TryGetValue(facetValue, out nodeInfo) == false)
                                 {

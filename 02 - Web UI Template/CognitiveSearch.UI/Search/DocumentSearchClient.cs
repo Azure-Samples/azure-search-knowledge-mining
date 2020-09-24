@@ -11,10 +11,12 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Sas;
 using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace CognitiveSearch.UI
@@ -22,8 +24,8 @@ namespace CognitiveSearch.UI
     public class DocumentSearchClient
     {
         private IConfiguration _configuration { get; set; }
-        readonly SearchIndexClient _searchIndexClient;
-        readonly SearchClient _searchClient;
+        private readonly SearchIndexClient _searchIndexClient;
+        private readonly SearchClient _searchClient;
         private string searchServiceName { get; set; }
         private string apiKey { get; set; }
         private string IndexName { get; set; }
@@ -33,7 +35,7 @@ namespace CognitiveSearch.UI
 
         // Client logs all searches in Application Insights
         private static TelemetryClient telemetryClient = new TelemetryClient();
-        public string _SearchId { get; set; }
+        public string SearchId { get; set; }
 
         public SearchSchema Schema { get; set; }
         public SearchModel Model { get; set; }
@@ -89,7 +91,7 @@ namespace CognitiveSearch.UI
                 if (!string.IsNullOrEmpty(telemetryClient.InstrumentationKey))
                 {
                     var s = GenerateSearchId(searchText, options);
-                    _SearchId = s.Result;
+                    SearchId = s.Result;
                 }
 
                 return _searchClient.Search<SearchDocument>(searchText, options);
@@ -110,12 +112,26 @@ namespace CognitiveSearch.UI
                 Skip = (currentPage - 1) * 10,
                 IncludeTotalCount = true,
                 QueryType = SearchQueryType.Full,
-                //Select = selectFilter,
-                //Facets = Model.Facets.Select(f => f.Name).ToList(),
-                //HighlightFields = Model.SearchableFields,
                 HighlightPreTag = "<b>",
                 HighlightPostTag = "</b>"
             };
+
+            foreach (string s in selectFilter)
+            {
+                options.Select.Add(s);
+            }
+
+            var facets = Model.Facets.Select(f => f.Name).ToList();
+            foreach (string f in facets)
+            {
+                options.Facets.Add(f);
+            }
+
+            foreach (string h in Model.SearchableFields)
+            {
+                options.HighlightFields.Add(h);
+            }
+
 
             string filter = null;
             var filterStr = string.Empty;
@@ -244,7 +260,7 @@ namespace CognitiveSearch.UI
 
         public string GetSearchId()
         {
-            if (_SearchId != null) { return _SearchId; }
+            if (SearchId != null) { return SearchId; }
             return string.Empty;
         }
 
@@ -267,6 +283,11 @@ namespace CognitiveSearch.UI
                     QueryType = SearchQueryType.Full
                 };
 
+                foreach (string s in facetNames)
+                {
+                    options.Facets.Add(s);
+                }
+                
                 return _searchIndexClient.GetSearchClient(IndexName).Search<SearchDocument>(searchText, options);
             }
             catch (Exception ex)
@@ -289,7 +310,7 @@ namespace CognitiveSearch.UI
 
             var response = Search(q, searchFacets, selectFilter, currentPage, polygonString);
             var searchId = GetSearchId().ToString();
-            var facetResults = new List<object>();
+            var facetResults = new List<Facet>();
             var tagsResults = new List<object>();
 
             if (response != null && response.Facets != null)
@@ -299,7 +320,7 @@ namespace CognitiveSearch.UI
                 {
                     var cleanValues = GetCleanFacetValues(facetResult);
 
-                    facetResults.Add(new
+                    facetResults.Add(new Facet
                     {
                         key = facetResult.Key,
                         value = cleanValues
@@ -329,6 +350,10 @@ namespace CognitiveSearch.UI
                 Token = s_tokens[0],
                 IsPathBase64Encoded = _isPathBase64Encoded
             };
+
+            string json = JsonConvert.SerializeObject(facetResults);
+
+
             return result;
         }
 
@@ -376,11 +401,11 @@ namespace CognitiveSearch.UI
             s_containerAddresses[1] = _configuration.GetSection("StorageContainerAddress2")?.Value.ToLower();
             s_containerAddresses[2] = _configuration.GetSection("StorageContainerAddress3")?.Value.ToLower();
             int s_containerAddressesLength = s_containerAddresses.Length;
-            if (!String.Equals(s_containerAddresses[1], defaultContainerUriValue))
+            if (String.Equals(s_containerAddresses[1], defaultContainerUriValue))
             {
                 s_containerAddressesLength--;
             }
-            if (!String.Equals(s_containerAddresses[2], defaultContainerUriValue))
+            if (String.Equals(s_containerAddresses[2], defaultContainerUriValue))
             {
                 s_containerAddressesLength--;
             }
@@ -400,7 +425,7 @@ namespace CognitiveSearch.UI
                 BlobUriBuilder  sasUri = new BlobUriBuilder(container.Uri);
                 sasUri.Sas = sas;
 
-                s_tokens[i] = sasUri.ToUri().ToString();
+                s_tokens[i] = "?" + sasUri.Sas.ToString();
             }
         }
 
@@ -481,9 +506,9 @@ namespace CognitiveSearch.UI
         /// </summary>
         /// <param name="facetResult"></param>
         /// <returns></returns>
-        private static IList<FacetResult> GetCleanFacetValues(KeyValuePair<string, IList<FacetResult>> facetResult)
+        private static List<FacetValue> GetCleanFacetValues(KeyValuePair<string, IList<FacetResult>> facetResult)
         {
-            IList<FacetResult> cleanValues = new List<FacetResult>();
+            List<FacetValue> cleanValues = new List<FacetValue>();
 
             if (facetResult.Key == "people")
             {
@@ -492,7 +517,8 @@ namespace CognitiveSearch.UI
                 {
                     if (element.Values.ToString().Length >= 4)
                     {
-                        cleanValues.Add(element);
+                       
+                        cleanValues.Add(new FacetValue() { value = element.Value.ToString(), count = element.Count });
                     }
                 }
 
@@ -500,7 +526,10 @@ namespace CognitiveSearch.UI
             }
             else
             {
-                return facetResult.Value;
+                List<FacetValue> outputFacets = facetResult.Value
+                           .Select(x => new FacetValue() { value = x.Value.ToString(), count = x.Count })
+                           .ToList();
+                return outputFacets;
             }
         }
     }

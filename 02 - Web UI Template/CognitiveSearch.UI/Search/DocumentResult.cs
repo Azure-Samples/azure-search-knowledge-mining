@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Azure;
+using Azure.Search.Documents;
 using Azure.Search.Documents.Models;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace CognitiveSearch.UI
 {
     public class DocumentResult
     {
-        public List<object> Facets { get; set; }
+        public List<Facet> Facets { get; set; }
         public SearchDocument Result { get; set; }
         public Pageable<SearchResult<SearchDocument>> Results { get; set; }
         public int? Count { get; set; }
@@ -24,4 +25,17 @@ namespace CognitiveSearch.UI
         public string IdField { get; set; }
         public bool IsPathBase64Encoded { get; set; }
     }
+
+    public class Facet
+    {
+        public string key { get; set; }
+        public List<FacetValue> value { get; set; }
+    }
+
+    public class FacetValue
+    {
+        public string value { get; set; }
+        public long? count { get; set; }
+    }
+
 }
