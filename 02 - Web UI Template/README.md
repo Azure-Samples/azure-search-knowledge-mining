@@ -1,10 +1,5 @@
 # Cognitive Search UI Template
-This folder contains a basic web front end that can be used to quickly create a view of your search results.  With just a few simple steps, you can configure this template UI to query your newly created search index.
-
-The Cognitive Search Template contains two projects:
-
-1. **CognitiveSearch.UI** - this is a .NET Core MVC Web app used as a Template UI for querying a search index. This is the focus of this README.
-2. **CognitiveSearch.Skills** - this is an Azure Function project used for creating C# custom skills. For more information on custom skills, please see the the documentation in *03 - Data Science & Custom Skills*.
+This folder contains a basic web front end that can be used to quickly create a view of your search results.  With just a few simple steps, you can configure this template UI to query your newly created search index. **CognitiveSearch.UI** is a .NET Core MVC Web app used as a Template UI for querying a search index. This is the focus of this README.
 
 In just a few steps, you can configure this template UI to query your search index. This template will render a web page similar to the following:
 
