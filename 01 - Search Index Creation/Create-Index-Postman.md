@@ -41,4 +41,4 @@ We recommend using this collection to create an initial index and then iterating
 
 ## Additional Resources
 
-For more help working with Postman, see the [documentation](https://www.getpostman.com/docs/v6/postman/launching_postman/sending_the_first_request) on the Postman website.
+For more help working with Postman, see the [documentation](https://learning.postman.com/docs/getting-started/introduction/) on the Postman website.
