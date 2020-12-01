@@ -53,9 +53,7 @@ The contents of this folder show you how to deploy the required resources to you
 
 Alternatively, you can automatically deploy the required resources using this button:
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure-Samples%2Fazure-search-knowledge-mining%2Fmaster%2Fazuredeploy.json" target="_blank">
-    <img src="https://azuredeploy.net/deploybutton.png"/>
-</a>
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure-Samples%2Fazure-search-knowledge-mining%2Fmaster%2Fazuredeploy.json)
 
 ### [01 - Search Index Creation](https://github.com/Azure-Samples/azure-search-knowledge-mining/tree/master/01%20-%20Search%20Index%20Creation)
 
