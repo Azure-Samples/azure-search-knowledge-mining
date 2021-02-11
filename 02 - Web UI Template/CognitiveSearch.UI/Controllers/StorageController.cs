@@ -10,6 +10,7 @@ using System.IO;
 using System.Web;
 using Azure.Storage.Blobs;
 using Azure.Storage;
+using Azure.Storage.Blobs.Models;
 
 namespace CognitiveSearch.UI.Controllers
 {
@@ -36,7 +37,9 @@ namespace CognitiveSearch.UI.Controllers
                     if (formFile.Length > 0)
                     {
                         var blob = container.GetBlobClient(formFile.FileName);
-                        await blob.UploadAsync(formFile.OpenReadStream());
+                        var blobHttpHeader = new BlobHttpHeaders();
+                        blobHttpHeader.ContentType = formFile.ContentType;
+                        await blob.UploadAsync(formFile.OpenReadStream(), blobHttpHeader);
                     }
                 }
             }
