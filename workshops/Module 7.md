@@ -12,7 +12,7 @@ If you happen to have SQL Server Management Studio, you can connect to the Azure
 Server: azs-playground.database.windows.net
 Database: medical-demo
 User: reader
-Password: (see the value in [https://azsplayground.blob.core.windows.net/public/medical-demo-connection-string.txt](https://azsplayground.blob.core.windows.net/public/medical-demo-connection-string.txt))
+Password: (see the value in https://azsplayground.blob.core.windows.net/public/medical-demo-connection-string.txt)
 Table: patient_info
 ```
 
