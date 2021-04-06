@@ -121,6 +121,8 @@ namespace CognitiveSearch.UI.Controllers
                 currentPage = searchParams.currentPage,
                 searchId = searchidId ?? null,
                 applicationInstrumentationKey = _configuration.GetSection("InstrumentationKey")?.Value,
+                searchServiceName = _configuration.GetSection("SearchServiceName")?.Value,
+                indexName = _configuration.GetSection("SearchIndexName")?.Value,
                 facetableFields = _docSearch.Model.Facets.Select(k => k.Name).ToArray()
             };
             return viewModel;
