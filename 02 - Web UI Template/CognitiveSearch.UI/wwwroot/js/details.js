@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 // Details
-function ShowDocument(id) {
+function ShowDocument(id, index) {
     $.post('/home/getdocumentbyid',
         {
             id: id
@@ -100,7 +100,7 @@ function ShowDocument(id) {
             }
 
             //Log Click Events
-            LogClickAnalytics(result.metadata_storage_name, 0);
+            LogClickAnalytics(result.metadata_storage_name, index);
             GetSearchReferences(q);
         });
 }

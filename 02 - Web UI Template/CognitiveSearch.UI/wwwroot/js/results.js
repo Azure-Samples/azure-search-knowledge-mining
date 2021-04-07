@@ -122,8 +122,8 @@ function AddMapPoints(results) {
                     var properties = e.shapes[0].getProperties();
                     var id = properties.id;
                     var popupTemplate = `<div class="customInfobox">
-                                         <div class="name" onclick="ShowDocument('${id}');" >{name}</div>
-                                         <div onclick="ShowDocument('${id}');">{description}</div>
+                                         <div class="name" onclick="ShowDocument('${id}', ${0});" >{name}</div>
+                                         <div onclick="ShowDocument('${id}', ${0});">{description}</div>
                                          </div>`;
                     content = popupTemplate.replace(/{name}/g, properties.name).replace(/{description}/g, properties.description);
                     coordinate = e.shapes[0].getCoordinates();
@@ -310,7 +310,7 @@ function UpdateResults(data) {
 
             var contentPreview = content ? `<p class="max-lines">${content}</p>` : "";
 
-            resultsHtml += `<div id="resultdiv${i}" class="${classList}" onclick="ShowDocument('${id}');">
+            resultsHtml += `<div id="resultdiv${i}" class="${classList}" onclick="ShowDocument('${id}', ${i + 1});">
                                     <div class="search-result">
                                         ${imageContent}
                                         <div class="results-icon col-md-1">

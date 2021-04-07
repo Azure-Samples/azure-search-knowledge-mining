@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using Azure;
+using Azure.Core;
+using Azure.Core.Pipeline;
 using Azure.Search.Documents;
 using Azure.Search.Documents.Indexes;
 using Azure.Search.Documents.Indexes.Models;
@@ -64,8 +66,12 @@ namespace CognitiveSearch.UI
                 idField = configuration.GetSection("KeyField")?.Value;
                 telemetryClient.InstrumentationKey = configuration.GetSection("InstrumentationKey")?.Value;
 
+                // Options used to get a search id for reporting
+                SearchClientOptions clientOptions = new SearchClientOptions();
+                clientOptions.AddPolicy(new SearchIdPipelinePolicy(), HttpPipelinePosition.PerCall);
+
                 // Create an HTTP reference to the catalog index
-                _searchIndexClient = new SearchIndexClient(new Uri($"https://{searchServiceName}.search.windows.net/"), new AzureKeyCredential(apiKey));
+                _searchIndexClient = new SearchIndexClient(new Uri($"https://{searchServiceName}.search.windows.net/"), new AzureKeyCredential(apiKey), options: clientOptions);
                 _searchClient = _searchIndexClient.GetSearchClient(IndexName);
 
                 Schema = new SearchSchema().AddFields(_searchIndexClient.GetIndex(IndexName).Value.Fields);
@@ -76,7 +82,7 @@ namespace CognitiveSearch.UI
             }
             catch (Exception e)
             {
-                // If you get an exceptio here, most likely you have not set your
+                // If you get an exception here, most likely you have not set your
                 // credentials correctly in appsettings.json
                 throw new ArgumentException(e.Message.ToString());
             }
@@ -88,13 +94,28 @@ namespace CognitiveSearch.UI
             {
                 SearchOptions options = GenerateSearchOptions(searchFacets, selectFilter, currentPage, polygonString);
 
+                //if (!string.IsNullOrEmpty(telemetryClient.InstrumentationKey))
+                //{
+                //    var s = GenerateSearchId(searchText, options);
+                //    SearchId = s.Result;
+                //}
+
+                Response<SearchResults<SearchDocument>> response = _searchClient.Search<SearchDocument>(searchText, options);
+
+                // logging the search id for app insights
                 if (!string.IsNullOrEmpty(telemetryClient.InstrumentationKey))
                 {
-                    var s = GenerateSearchId(searchText, options);
-                    SearchId = s.Result;
+                    IEnumerable<string> headerValues;
+                    string searchId = string.Empty;
+                    if (response.GetRawResponse().Headers.TryGetValues("x-ms-azs-searchid", out headerValues))
+                    {
+                        searchId = headerValues.FirstOrDefault();
+                    }
+
+                    SearchId = searchId;
                 }
 
-                return _searchClient.Search<SearchDocument>(searchText, options);
+                return response.Value;
             }
             catch (Exception ex)
             {
@@ -247,8 +268,8 @@ namespace CognitiveSearch.UI
 
         private async Task<string> GenerateSearchId(string searchText, SearchOptions options)
         {
-            var client = new SearchClient(new Uri($"https://{searchServiceName}.search.windows.net/"), IndexName, new AzureKeyCredential(apiKey));
-            var response = await client.SearchAsync<SearchDocument>(searchText: searchText, options);
+            //var client = new SearchClient(new Uri($"https://{searchServiceName}.search.windows.net/"), IndexName, new AzureKeyCredential(apiKey));
+            var response = await _searchClient.SearchAsync<SearchDocument>(searchText: searchText, options);
             IEnumerable<string> headerValues;
             string searchId = string.Empty;
             if (response.GetRawResponse().Headers.TryGetValues("x-ms-azs-searchid", out headerValues))
@@ -531,6 +552,13 @@ namespace CognitiveSearch.UI
                            .ToList();
                 return outputFacets;
             }
+        }
+    }
+    public class SearchIdPipelinePolicy : HttpPipelineSynchronousPolicy
+    {
+        public override void OnSendingRequest(HttpMessage message)
+        {
+            message.Request.Headers.SetValue("x-ms-azs-return-searchid", "true");
         }
     }
 }
