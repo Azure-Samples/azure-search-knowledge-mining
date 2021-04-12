@@ -38,7 +38,7 @@ In order to successfully complete your solution, you'll need to gain access and 
 
 The directions provided in this guide assume you have a fundamental working knowledge of the Azure portal, Azure Functions, Azure Cognitive Search, Visual Studio and Postman. For additional training and support, please see:
 
-* [Knowledge Mining Bootcamp](https://github.com/Azure/LearnAI-KnowledgeMiningBootcamp)
+* [Knowledge Mining Bootcamp](https://github.com/MicrosoftLearning/LearnAI-KnowledgeMiningBootcamp)
 * [AI in Cognitive Search documentation](https://docs.microsoft.com/azure/search/cognitive-search-resources-documentation)
 
 ## Process overview
