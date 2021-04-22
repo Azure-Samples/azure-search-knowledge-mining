@@ -9,8 +9,6 @@ var selectedFacets = [];
 var token = "";
 var currentPage = 1;
 var searchId;
-var searchServiceName = "";
-var indexName = "";
 var scoringProfile = "";
 var resultsMap = null;
 var mapDataSource = null;
