@@ -31,6 +31,8 @@ namespace CognitiveSearch.UI
             "metadata_storage_path",
             "metadata_storage_name",
             "metadata_title",
+            "indexed_video_id",
+            "indexed_video_thumbnail_id",
 
             // Add fields needed to display results cards
 

@@ -1,0 +1,37 @@
+﻿{
+  "dataSourceName": "{{datasource_name}}",
+  "targetIndexName": "{{index_name}}",
+  "skillsetName": null,
+  "schedule": {
+    "interval": "PT5M",
+    "startTime": "{{schedule_start_time}}"
+  },
+  "parameters": {
+    "configuration": {
+      "parsingMode": "json"
+    }
+  },
+  "fieldMappings": [
+    {
+      "sourceFieldName": "originalVideoEncodedMetadataPath",
+      "targetFieldName": "metadata_storage_path",
+      "mappingFunction": null
+    },
+    {
+      "sourceFieldName": "originalVideoName",
+      "targetFieldName": "metadata_storage_name",
+      "mappingFunction": null
+    },
+    {
+      "sourceFieldName": "indexedVideoId",
+      "targetFieldName": "indexed_video_id",
+      "mappingFunction": null
+    },
+    {
+      "sourceFieldName": "thumbnailId",
+      "targetFieldName": "indexed_video_thumbnail_id",
+      "mappingFunction": null
+    }
+  ],
+  "outputFieldMappings": []
+}

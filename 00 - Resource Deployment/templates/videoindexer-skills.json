@@ -1,0 +1,32 @@
+﻿{
+  "description": "Initiate Video Indexing on incoming video",
+  "cognitiveServices": {
+    "@odata.type": "#Microsoft.Azure.Search.DefaultCognitiveServices",
+    "description": "video-indexer-skill"
+  },
+  "skills": [
+    {
+      "@odata.type": "#Microsoft.Skills.Custom.WebApiSkill",
+      "name": "videoIndexer",
+      "description": "Video Indexer",
+      "uri": "{{function_endpoint}}api/video-indexer?code={{function_code}}",
+      "batchSize": 1,
+      "context": "/document",
+      "inputs": [
+        {
+          "name": "metadata_storage_path",
+          "source": "/document/metadata_storage_path"
+        },
+        {
+          "name": "metadata_storage_name",
+          "source": "/document/metadata_storage_name"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "videoId"
+        }
+      ]
+    }
+  ]
+}

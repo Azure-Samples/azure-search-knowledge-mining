@@ -173,8 +173,14 @@ function GetMatches(string, regex, index) {
 function GetFileHTML(data, result) {
     var filename = result.metadata_storage_name; // blob filename
     var path = data.decodedPath + data.token; // direct path to blob with auth token
+    var isIndexedVideo = result.indexed_video_id !== null;
 
-    if (path != null) {
+    if (isIndexedVideo) {
+        fileContainerHTML = `
+<iframe className="col-md-7 col-sm-12" src="/api/video/${result.indexed_video_id}/insights" frameBorder="0" allowFullScreen style="height: 50%"></iframe>
+<iframe class="col-md-5 col-sm-12" src="/api/video/${result.indexed_video_id}/player" frameborder="0" allowfullscreen style="height: 100%"></iframe>`
+    }
+    else if (path != null) {
         var pathLower = path.toLowerCase();
 
         if (pathLower.includes(".pdf")) {
