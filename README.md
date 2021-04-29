@@ -55,6 +55,8 @@ Alternatively, you can automatically deploy the required resources using this bu
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure-Samples%2Fazure-search-knowledge-mining%2Fmaster%2Fazuredeploy.json)
 
+> If you need to deploy to Azure Government, check out the [Azure Government version of the Knowledge Mining Solution Accelerator](https://github.com/usri/azuregov-search-knowledge-mining).
+
 ### [01 - Search Index Creation](https://github.com/Azure-Samples/azure-search-knowledge-mining/tree/master/01%20-%20Search%20Index%20Creation)
 
 This folder contains a Postman collection that you can use to create a search index. The collection is pre-configured to take advantage of out-of-the-box Cognitive Search functionality.
