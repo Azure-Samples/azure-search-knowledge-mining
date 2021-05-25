@@ -7,7 +7,7 @@ The custom skills and templates that were previously in this directory can now b
 
 ## Features
 
-This project provides the following custom skills:
+This project provides the following custom skills along with many other options:
 
 * [**HelloWorld**](https://github.com/Azure-Samples/azure-search-power-skills/blob/master/Template/HelloWorld/README.md): a minimal skill that can be used as a starting point or template for your own skills.
 * [**GeoPointFromName**](https://github.com/Azure-Samples/azure-search-power-skills/blob/master/Geo/GeoPointFromName/README.md): retrieves coordinates from place names and addresses.
