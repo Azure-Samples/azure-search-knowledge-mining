@@ -31,9 +31,11 @@ The first field we will add will be called "diseases" and it will simply hold a 
 The second field, called "diseasesPhonetic" will also hold the diseases extracted, however, it will use something called a Phonetic analyzer, which is one of the many Custom Analyzers that Azure Cognitive Search makes available to users.  As you might guess, the Phonetic analyzer allows you to search for words that sounds phonetically similar - we will be adding this field and exploring the phonetic analyzer further in Module 5.  
 
 We can first retrieve the current index schema by opening Postman and making the following GET request:
+
 ```
 GET https://{name of your service}.search.windows.net/indexes/clinical-trials-small?api-version=2019-05-06
 ```
+
 For all of the subsequent requests, you will need to set the following two headers values:
 * api-key: [Enter Admin API Key from Azure Cognitive Search portal]
 * Content-Type: application/json
@@ -109,62 +111,67 @@ Paste the response we got from the GET request, and add the additional skill.
 
 To get the URI, you will need to get it from the published skill you tested in module 3, but this is what it looked like for our test skill…
 
-```
-         {
-            "@odata.type": "#Microsoft.Skills.Custom.WebApiSkill",
-            "name": "diseases",
-            "description": "Disease Extraction Skill",
-            "context": "/document",
-            "uri": "<your custom skill URI here>",
-            "httpMethod": "POST",
-            "timeout": "PT90S",
-            "batchSize": 1,
-            "inputs": [
-                {
-                    "name": "text",
-                    "source": "/document/merged_content",
-                    "inputs": []
-                }
-            ],
-            "outputs": [
-                {
-                    "name": "entities",
-                    "targetName": "diseases"
-                }
-            ]
+```json
+    {
+    "@odata.type": "#Microsoft.Skills.Custom.WebApiSkill",
+    "name": "diseases",
+    "description": "Disease Extraction Skill",
+    "context": "/document",
+    "uri": "<your custom skill URI here>",
+    "httpMethod": "POST",
+    "timeout": "PT90S",
+    "batchSize": 1,
+    "inputs": [
+        {
+            "name": "text",
+            "source": "/document/merged_content",
+            "inputs": []
         }
+    ],
+    "outputs": [
+        {
+            "name": "entities",
+            "targetName": "diseases"
+        }
+    ]
+}
 ```
+
 ###  Add a new record to the Shaper Skill, and add a new Table Projection
 
-#### Add a new diseases input into the Shaper Skill.
+#### Add a new diseases input into the Shaper Skill and add it to the skillset
 
-```
+```json
+{
+    "@odata.type": "#Microsoft.Skills.Util.ShaperSkill",
+    "name": "#4",
+    "description": null,
+    "context": "/document",
+    "inputs": [
         {
-            "@odata.type": "#Microsoft.Skills.Util.ShaperSkill",
-            "name": "#4",
-            "description": null,
-            "context": "/document",
+            "name": "diseases",
+            "sourceContext": "/document/diseases/*",
             "inputs": [
-            	{
-                    "name": "diseases",
-                    "sourceContext": "/document/diseases/*",
-                    "inputs": [
-                        {
-                            "name": "disease",
-                            "source": "/document/diseases/*/name"
-                        }
-                    ]
-                },
                 {
-                    "name": "lastUpdatePosted",
-                    "source": "/document/lastUpdatePosted",
-                    "sourceContext": null,
-                    "inputs": []
-                },
+                    "name": "disease",
+                    "source": "/document/diseases/*/name"
+                }
+            ]
+        },
+        {
+            "name": "lastUpdatePosted",
+            "source": "/document/lastUpdatePosted",
+            "sourceContext": null,
+            "inputs": []
+        },
+    ]
+}
 ...
 ```
+
 Remember that *document/diseases* refers to an array of complex types, something like this:
-```
+
+```json
 "document/diseases": 
 [
     {
@@ -191,8 +198,8 @@ Remember that *document/diseases* refers to an array of complex types, something
     },
     ...
 ]
-
 ```
+
 and */document/diseases/** refers to the each of the members of that array -- each of those complex types.
 
 This skill is shaping a new complex object called *tableprojection* that will have many members.
@@ -202,7 +209,7 @@ Since the "sourceContext" for this new member is *"/document/diseases/\*"* , the
 
 It's json representation would look something like this:
 
-```
+```json
 "document/tableprojection" :
 {
 	"lastUpdatePosted": "August 10, 2017",
@@ -224,7 +231,7 @@ Some tools like PowerBI know how to ingest tables and databases better than if w
 
 Let's add one more table to the list for our new diseases member. 
 
-```
+```json
          "projections": [
             {
                 "tables": [
@@ -253,6 +260,7 @@ Let's add one more table to the list for our new diseases member.
                 "objects": []
             }
 ```
+
 When we do this, each disease extracted will be given a unique identifier (*Diseaseid*). Since "/document/tableprojection/diseases/\*" is a child of "/document/tableprojection", the diseases table will automatically also get column called "Documentid".
 
 After you have made these changes, complete the PUT request.
@@ -260,6 +268,7 @@ After you have made these changes, complete the PUT request.
 ```
 PUT https://{your-service-name-goes-here}.search.windows.net/skillsets/clinical-trials-small?api-version=2019-05-06-Preview
 ```
+
 It is important that you use version 2019-05-06-Preview because the knowledge store projections are still in Preview mode.
 
 *Note that you can create, get, edit and delete each of the resources (index, data source, indexer, skillset) using REST APIs, just like you did with the skillset*.
@@ -271,6 +280,7 @@ Now we’ll follow a similar process to get and modify the Indexer.  The Indexer
 Add this **outputFieldMapping to the indexer**. This will specify where in the index we should store the diseases we just extracted. Make sure to do this in the *output field mappings* and not on the *field mappings*. *Field mappings* occur before enrichment, and *output field mappings* occurs post enrichment.
 
 Do a GET and then a PUT with
+
 ```
 https://{your-service-name-goes-here}.search.windows.net/indexers/clinical-trials-small?api-version=2019-05-06
 ```
@@ -302,6 +312,7 @@ In the query string, enter:
 ```
 search=*&facet=diseases
 ```
+
 This tells the search engine to search all documents (*) and group the results by diseases.
 
 Let's also use this new field to allow us to do a strict filter to any documents that talk about the disease "morquio"
