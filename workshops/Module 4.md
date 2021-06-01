@@ -112,7 +112,7 @@ Paste the response we got from the GET request, and add the additional skill.
 To get the URI, you will need to get it from the published skill you tested in module 3, but this is what it looked like for our test skill…
 
 ```json
-    {
+{
     "@odata.type": "#Microsoft.Skills.Custom.WebApiSkill",
     "name": "diseases",
     "description": "Disease Extraction Skill",
@@ -139,7 +139,7 @@ To get the URI, you will need to get it from the published skill you tested in m
 
 ###  Add a new record to the Shaper Skill, and add a new Table Projection
 
-#### Add a new diseases input into the Shaper Skill and add it to the skillset
+#### Add a new diseases input into the Shaper Skill and add the shaper skill to the skillset
 
 ```json
 {
@@ -173,31 +173,31 @@ Remember that *document/diseases* refers to an array of complex types, something
 
 ```json
 "document/diseases": 
-[
-    {
-        "name": "heart failure",
-        "matches": [
-            {
-                "text": "heart failure",
-                "offset": 10,
-                "length": 12,
-                "matchDistance": 0.0
-            }
-        ]
-    },
-    {
-        "name": "morquio",
-        "matches": [
-            {
-                "text": "morquio",
-                "offset": 25,
-                "length": 7,
-                "matchDistance": 0.0
-            }
-        ]
-    },
-    ...
-]
+    [
+        {
+            "name": "heart failure",
+            "matches": [
+                {
+                    "text": "heart failure",
+                    "offset": 10,
+                    "length": 12,
+                    "matchDistance": 0.0
+                }
+            ]
+        },
+        {
+            "name": "morquio",
+            "matches": [
+                {
+                    "text": "morquio",
+                    "offset": 25,
+                    "length": 7,
+                    "matchDistance": 0.0
+                }
+            ]
+        },
+        ...
+    ]
 ```
 
 and */document/diseases/** refers to the each of the members of that array -- each of those complex types.
@@ -232,33 +232,34 @@ Some tools like PowerBI know how to ingest tables and databases better than if w
 Let's add one more table to the list for our new diseases member. 
 
 ```json
-         "projections": [
-            {
-                "tables": [
-                    {
-                        "tableName": "clinicalTrialsSmallDocument",
-                        "generatedKeyName": "Documentid",
-                        "source": "/document/tableprojection",
-                        "sourceContext": null,
-                        "inputs": []
-                    },
-                    {
-                        "tableName": "clinicalTrialsSmallEntities",
-                        "generatedKeyName": "Entitiesid",
-                        "source": "/document/tableprojection/Entities/*",
-                        "sourceContext": null,
-                        "inputs": []
-                    },
-		    {
-			"tableName": "clinicalTrialsSmallDiseases",
-                    	"generatedKeyName": "Diseaseid",
-                    	"source": "/document/tableprojection/diseases/*",
-                    	"sourceContext": null,
-                        "inputs": []
-                	}
-                ],
-                "objects": []
-            }
+    "projections": [
+        {
+            "tables": [
+                {
+                    "tableName": "clinicalTrialsSmallDocument",
+                    "generatedKeyName": "Documentid",
+                    "source": "/document/tableprojection",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "tableName": "clinicalTrialsSmallEntities",
+                    "generatedKeyName": "Entitiesid",
+                    "source": "/document/tableprojection/Entities/*",
+                    "sourceContext": null,
+                    "inputs": []
+                },
+                {
+                    "tableName": "clinicalTrialsSmallDiseases",
+                    "generatedKeyName": "Diseaseid",
+                    "source": "/document/tableprojection/diseases/*",
+                    "sourceContext": null,
+                    "inputs": []
+                }
+            ],
+            "objects": []
+        }
+    ]
 ```
 
 When we do this, each disease extracted will be given a unique identifier (*Diseaseid*). Since "/document/tableprojection/diseases/\*" is a child of "/document/tableprojection", the diseases table will automatically also get column called "Documentid".
