@@ -56,6 +56,22 @@
       "sortable": false,
       "filterable": false,
       "facetable": false
+    },
+    {
+      "name" : "indexed_video_id",
+      "type" : "Edm.String",
+      "searchable": true,
+      "sortable": false,
+      "filterable": false,
+      "facetable": false
+    },
+    {
+      "name" : "indexed_video_thumbnail_id",
+      "type" : "Edm.String",
+      "searchable": true,
+      "sortable": false,
+      "filterable": false,
+      "facetable": false
     }
   ]
 }

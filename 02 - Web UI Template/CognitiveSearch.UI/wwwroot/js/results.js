@@ -219,6 +219,8 @@ function UpdateResults(data) {
                 content = result.highlights?.merged_content[0];
             } else if (result.highlights?.content) {
                 content = result.highlights?.content[0];
+            } else {
+                content = "";
             }
         } else {
             content = "";
@@ -228,13 +230,18 @@ function UpdateResults(data) {
         var id = document[data.idField]; 
         var tags = GetTagsHTML(document);
         var path;
-
+        var isIndexedVideo = document.indexed_video_id !== null;
+        
         // get path
         if (data.isPathBase64Encoded) {
-            path = Base64Decode(document.metadata_storage_path) + token;
+            path = Base64Decode(document.metadata_storage_path);
         }
         else {
-            path = document.metadata_storage_path + token;
+            path = document.metadata_storage_path;
+        }
+
+        if (!isIndexedVideo) {
+            path = path + token;
         }
 
         if (document["metadata_storage_name"] !== undefined) {
@@ -279,7 +286,11 @@ function UpdateResults(data) {
             var resultContent = "";
             var imageContent = "";
 
-            if (pathLower.includes(".jpg") || pathLower.includes(".png")) {
+            if (isIndexedVideo) {
+                icon = "ms-Icon--Video";
+                imageContent = `<img class="img-result" style='max-width:100%;' src="/api/video/${document.indexed_video_id}/thumbnail/${document.indexed_video_thumbnail_id}" />`;
+            } 
+            else if (pathLower.includes(".jpg") || pathLower.includes(".png")) {
                 icon = "ms-Icon--FileImage";
                 imageContent = `<img class="img-result" style='max-width:100%;' src="${path}"/>`;
             }

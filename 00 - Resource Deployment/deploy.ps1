@@ -34,6 +34,8 @@ function Deploy
     # Read parameters from user.
     Write-Host "Press enter to use [default] value."
     Write-Host "For uniqueName, please enter a string with 10 or less characters."
+    Write-Host "For video-indexing provide your Azure Video Indexer account ID. Blank to disable video indexing. https://docs.microsoft.com/en-us/azure/media-services/video-indexer/connect-to-azure"
+    
     while (!($uniqueName = Read-Host "uniqueName")) { Write-Host "You must provide a uniqueName."; }
     while (!($resourceGroupName = Read-Host "resourceGroupName")) { Write-Host "You must provide a resourceGroupName."; }
     while (!($subscriptionId = Read-Host "subscriptionId")) { Write-Host "You must provide a subscriptionId."; }
@@ -42,7 +44,13 @@ function Deploy
     if (!($location = Read-Host "location [$defaultLocation]")) { $location = $defaultLocation }
     $defaultSearchSku = "basic"
     if (!($searchSku = Read-Host "searchSku [$defaultSearchSku]")) { $searchSku = $defaultSearchSku }
-        
+
+    while (!($videoIndexingAccountId = Read-Host "videoIndexingAccountId")) { Write-Host "Azure Video Indexer ID or blank"; }
+    If ('' -ne $videoIndexingAccountId) {
+        while (!($videoIndexingAccountKey = Read-Host "videoIndexingAccountKey")) { Write-Host "Azure Video Indexer Key"; }
+        while (!($videoIndexingLocation = Read-Host "videoIndexingLocation")) { Write-Host "Azure Video Indexer Location"; }
+    }
+
     # Generate derivative parameters.
     $searchServiceName = $uniqueName + "search";
     $webappname = $uniqueName + "app";
@@ -55,7 +63,15 @@ function Deploy
     $skillsetName = $uniqueName + "-skillset";
     $indexName = $uniqueName + "-index";
     $indexerName = $uniqueName + "-indexer";
- 
+
+    # Only used if we opt-in to index videos
+    $videoIndexerName = $uniqueName + "-videoindexer";
+    $videoIndexerSkillsetName = $uniqueName + "-videoindexer-skillset";
+    $videoIndexerStorageContainerInsightsName = "videoindexerinsights";
+    $videoIndexerInsightsIndexerName = $uniqueName + "-videoindexer-insights-indexer";
+    $videoIndexerInsightsDataSourceName = $uniqueName + "-videoindexer-insights-datasource";
+    $videoIndexerFunctionAppname = $uniqueName + "functions";
+
     # These values are extracted by this process automatically. Do not set values here.
     $global:storageAccountKey = "";
     $global:searchServiceKey = "";
@@ -81,6 +97,8 @@ function Deploy
         Write-Host "skillsetName: '$skillsetName'";
         Write-Host "indexName: '$indexName'";
         Write-Host "indexerName: '$indexerName'";
+        Write-Host "videoIndexerAccountId: '$videoIndexingAccountId'"
+        Write-Host "videoIndexerLocation: '$videoIndexingLocation'"
         Write-Host "------------------------------------------------------------";
 	}
 
@@ -163,6 +181,12 @@ function Deploy
             -Context $storageContext `
             -Permission Off
 
+        Write-Host "Creating Video Insights Container";
+        $videoInsightsContainer = New-AzStorageContainer `
+            -Name $videoIndexerStorageContainerInsightsName `
+            -Context $storageContext `
+            -Permission Off
+    
         Write-Host "Uploading sample_documents directory";
         Push-Location "../sample_documents"
         ls -File -Recurse | Set-AzStorageBlobContent -Container $storageContainerName -Context $storageContext -Force
@@ -202,31 +226,30 @@ function Deploy
 	}
 
     CreateSearchServices;
+   
+    function CallSearchAPI
+    {
+        param (
+            [string]$url,
+            [string]$body
+        )
+
+        $headers = @{
+            'api-key' = $global:searchServiceKey
+            'Content-Type' = 'application/json' 
+            'Accept' = 'application/json' 
+        }
+        $baseSearchUrl = "https://"+$searchServiceName+".search.windows.net"
+        $fullUrl = $baseSearchUrl + $url
     
+        Write-Host "Calling api: '"$fullUrl"'";
+        Invoke-RestMethod -Uri $fullUrl -Headers $headers -Method Put -Body $body | ConvertTo-Json
+    }; 
 
     function CreateSearchIndex
     {
         Write-Host "Creating Search Index"; 
         
-        function CallSearchAPI
-        {
-            param (
-                [string]$url,
-                [string]$body
-            )
-
-            $headers = @{
-                'api-key' = $global:searchServiceKey
-                'Content-Type' = 'application/json' 
-                'Accept' = 'application/json' 
-            }
-            $baseSearchUrl = "https://"+$searchServiceName+".search.windows.net"
-            $fullUrl = $baseSearchUrl + $url
-        
-            Write-Host "Calling api: '"$fullUrl"'";
-            Invoke-RestMethod -Uri $fullUrl -Headers $headers -Method Put -Body $body | ConvertTo-Json
-		}; 
-
         # Create the datasource
         $dataSourceBody = Get-Content -Path .\templates\base-datasource.json  
         $dataSourceBody = $dataSourceBody -replace "{{env_storage_connection_string}}", $global:storageConnectionString      
@@ -251,7 +274,6 @@ function Deploy
 	}
 
     CreateSearchIndex;
-
 
     function CreateWebApp
     {
@@ -289,6 +311,7 @@ function Deploy
         # Setting App Insights Key in Web app
         Write-Host "Connecting App Insights with Web App";
         $appSetting = @{'APPINSIGHTS_INSTRUMENTATIONKEY' = $appInsights.Properties.InstrumentationKey }
+        $global:appInsightsInstrumentationKey =  $appInsights.Properties.InstrumentationKey
         $updateSettings = Set-AzWebApp `
             -Name $webappname `
             -ResourceGroupName $resourceGroupName `
@@ -296,6 +319,96 @@ function Deploy
 	}
 
     CreateWebApp;
+
+    function CreateVideoIndexerFunctionApp
+    {
+        Write-Host "Creating Funtion App for video indexing function";
+
+        $functionApp = New-AzFunctionApp `
+            -ResourceGroupName $resourceGroupName `
+            -Name $videoIndexerFunctionAppname `
+            -StorageAccountName $storageAccountName `
+            -PlanName $webappname `
+            -Runtime DotNet `
+            -FunctionsVersion 3 `
+            -WarningAction SilentlyContinue `
+            -ApplicationInsightsKey $global:appInsightsInstrumentationKey `
+            -ApplicationInsightsName $appInsightsName `
+            -ErrorAction SilentlyContinue
+
+        $token = (Get-AzAccessToken).Token
+        $global:skillFunctionCode = (Invoke-RestMethod -Method Post -Uri "https://management.azure.com/subscriptions/$subscriptionId/resourceGroups/$resourceGroupName/providers/Microsoft.Web/sites/$videoIndexerFunctionAppname/functions/video-indexer/listkeys?api-version=2020-12-01"  -Headers @{ Authorization="Bearer $token"; "Content-Type"="application/json"  }).default
+        $functionCallbackCode = (Invoke-RestMethod -Method Post -Uri "https://management.azure.com/subscriptions/$subscriptionId/resourceGroups/$resourceGroupName/providers/Microsoft.Web/sites/$videoIndexerFunctionAppname/functions/video-indexer-callback/listkeys?api-version=2020-12-01"  -Headers @{ Authorization="Bearer $token"; "Content-Type"="application/json"  }).default
+
+        $functionAppSettings = @{
+            MediaIndexer_AccountId = "$videoIndexingAccountId"
+            MediaIndexer_Location = "$videoIndexingLocation"
+            MediaIndexer_AccountKey = "$videoIndexingAccountKey"
+            MediaIndexer_StorageConnectionString = "$global:storageConnectionString"
+            MediaIndexer_StorageContainer = "$videoIndexerStorageContainerInsightsName"
+            MediaIndexer_CallbackFunctionCode = $functionCallbackCode
+            #https://github.com/projectkudu/kudu/wiki/Deploying-inplace-and-without-repository / https://github.com/projectkudu/kudu/wiki/Customizing-deployments
+            PROJECT = "./Video/VideoIndexer/VideoIndexer.csproj"
+        }
+
+        Update-AzFunctionAppSetting -ResourceGroupName $resourceGroupName -Name $videoIndexerFunctionAppname -AppSetting $functionAppSettings
+
+        $functionScmProperties = @{
+            repoUrl = "https://github.com/azure-samples/azure-search-power-skills";
+            branch = "main";
+            isManualIntegration = "true";
+        }
+
+        Set-AzResource `
+            -ResourceGroupName $resourceGroupName `
+            -ResourceType Microsoft.Web/sites/sourcecontrols `
+            -Name $videoIndexerFunctionAppname/web `
+            -PropertyObject  $functionScmProperties `
+            -ApiVersion 2020-09-01 `
+            -Force
+
+    }
+
+    if (-Not [string]::IsNullOrWhiteSpace($videoIndexingAccountId)) {
+        CreateVideoIndexerFunctionApp;
+    }
+
+    
+    function CreateVideoIndexer
+    {
+        Write-Host "Creating Video Indexer Index"; 
+        
+        # Create the video-indexer datasource
+        $dataSourceBody = Get-Content -Path .\templates\videoindexer-datasource.json  
+        $dataSourceBody = $dataSourceBody -replace "{{env_storage_connection_string}}", $global:storageConnectionString      
+        $dataSourceBody = $dataSourceBody -replace "{{env_storage_container}}", $videoIndexerStorageContainerInsightsName        
+        CallSearchAPI -url ("/datasources/"+$videoIndexerInsightsDataSourceName+"?api-version=2019-05-06") -body $dataSourceBody
+
+        # Create the skillset
+        $skillBody = Get-Content -Path .\templates\videoindexer-skills.json
+        $skillBody = $skillBody -replace "{{function_endpoint}}", "https://$($videoIndexerFunctionAppname).azurewebsites.net/"  
+        $skillBody = $skillBody -replace "{{function_code}}", "$global:skillFunctionCode"
+        CallSearchAPI -url ("/skillsets/"+$videoIndexerSkillsetName+"?api-version=2019-05-06") -body $skillBody
+        
+        # Create the indexer
+        $indexerBody = Get-Content -Path .\templates\videoindexer-indexer.json
+        $indexerBody = $indexerBody -replace "{{datasource_name}}", $dataSourceName
+        $indexerBody = $indexerBody -replace "{{skillset_name}}", $videoIndexerSkillsetName
+        $indexerBody = $indexerBody -replace "{{index_name}}", $indexName   
+        CallSearchAPI -url ("/indexers/"+$videoIndexerName+"?api-version=2019-05-06") -body $indexerBody
+
+        # Create the insights document indexer
+        $indexerBody = Get-Content -Path .\templates\videoindexer-insights-indexer.json
+        $indexerBody = $indexerBody -replace "{{datasource_name}}", $videoIndexerInsightsDataSourceName
+        $indexerBody = $indexerBody -replace "{{index_name}}", $indexName
+        $indexerBody = $indexerBody -replace "{{schedule_start_time}}", [System.DateTimeOffset]::Now.ToString("u")
+        CallSearchAPI -url ("/indexers/"+$videoIndexerInsightsIndexerName+"?api-version=2019-05-06") -body $indexerBody
+
+    }
+
+    if (-Not [string]::IsNullOrWhiteSpace($videoIndexingAccountId)) {
+        CreateVideoIndexer;
+    }
 
     function PrintAppsettings
     {
@@ -309,6 +422,13 @@ function Deploy
         Write-Host "StorageAccountKey: '$global:storageAccountKey'";
         $StorageContainerAddress = ("https://"+$storageAccountName+".blob.core.windows.net/"+$storageContainerName)
         Write-Host "StorageContainerAddress: '$StorageContainerAddress'";
+
+        if (-Not [string]::IsNullOrWhiteSpace($videoIndexingAccountId)) {
+            Write-Host "VideoIndexerAccountId: '$videoIndexingAccountId'";
+            Write-Host "VideoIndexerApiKey: '$videoIndexingAccountKey'";
+            Write-Host "VideoIndexerLocation: '$videoIndexingLocation'";
+        }
+
         Write-Host "------------------------------------------------------------";
 	}
     PrintAppsettings;

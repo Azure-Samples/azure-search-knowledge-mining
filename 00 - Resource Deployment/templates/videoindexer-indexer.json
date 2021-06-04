@@ -1,0 +1,28 @@
+﻿{
+  "dataSourceName": "{{datasource_name}}",
+  "targetIndexName": "{{index_name}}",
+  "skillsetName": "{{skillset_name}}",
+  "fieldMappings": [
+    {
+      "sourceFieldName": "metadata_storage_path",
+      "targetFieldName": "metadata_storage_path",
+      "mappingFunction": { "name": "base64Encode" }
+    },
+    {
+      "sourceFieldName": "metadata_storage_name",
+      "targetFieldName": "metadata_storage_name"
+    }
+  ],
+  "outputFieldMappings": [
+  ],
+  "parameters": {
+    "batchSize": 1,
+    "maxFailedItems": -1,
+    "maxFailedItemsPerBatch": -1,
+    "configuration": {
+      "dataToExtract": "storageMetadata",
+      "imageAction": "none",
+      "indexedFileNameExtensions": ".mp4,.mov,.avi,.mkv,.wmv"
+    }
+  }
+}

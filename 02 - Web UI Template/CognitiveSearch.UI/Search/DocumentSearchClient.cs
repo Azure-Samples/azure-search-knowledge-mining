@@ -32,6 +32,7 @@ namespace CognitiveSearch.UI
         private string apiKey { get; set; }
         private string IndexName { get; set; }
         private string IndexerName { get; set; }
+        private string VideoIndexerName { get; set; }
 
         private string idField { get; set; }
 
@@ -63,6 +64,7 @@ namespace CognitiveSearch.UI
                 apiKey = configuration.GetSection("SearchApiKey")?.Value;
                 IndexName = configuration.GetSection("SearchIndexName")?.Value;
                 IndexerName = configuration.GetSection("SearchIndexerName")?.Value;
+                VideoIndexerName = configuration.GetSection("VideoIndexerName")?.Value;
                 idField = configuration.GetSection("KeyField")?.Value;
                 telemetryClient.InstrumentationKey = configuration.GetSection("InstrumentationKey")?.Value;
 
@@ -388,6 +390,20 @@ namespace CognitiveSearch.UI
             if (indexStatus.Value.LastResult.Status != IndexerExecutionStatus.InProgress)
             {
                 _searchIndexerClient.RunIndexer(IndexerName);
+            }
+        }
+        /// <summary>
+        /// Initiates a run of the search indexer.
+        /// </summary>
+        public async Task RunVideoIndexer()
+        {
+            if (string.IsNullOrWhiteSpace(VideoIndexerName)) return;
+            
+            SearchIndexerClient _searchIndexerClient = new SearchIndexerClient(new Uri($"https://{searchServiceName}.search.windows.net/"), new AzureKeyCredential(apiKey));
+            var indexStatus = await _searchIndexerClient.GetIndexerStatusAsync(VideoIndexerName);
+            if (indexStatus.Value.LastResult.Status != IndexerExecutionStatus.InProgress)
+            {
+                _searchIndexerClient.RunIndexer(VideoIndexerName);
             }
         }
 
