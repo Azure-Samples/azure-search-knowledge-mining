@@ -45,6 +45,7 @@ namespace CognitiveSearch.UI.Controllers
             }
 
             await _docSearch.RunIndexer();
+            await _docSearch.RunVideoIndexer();
 
             return new JsonResult("ok");
         }
