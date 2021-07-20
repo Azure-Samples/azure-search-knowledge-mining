@@ -331,9 +331,9 @@ function Deploy
             -PlanName $webappname `
             -Runtime DotNet `
             -FunctionsVersion 3 `
-            -WarningAction SilentlyContinue `
             -ApplicationInsightsKey $global:appInsightsInstrumentationKey `
             -ApplicationInsightsName $appInsightsName `
+            -WarningAction SilentlyContinue `
             -ErrorAction SilentlyContinue
 
         $token = (Get-AzAccessToken).Token
@@ -401,7 +401,7 @@ function Deploy
         $indexerBody = Get-Content -Path .\templates\videoindexer-insights-indexer.json
         $indexerBody = $indexerBody -replace "{{datasource_name}}", $videoIndexerInsightsDataSourceName
         $indexerBody = $indexerBody -replace "{{index_name}}", $indexName
-        $indexerBody = $indexerBody -replace "{{schedule_start_time}}", [System.DateTimeOffset]::Now.ToString("u")
+        $indexerBody = $indexerBody -replace "{{schedule_start_time}}", [System.DateTimeOffset]::Now.ToString("o")
         CallSearchAPI -url ("/indexers/"+$videoIndexerInsightsIndexerName+"?api-version=2019-05-06") -body $indexerBody
 
     }
