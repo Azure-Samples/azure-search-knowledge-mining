@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Azure.Search.Documents.Indexes.Models;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -76,6 +77,7 @@ namespace CognitiveSearch.UI
                     {
                         Facets.Add(schema.Fields[field]);
                     }
+                    //else if (schema.Fields[field] != null && schema.Fields[field].Type == "Edm.ComplexType")
                 }
             }
             else
@@ -84,6 +86,16 @@ namespace CognitiveSearch.UI
                 {
                     Facets.Add(field.Value);
                 }
+
+                foreach (var field in schema.Fields.Where(f => f.Value.IsComplex == true))
+                {
+                    foreach(var subField in field.Value.Fields.Where(f => f.Value.IsFacetable))
+                    {
+                        Facets.Add(subField.Value);
+                    }
+                }
+                int x = 5;
+
             }
 
             if (tags.Count() > 0)

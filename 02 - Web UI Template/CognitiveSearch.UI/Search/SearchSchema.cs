@@ -23,6 +23,8 @@ namespace CognitiveSearch.UI
         public bool IsHidden;
         public bool IsSearchable;
         public bool IsSortable;
+        public Dictionary<string, SearchField> Fields = new Dictionary<string, SearchField>();
+        public bool IsComplex;
 
         // Fields to control
         public PreferredFilter FilterPreference;
@@ -42,6 +44,7 @@ namespace CognitiveSearch.UI
     {
         public static SearchField ToSearchField(this Azure.Search.Documents.Indexes.Models.SearchField field)
         {
+            bool isComplex = false;
             Type type;
             if (field.Type == SearchFieldDataType.Boolean) type = typeof(Boolean);
             else if (field.Type == SearchFieldDataType.DateTimeOffset) type = typeof(DateTime);
@@ -53,8 +56,8 @@ namespace CognitiveSearch.UI
    
             // Azure Search SearchFieldDataType objects don't follow value comparisons, so use overloaded string conversion operator to be a consistent representation
             else if (field.Type.ToString() == SearchFieldDataType.Collection(SearchFieldDataType.String).ToString()) type = typeof(string[]);
-            else if (field.Type == SearchFieldDataType.Complex) type = typeof(string);
-            else if (field.Type == SearchFieldDataType.Collection(SearchFieldDataType.Complex)) type = typeof(string[]);
+            else if (field.Type == SearchFieldDataType.Complex) type = typeof(Dictionary<string,SearchField>);
+            else if (field.Type == SearchFieldDataType.Collection(SearchFieldDataType.Complex)) type = typeof(Dictionary<string, SearchField>[]);
             else if (field.Type.ToString() == SearchFieldDataType.Collection(SearchFieldDataType.DateTimeOffset).ToString()) type = typeof(DateTime[]);
             else if (field.Type.ToString() == SearchFieldDataType.Collection(SearchFieldDataType.GeographyPoint).ToString()) type = typeof(Microsoft.Spatial.GeographyPoint[]);
             else if (field.Type.ToString() == SearchFieldDataType.Collection(SearchFieldDataType.Double).ToString()) type = typeof(double[]);
@@ -65,6 +68,11 @@ namespace CognitiveSearch.UI
             {
                 throw new ArgumentException($"Cannot map {field.Type} to a C# type");
             }
+
+            if (field.Type == SearchFieldDataType.Complex || field.Type == SearchFieldDataType.Collection(SearchFieldDataType.Complex))
+            {
+                isComplex = true;
+            }
             return new SearchField()
             {
                 Name = field.Name,
@@ -74,7 +82,8 @@ namespace CognitiveSearch.UI
                 IsKey = field.IsKey ?? false,
                 IsHidden = field.IsHidden ?? false,
                 IsSearchable = field.IsSearchable ?? false,
-                IsSortable = field.IsSortable ?? false
+                IsSortable = field.IsSortable ?? false,
+                IsComplex = isComplex
             };
         }
 
@@ -83,6 +92,16 @@ namespace CognitiveSearch.UI
             foreach (var field in fields)
             {
                 schema.Fields[field.Name] = field.ToSearchField();
+
+                var subfields = new Dictionary<string, SearchField>();
+                foreach (var subfield in field.Fields)
+                {
+                    SearchField tempSubField = subfield.ToSearchField();
+                    tempSubField.Name = field.Name + "/" + subfield.Name;
+                    subfields[tempSubField.Name] = tempSubField;
+                }
+
+                schema.Fields[field.Name].Fields = subfields;
             }
             return schema;
         }
