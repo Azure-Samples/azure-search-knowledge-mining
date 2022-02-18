@@ -211,7 +211,7 @@ namespace CognitiveSearch.UI.Controllers
         public IActionResult GetDocumentById(string id = "", string query = "")
         {
             var response = _docSearch.LookUp(id);
-
+                        
             if (query != "")
             {
                 string videoId = response.GetValueOrDefault("id", response.GetValueOrDefault("Id",0)).ToString();
@@ -219,7 +219,9 @@ namespace CognitiveSearch.UI.Controllers
                 List<string> orderBy = new List<string>();
                 orderBy.Add("startTime asc");
                 var timeReferences = _timeReferenceSearch.Search(query,filtersString: filter, orderBy: orderBy);
-                string timeReference = timeReferences.Results[0].Document.GetValueOrDefault("startTime", 0).ToString(); ; // ContainsKey("startTime");
+                string timeReference = "0";
+                if (timeReferences.Results.Count > 0)
+                    timeReference = timeReferences.Results.First().Document.GetValueOrDefault("startTime", 0).ToString(); // ContainsKey("startTime");
                 if (timeReference != "0")
                     response.Add("time_reference", timeReference);
             }

@@ -2,17 +2,10 @@
 // Licensed under the MIT License.
 
 function Base64Decode(token) {
-    if (token.length === 0) return null;
-    // The last character in the token is the number of padding characters.
-    var numberOfPaddingCharacters = token.slice(-1);
-    // The Base64 string is the token without the last character.
-    token = token.slice(0, -1);
-    // '-'s are '+'s and '_'s are '/'s.
-    token = token.replace(/-/g, '+');
-    token = token.replace(/_/g, '/');
-    // Pad the Base64 string out with '='s
-    for (var i = 0; i < numberOfPaddingCharacters; i++)
-        token += "=";
+    if (token.slice(-1) !== '0')
+        token = token + Array((4 - token.length % 4) % 4 + 1).join('=');
+    else
+        token = token.slice(0, -1);
     return atob(token);
 }
 
