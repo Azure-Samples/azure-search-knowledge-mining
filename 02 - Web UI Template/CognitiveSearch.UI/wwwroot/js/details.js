@@ -2,11 +2,10 @@
 // Licensed under the MIT License.
 
 // Details
-function ShowDocument(id, q) {
+function ShowDocument(id, index) {
     $.post('/home/getdocumentbyid',
         {
-            id: id,
-            query: q
+            id: id
         },
         function (data) {
             result = data.result;
@@ -20,7 +19,7 @@ function ShowDocument(id, q) {
 
             $('#result-id').val(id);
 
-            var fileContainerHTML = GetFileHTML(data);
+            var fileContainerHTML = GetFileHTML(data, result);
 
             // Transcript Tab Content
             var transcriptContainerHTML = GetTranscriptHTML(result);
@@ -104,7 +103,7 @@ function ShowDocument(id, q) {
             }
 
             //Log Click Events
-            LogClickAnalytics(result.metadata_storage_name, 0);
+            LogClickAnalytics(result.metadata_storage_name, index);
             GetSearchReferences(q);
         });
 }
@@ -116,11 +115,11 @@ function AuthenticateMap(result) {
 
             var latlon = result.geoLocation;
 
-            if (latlon !== null && latlon !== undefined) {
+            if (latlon) {
 
-                if (latlon.isEmpty === false) {
+                if (latlon.coordinates !== null) {
 
-                    var coordinates = [latlon.longitude, latlon.latitude];
+                    var coordinates = [latlon.coordinates[0], latlon.coordinates[1]]; // longitude, latitude
 
                     // Authenticate the map using the key 
                     var map = new atlas.Map('myMap', {
@@ -174,12 +173,9 @@ function GetMatches(string, regex, index) {
     return matches;
 }
 
-function GetFileHTML(data) {
-
-    var path;
-
-    path = data.decodedPath;
-    path = path + data.token;
+function GetFileHTML(data, result) {
+    var filename = result.metadata_storage_name; // blob filename
+    var path = data.decodedPath + data.token; // direct path to blob with auth token
 
     video_indexer_url = data.result.video_indexer_url;
 
@@ -201,12 +197,15 @@ function GetFileHTML(data) {
         var pathLower = path.toLowerCase();
 
         if (pathLower.includes(".pdf")) {
-            fileContainerHTML =
+              fileContainerHTML =
                 `<object class="file-container" data="${path}" type="application/pdf">
+                    <iframe class="file-container" src="${path}" type="application/pdf">
+                        This browser does not support PDFs. Please download the XML to view it: <a href="${path}">Download PDF</a>"
+                    </iframe>
                 </object>`;
         }
         else if (pathLower.includes(".txt") || pathLower.includes(".json")) {
-            var txtHtml = htmlDecode(result.content?.trim());
+            var txtHtml = htmlDecode(result.content.trim());
             fileContainerHTML = `<pre id="file-viewer-pre"> ${txtHtml} </pre>`;
         }
         else if (pathLower.includes(".las")) {
@@ -285,13 +284,15 @@ function GetTranscriptHTML(result) {
     var full_content = "";
 
     // If we have merged content, let's use it.
-    if (result.merged_content !== null && result.merged_content.length > 0) {
-        full_content = htmlDecode(result.merged_content.trim());
+    if (result.merged_content) {
+        if (result.merged_content.length > 0) {
+            full_content = htmlDecode(result.merged_content.trim());
+        }
     }
     else
     {
         // otherwise, let's try getting the content -- although it won't have any image data.
-        full_content = result.content?.trim();
+        full_content = result.content.trim();
     }
 
     if (full_content === null || full_content === "")
@@ -405,7 +406,7 @@ function SearchBarVisibility(visibility) {
         $("#details-pivot").removeClass("col-md-8");
         $("#details-pivot").addClass("col-md-12");
         $("#tags-panel").hide();
-    } 
+    }
 }
 
 

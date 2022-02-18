@@ -1,80 +1,122 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Azure;
+using Azure.Core;
+using Azure.Core.Pipeline;
+using Azure.Search.Documents;
+using Azure.Search.Documents.Indexes;
+using Azure.Search.Documents.Indexes.Models;
+using Azure.Search.Documents.Models;
+using Azure.Storage;
+using Azure.Storage.Blobs;
+using Azure.Storage.Sas;
 using Microsoft.ApplicationInsights;
-using Microsoft.Azure.Search;
-using Microsoft.Azure.Search.Models;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Spatial;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Globalization;
 using System.Linq;
+using System.Net;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace CognitiveSearch.UI
 {
     public class DocumentSearchClient
     {
-        private SearchServiceClient _searchClient;
-        private ISearchIndexClient _indexClient;
+        private IConfiguration _configuration { get; set; }
+        private readonly SearchIndexClient _searchIndexClient;
+        private readonly SearchClient _searchClient;
         private string searchServiceName { get; set; }
-        private string apiKey { get; set; } 
+        private string apiKey { get; set; }
         private string IndexName { get; set; }
+        private string IndexerName { get; set; }
 
         private string idField { get; set; }
 
         // Client logs all searches in Application Insights
         private static TelemetryClient telemetryClient = new TelemetryClient();
-        public static string _searchId;
+        public string SearchId { get; set; }
 
         public SearchSchema Schema { get; set; }
         public SearchModel Model { get; set; }
 
-        public static string errorMessage;
+        public string ErrorMessage { get; set; }
+
+        private bool _isPathBase64Encoded { get; set; }
+
+        // data source information. Currently supporting 3 data sources indexed by different indexers
+        private static string[] s_containerAddresses = null;
+        private static string[] s_tokens = null;
+
+        // this should match the default value used in appsettings.json.  
+        private static string defaultContainerUriValue = "https://{storage-account-name}.blob.core.windows.net/{container-name}";
+
 
         public DocumentSearchClient(IConfiguration configuration, bool videoIndexerTimeRefs = false)
         {
             try
             {
+                _configuration = configuration;
                 searchServiceName = configuration.GetSection("SearchServiceName")?.Value;
                 apiKey = configuration.GetSection("SearchApiKey")?.Value;
                 IndexName = videoIndexerTimeRefs ? configuration.GetSection("SearchIndexNameVideoIndexerTimeRef")?.Value : configuration.GetSection("SearchIndexName")?.Value;
+
+                IndexerName = configuration.GetSection("SearchIndexerName")?.Value;
                 idField = configuration.GetSection("KeyField")?.Value;
                 telemetryClient.InstrumentationKey = configuration.GetSection("InstrumentationKey")?.Value;
 
-                // Create an HTTP reference to the catalog index
-                _searchClient = new SearchServiceClient(searchServiceName, new SearchCredentials(apiKey));
-                _indexClient = _searchClient.Indexes.GetClient(IndexName);
+                // Options used to get a search id for reporting
+                SearchClientOptions clientOptions = new SearchClientOptions();
+                clientOptions.AddPolicy(new SearchIdPipelinePolicy(), HttpPipelinePosition.PerCall);
 
-                Schema = new SearchSchema().AddFields(_searchClient.Indexes.Get(IndexName).Fields);
+                // Create an HTTP reference to the catalog index
+                _searchIndexClient = new SearchIndexClient(new Uri($"https://{searchServiceName}.search.windows.net/"), new AzureKeyCredential(apiKey), options: clientOptions);
+                _searchClient = _searchIndexClient.GetSearchClient(IndexName);
+
+                Schema = new SearchSchema().AddFields(_searchIndexClient.GetIndex(IndexName).Value.Fields);
                 Model = new SearchModel(Schema);
+
+                _isPathBase64Encoded = (configuration.GetSection("IsPathBase64Encoded")?.Value == "True");
 
             }
             catch (Exception e)
             {
-                // If you get an exceptio here, most likely you have not set your
+                // If you get an exception here, most likely you have not set your
                 // credentials correctly in appsettings.json
                 throw new ArgumentException(e.Message.ToString());
             }
         }
 
-        public DocumentSearchResult<Document> Search(string searchText, SearchFacet[] searchFacets = null, string[] selectFilter = null, int currentPage = 1, string polygonString = null, string filtersString = null, List<string> orderBy = null)
+        public SearchResults<SearchDocument> Search(string searchText, SearchFacet[] searchFacets = null, string[] selectFilter = null, int currentPage = 1, string polygonString = null)
         {
             try
             {
-                SearchParameters sp = GenerateSearchParameters(searchFacets, selectFilter, currentPage, polygonString, filtersString, orderBy);
+                SearchOptions options = GenerateSearchOptions(searchFacets, selectFilter, currentPage, polygonString);
 
+                //if (!string.IsNullOrEmpty(telemetryClient.InstrumentationKey))
+                //{
+                //    var s = GenerateSearchId(searchText, options);
+                //    SearchId = s.Result;
+                //}
+
+                Response<SearchResults<SearchDocument>> response = _searchClient.Search<SearchDocument>(searchText, options);
+
+                // logging the search id for app insights
                 if (!string.IsNullOrEmpty(telemetryClient.InstrumentationKey))
                 {
-                    var s = GenerateSearchId(searchText, sp);
-                    _searchId = s.Result;
+                    IEnumerable<string> headerValues;
+                    string searchId = string.Empty;
+                    if (response.GetRawResponse().Headers.TryGetValues("x-ms-azs-searchid", out headerValues))
+                    {
+                        searchId = headerValues.FirstOrDefault();
+                    }
+
+                    SearchId = searchId;
                 }
 
-                return _indexClient.Documents.Search(searchText, sp);
+                return response.Value;
             }
             catch (Exception ex)
             {
@@ -83,20 +125,35 @@ namespace CognitiveSearch.UI
             return null;
         }
 
-        public SearchParameters GenerateSearchParameters(SearchFacet[] searchFacets = null, string[] selectFilter = null, int currentPage = 1, string polygonString = null, string filtersString = null, List<string> orderBy = null)
+        public SearchOptions GenerateSearchOptions(SearchFacet[] searchFacets = null, string[] selectFilter = null, int currentPage = 1, string polygonString = null)
         {
-            // For more information on search parameters visit: 
-            // https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.search.models.searchparameters?view=azure-dotnet
-            SearchParameters sp = new SearchParameters()
+            SearchOptions options = new SearchOptions()
             {
                 SearchMode = SearchMode.All,
-                Top = 10,
+                Size = 10,
                 Skip = (currentPage - 1) * 10,
-                IncludeTotalResultCount = true,
-                QueryType = QueryType.Full,
-                Select = selectFilter,
-                Facets = Model.Facets.Select(f => f.Name).ToList()                
+                IncludeTotalCount = true,
+                QueryType = SearchQueryType.Full,
+                HighlightPreTag = "<b>",
+                HighlightPostTag = "</b>"
             };
+
+            foreach (string s in selectFilter)
+            {
+                options.Select.Add(s);
+            }
+
+            var facets = Model.Facets.Select(f => f.Name).ToList();
+            foreach (string f in facets)
+            {
+                options.Facets.Add(f);
+            }
+
+            foreach (string h in Model.SearchableFields)
+            {
+                options.HighlightFields.Add(h);
+            }
+
 
             string filter = null;
             var filterStr = string.Empty;
@@ -133,52 +190,38 @@ namespace CognitiveSearch.UI
                 }
             }
 
-            sp.Filter = filter;
+            options.Filter = filter;
 
             // Add Filter based on geographic polygon if it is set.
             if (polygonString != null && polygonString.Length > 0)
             {
                 string geoQuery = "geo.intersects(geoLocation, geography'POLYGON((" + polygonString + "))')";
                 
-                if (sp.Filter != null && sp.Filter.Length > 0)
+                if (options.Filter != null && options.Filter.Length > 0)
                 { 
-                    sp.Filter += " and " + geoQuery; 
+                    options.Filter += " and " + geoQuery; 
                 }
                 else
                 { 
-                    sp.Filter = geoQuery; 
+                    options.Filter = geoQuery; 
                 }
             }
 
-            if (filtersString != null && filtersString.Length > 0)
-            {
-                if (sp.Filter != null && sp.Filter.Length > 0)
-                {
-                    sp.Filter += " and " + filtersString;
-                }
-                else
-                {
-                    sp.Filter = filtersString;
-                }
-            }
-
-            sp.OrderBy = orderBy;
-
-            return sp;
+            return options;
         }
 
-        public DocumentSuggestResult<Document> Suggest(string searchText, bool fuzzy)
+        public SuggestResults<SearchDocument> Suggest(string searchText, bool fuzzy)
         {
             // Execute search based on query string
             try
             {
-                SuggestParameters sp = new SuggestParameters()
+                SuggestOptions options = new SuggestOptions()
                 {
                     UseFuzzyMatching = fuzzy,
-                    Top = 8
+                    Size = 8
                 };
 
-                return _indexClient.Documents.Suggest(searchText, "sg", sp);
+                return _searchClient.Suggest<SearchDocument>(searchText, "sg", options);
             }
             catch (Exception ex)
             {
@@ -187,19 +230,19 @@ namespace CognitiveSearch.UI
             return null;
         }
 
-        public AutocompleteResult Autocomplete(string searchText, bool fuzzy)
+        public AutocompleteResults Autocomplete(string searchText, bool fuzzy)
         {
             // Execute search based on query string
             try
             {
-                AutocompleteParameters ap = new AutocompleteParameters()
+                AutocompleteOptions options = new AutocompleteOptions()
                 {
-                    AutocompleteMode = AutocompleteMode.OneTermWithContext,
+                    Mode = AutocompleteMode.OneTermWithContext,
                     UseFuzzyMatching = fuzzy,
-                    Top = 8
+                    Size = 8
                 };
 
-                return _indexClient.Documents.Autocomplete(searchText, "sg", ap);
+                return _searchClient.Autocomplete(searchText, "sg", options);
             }
             catch (Exception ex)
             {
@@ -209,12 +252,12 @@ namespace CognitiveSearch.UI
         }
 
 
-        public Document LookUp(string id)
+        public SearchDocument LookUp(string id)
         {
             // Execute geo search based on query string
             try
             {
-                return _indexClient.Documents.Get(id);
+                return _searchClient.GetDocument<SearchDocument>(id);
             }
             catch (Exception ex)
             {
@@ -224,14 +267,13 @@ namespace CognitiveSearch.UI
         }
 
 
-        private async Task<string> GenerateSearchId(string searchText, SearchParameters sp)
+        private async Task<string> GenerateSearchId(string searchText, SearchOptions options)
         {
-            var client = new SearchIndexClient(searchServiceName, IndexName, new SearchCredentials(apiKey));
-            var headers = new Dictionary<string, List<string>>() { { "x-ms-azs-return-searchid", new List<string>() { "true" } } };
-            var response = await client.Documents.SearchWithHttpMessagesAsync(searchText: searchText, searchParameters: sp, customHeaders: headers);
+            //var client = new SearchClient(new Uri($"https://{searchServiceName}.search.windows.net/"), IndexName, new AzureKeyCredential(apiKey));
+            var response = await _searchClient.SearchAsync<SearchDocument>(searchText: searchText, options);
             IEnumerable<string> headerValues;
             string searchId = string.Empty;
-            if (response.Response.Headers.TryGetValues("x-ms-azs-searchid", out headerValues))
+            if (response.GetRawResponse().Headers.TryGetValues("x-ms-azs-searchid", out headerValues))
             {
                 searchId = headerValues.FirstOrDefault();
             }
@@ -240,11 +282,11 @@ namespace CognitiveSearch.UI
 
         public string GetSearchId()
         {
-            if (_searchId != null) { return _searchId; }
+            if (SearchId != null) { return SearchId; }
             return string.Empty;
         }
 
-        public DocumentSearchResult<Document> GetFacets(string searchText, List<string> facetNames, int maxCount = 30)
+        public SearchResults<SearchDocument> GetFacets(string searchText, List<string> facetNames, int maxCount = 30)
         {
             var facets = new List<String>();
 
@@ -256,16 +298,19 @@ namespace CognitiveSearch.UI
             // Execute search based on query string
             try
             {
-                SearchParameters sp = new SearchParameters()
+                SearchOptions options = new SearchOptions()
                 {
                     SearchMode = SearchMode.Any,
-                    Top = 10,
-                    Select = new List<String>() { idField },
-                    Facets = facets, 
-                    QueryType = QueryType.Full
+                    Size = 10,
+                    QueryType = SearchQueryType.Full
                 };
 
-                return _searchClient.Indexes.GetClient(IndexName).Documents.Search(searchText, sp);
+                foreach (string s in facetNames)
+                {
+                    options.Facets.Add(s);
+                }
+                
+                return _searchIndexClient.GetSearchClient(IndexName).Search<SearchDocument>(searchText, options);
             }
             catch (Exception ex)
             {
@@ -274,5 +319,251 @@ namespace CognitiveSearch.UI
             return null;
         }
 
+        public DocumentResult GetDocuments(string q, SearchFacet[] searchFacets, int currentPage, string polygonString = null)
+        {
+            GetContainerSasUris();
+
+            var selectFilter = Model.SelectFilter;
+
+            if (!string.IsNullOrEmpty(q))
+            {
+                q = q.Replace("?", "");
+            }
+
+            var response = Search(q, searchFacets, selectFilter, currentPage, polygonString);
+            var searchId = GetSearchId().ToString();
+            var facetResults = new List<Facet>();
+            var tagsResults = new List<object>();
+
+            if (response != null && response.Facets != null)
+            {
+                // Return only the selected facets from the Search Model
+                foreach (var facetResult in response.Facets.Where(f => Model.Facets.Where(x => x.Name == f.Key).Any()))
+                {
+                    var cleanValues = GetCleanFacetValues(facetResult);
+
+                    facetResults.Add(new Facet
+                    {
+                        key = facetResult.Key,
+                        value = cleanValues
+                    });
+                }
+
+                foreach (var tagResult in response.Facets.Where(t => Model.Tags.Where(x => x.Name == t.Key).Any()))
+                {
+                    var cleanValues = GetCleanFacetValues(tagResult);
+
+                    tagsResults.Add(new
+                    {
+                        key = tagResult.Key,
+                        value = cleanValues
+                    });
+                }
+            }
+
+            var result = new DocumentResult
+            {
+                Results = (response == null ? null : response.GetResults()),
+                Facets = facetResults,
+                Tags = tagsResults,
+                Count = (response == null ? 0 : Convert.ToInt32(response.TotalCount)),
+                SearchId = searchId,
+                IdField = idField,
+                Token = s_tokens[0],
+                IsPathBase64Encoded = _isPathBase64Encoded
+            };
+
+            string json = JsonConvert.SerializeObject(facetResults);
+
+
+            return result;
+        }
+
+        /// <summary>
+        /// Initiates a run of the search indexer.
+        /// </summary>
+        public async Task RunIndexer()
+        {
+            SearchIndexerClient _searchIndexerClient = new SearchIndexerClient(new Uri($"https://{searchServiceName}.search.windows.net/"), new AzureKeyCredential(apiKey));
+            var indexStatus = await _searchIndexerClient.GetIndexerStatusAsync(IndexerName);
+            if (indexStatus.Value.LastResult.Status != IndexerExecutionStatus.InProgress)
+            {
+                _searchIndexerClient.RunIndexer(IndexerName);
+            }
+        }
+
+        private string GetToken(string decodedPath, out int storageIndex)
+        {
+            // Initialize s_tokens and containers if not already initialized
+            GetContainerSasUris();
+
+            // Determine which token to use.
+            string tokenToUse;
+            if (decodedPath.ToLower().Contains(s_containerAddresses[1])) { tokenToUse = s_tokens[1]; storageIndex = 1; }
+            else if (decodedPath.ToLower().Contains(s_containerAddresses[2])) { tokenToUse = s_tokens[2]; storageIndex = 2; }
+            else { tokenToUse = s_tokens[0]; storageIndex = 0; }
+
+            return tokenToUse;
+        }
+
+        /// <summary>
+        /// This will return up to 3 s_tokens for the storage accounts
+        /// </summary>
+        /// <returns></returns>
+        private void GetContainerSasUris()
+        {
+            // We need to refresh the s_tokens every time or they will become invalid.
+            s_tokens = new string[3];
+            s_containerAddresses = new string[3];
+
+            string accountName = _configuration.GetSection("StorageAccountName")?.Value;
+            string accountKey = _configuration.GetSection("StorageAccountKey")?.Value;
+            StorageSharedKeyCredential storageSharedKeyCredential = new StorageSharedKeyCredential(accountName, accountKey);
+            s_containerAddresses[0] = _configuration.GetSection("StorageContainerAddress")?.Value.ToLower();
+            s_containerAddresses[1] = _configuration.GetSection("StorageContainerAddress2")?.Value.ToLower();
+            s_containerAddresses[2] = _configuration.GetSection("StorageContainerAddress3")?.Value.ToLower();
+            int s_containerAddressesLength = s_containerAddresses.Length;
+            if (String.Equals(s_containerAddresses[1], defaultContainerUriValue))
+            {
+                s_containerAddressesLength--;
+            }
+            if (String.Equals(s_containerAddresses[2], defaultContainerUriValue))
+            {
+                s_containerAddressesLength--;
+            }
+            for (int i = 0; i < s_containerAddressesLength; i++) {
+                BlobContainerClient container = new BlobContainerClient(new Uri(s_containerAddresses[i]), new StorageSharedKeyCredential(accountName, accountKey));
+                var policy = new BlobSasBuilder
+                {
+                    Protocol = SasProtocol.HttpsAndHttp,
+                    BlobContainerName = container.Name,
+                    Resource = "c",
+                    StartsOn = DateTimeOffset.UtcNow,
+                    ExpiresOn = DateTimeOffset.UtcNow.AddHours(24),
+                    IPRange = new SasIPRange(IPAddress.None, IPAddress.None)
+                };
+                policy.SetPermissions(BlobSasPermissions.Read);
+                var sas = policy.ToSasQueryParameters(storageSharedKeyCredential);
+                BlobUriBuilder  sasUri = new BlobUriBuilder(container.Uri);
+                sasUri.Sas = sas;
+
+                s_tokens[i] = "?" + sasUri.Sas.ToString();
+            }
+        }
+
+        public DocumentResult GetDocumentById(string id)
+        {
+            var decodedPath = id;
+
+            var response = LookUp(id);
+
+            if (_isPathBase64Encoded)
+            {
+                decodedPath = Base64Decode(id);
+            }
+
+            int storageIndex;
+            string tokenToUse = GetToken(decodedPath, out storageIndex);
+
+            var result = new DocumentResult
+            {
+                Result = response,
+                Token = tokenToUse,
+                StorageIndex = storageIndex,
+                DecodedPath = decodedPath,
+                IdField = idField,
+                IsPathBase64Encoded = _isPathBase64Encoded
+            };
+            return result;
+        }
+
+        private static string Base64Decode(string input)
+        {
+            if (input == null) throw new ArgumentNullException("input");
+            int inputLength = input.Length;
+            if (inputLength < 1) return null;
+
+            // Get padding chars
+            int numPadChars = (int)input[inputLength - 1] - (int)'0';
+            if (numPadChars < 0 || numPadChars > 10)
+            {
+                var x = input.Substring(input.Length - 2, 2);
+                if (x != "==")
+                    return null;
+                else
+                    numPadChars = 1;
+            }
+
+            // replace '-' and '_'
+            char[] base64Chars = new char[inputLength - 1 + numPadChars];
+            for (int iter = 0; iter < inputLength - 1; iter++)
+            {
+                char c = input[iter];
+
+                switch (c)
+                {
+                    case '-':
+                        base64Chars[iter] = '+';
+                        break;
+
+                    case '_':
+                        base64Chars[iter] = '/';
+                        break;
+
+                    default:
+                        base64Chars[iter] = c;
+                        break;
+                }
+            }
+
+            // Add padding chars
+            for (int iter = inputLength - 1; iter < base64Chars.Length; iter++)
+            {
+                base64Chars[iter] = '=';
+            }
+
+            var charArray = Convert.FromBase64CharArray(base64Chars, 0, base64Chars.Length);
+            return System.Text.Encoding.Default.GetString(charArray);
+        }
+
+        /// <summary>
+        /// In some situations you may want to restrict the facets that are displayed in the
+        /// UI. This allows you to add some heuristics to remove facets that you may consider unnecessary.
+        /// </summary>
+        /// <param name="facetResult"></param>
+        /// <returns></returns>
+        private static List<FacetValue> GetCleanFacetValues(KeyValuePair<string, IList<FacetResult>> facetResult)
+        {
+            List<FacetValue> cleanValues = new List<FacetValue>();
+
+            if (facetResult.Key == "people")
+            {
+                // only add names that are long enough 
+                foreach (var element in facetResult.Value)
+                {
+                    if (element.Values.ToString().Length >= 4)
+                    {
+                       
+                        cleanValues.Add(new FacetValue() { value = element.Value.ToString(), count = element.Count });
+                    }
+                }
+
+                return cleanValues;
+            }
+            else
+            {
+                List<FacetValue> outputFacets = facetResult.Value
+                           .Select(x => new FacetValue() { value = x.Value.ToString(), count = x.Count })
+                           .ToList();
+                return outputFacets;
+            }
+        }
+    }
+    public class SearchIdPipelinePolicy : HttpPipelineSynchronousPolicy
+    {
+        public override void OnSendingRequest(HttpMessage message)
+        {
+            message.Request.Headers.SetValue("x-ms-azs-return-searchid", "true");
+        }
     }
 }

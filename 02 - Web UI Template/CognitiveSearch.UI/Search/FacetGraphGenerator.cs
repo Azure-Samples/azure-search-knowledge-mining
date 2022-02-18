@@ -1,8 +1,10 @@
-﻿using Microsoft.Azure.Search.Models;
-using Newtonsoft.Json.Linq;
+﻿using Azure.Search.Documents.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace CognitiveSearch.UI
@@ -13,9 +15,14 @@ namespace CognitiveSearch.UI
         {
             Index = index;
             ColorId = colorId;
+            LayerCornerStone = -1;
         }
         public int Index { get; set; }
         public int ColorId { get; set; }
+        public int Layer { get; set; }
+        public int Distance { get; set; }
+        public int ChildCount { get; set; }
+        public int LayerCornerStone { get; set; }
     }
 
     public class FacetGraphGenerator
@@ -27,21 +34,22 @@ namespace CognitiveSearch.UI
             _searchHelper = searchClient;
         }
 
-        public JObject GetFacetGraphNodes(string q, List<string> facetNames)
+        public string GetFacetGraphNodes(string q, List<string> facetNames, int maxLevels, int maxNodes)
         {
-            // Calculate nodes for 3 levels
-            JObject dataset = new JObject();
-            int MaxEdges = 50;
-            int MaxLevels = 3;
-            int CurrentLevel = 1;
+            // Calculate nodes for N levels 
             int CurrentNodes = 0;
+            int originalDistance = 100;
 
             List<FDGraphEdges> FDEdgeList = new List<FDGraphEdges>();
             // Create a node map that will map a facet to a node - nodemap[0] always equals the q term
 
-            Dictionary<string, NodeInfo> NodeMap = new Dictionary<string, NodeInfo>();
-            
-            NodeMap[q] = new NodeInfo(CurrentNodes, 0);
+            var NodeMap = new Dictionary<string, NodeInfo>();
+
+            NodeMap[q] = new NodeInfo(CurrentNodes, 0)
+            {
+                Distance = originalDistance,
+                Layer = 0
+            };
 
             // If blank search, assume they want to search everything
             if (string.IsNullOrWhiteSpace(q))
@@ -49,79 +57,137 @@ namespace CognitiveSearch.UI
                 q = "*";
             }
 
+            List<string> currentLevelTerms = new List<string>();
+
             List<string> NextLevelTerms = new List<string>();
             NextLevelTerms.Add(q);
 
-            // Iterate through the nodes up to 3 levels deep to build the nodes or when I hit max number of nodes
-            while ((NextLevelTerms.Count() > 0) && (CurrentLevel <= MaxLevels) && (FDEdgeList.Count() < MaxEdges))
+            // Iterate through the nodes up to MaxLevels deep to build the nodes or when I hit max number of nodes
+            for (var CurrentLevel = 0; CurrentLevel < maxLevels && maxNodes > 0; ++CurrentLevel, maxNodes /= 2)
             {
-                q = NextLevelTerms.First();
-                NextLevelTerms.Remove(q);
-                if (NextLevelTerms.Count() == 0)
+                currentLevelTerms = NextLevelTerms.ToList();
+                NextLevelTerms.Clear();
+                var levelNodeCount = 0;
+
+                NodeInfo densestNodeThisLayer = null;
+                var density = 0;
+
+                foreach (var k in NodeMap)
+                    k.Value.Distance += originalDistance;
+
+                foreach (var t in currentLevelTerms)
                 {
-                    CurrentLevel++;
-                }
-                DocumentSearchResult<Document> response = _searchHelper.GetFacets(q, facetNames, 10);
-                if (response != null)
-                {
-                    int facetColor = 0;
-                    
-                    foreach (var facetName in facetNames)
+                    if (levelNodeCount >= maxNodes)
+                        break;
+
+                    int facetsToGrab = 10;
+                    if (maxNodes < 10)
                     {
-                        IList<FacetResult> facetVals = (response.Facets)[facetName];
-                        facetColor++;
+                        facetsToGrab = maxNodes;
+                    }
+                    SearchResults<SearchDocument> response = _searchHelper.GetFacets(t, facetNames, facetsToGrab);
+                    if (response != null)
+                    {
+                        int facetColor = 0;
 
-                        foreach (FacetResult facet in facetVals)
+                        foreach (var facetName in facetNames)
                         {
-                            NodeInfo nodeInfo = new NodeInfo(-1,-1);
-                            if (NodeMap.TryGetValue(facet.Value.ToString(), out nodeInfo) == false)
-                            {
-                                // This is a new node
-                                CurrentNodes++;
-                                int node = CurrentNodes;
-                                NodeMap[facet.Value.ToString()] =  new NodeInfo(node, facetColor);
-                            }
+                            var facetVals = (response.Facets)[facetName];
+                            facetColor++;
 
-                            // Add this facet to the fd list
-                            if (NodeMap[q] != NodeMap[facet.Value.ToString()])
+                            foreach (FacetResult facet in facetVals)
                             {
-                                FDEdgeList.Add(new FDGraphEdges { source = NodeMap[q].Index, target = NodeMap[facet.Value.ToString()].Index });
-                                if (CurrentLevel < MaxLevels)
+                                var facetValue = facet.Value.ToString();
+
+                                NodeInfo nodeInfo = new NodeInfo(-1, -1);
+                                if (NodeMap.TryGetValue(facetValue, out nodeInfo) == false)
                                 {
-                                    NextLevelTerms.Add(facet.Value.ToString());
+                                    // This is a new node
+                                    ++levelNodeCount;
+                                    NodeMap[facetValue] = new NodeInfo(++CurrentNodes, facetColor)
+                                    {
+                                        Distance = originalDistance,
+                                        Layer = CurrentLevel + 1
+                                    };
+
+                                    if (CurrentLevel < maxLevels)
+                                    {
+                                        NextLevelTerms.Add(facetValue);
+                                    }
+                                }
+
+                                // Add this facet to the fd list
+                                var newNode = NodeMap[facetValue];
+                                var oldNode = NodeMap[t];
+                                if (oldNode != newNode)
+                                {
+                                    oldNode.ChildCount += 1;
+                                    if (densestNodeThisLayer == null || oldNode.ChildCount > density)
+                                    {
+                                        density = oldNode.ChildCount;
+                                        densestNodeThisLayer = oldNode;
+                                    }
+
+                                    FDEdgeList.Add(new FDGraphEdges
+                                    {
+                                        source = oldNode.Index,
+                                        target = newNode.Index,
+                                        distance = newNode.Distance
+                                    });
                                 }
                             }
                         }
                     }
                 }
+
+                if (densestNodeThisLayer != null)
+                    densestNodeThisLayer.LayerCornerStone = CurrentLevel;
             }
 
             // Create nodes
-            JArray nodes = new JArray();
-            int nodeNumber = 0;
-            foreach (KeyValuePair<string, NodeInfo> entry in NodeMap)
+            var options = new JsonWriterOptions
             {
-                nodes.Add(JObject.Parse("{name: \"" + entry.Key.Replace("\"", "") + "\"" + ", id: " + entry.Value.Index + ", color: " + entry.Value.ColorId + "}"));
-                nodeNumber++;
-            }
-
-            // Create edges
-            JArray edges = new JArray();
-            foreach (FDGraphEdges entry in FDEdgeList)
+                Indented = true
+            };
+            using (var stream = new MemoryStream())
             {
-                edges.Add(JObject.Parse("{source: " + entry.source + ", target: " + entry.target + "}"));
+                using (var writer = new Utf8JsonWriter(stream, options))
+                {
+                    writer.WriteStartObject();
+                    writer.WritePropertyName("links");
+                    writer.WriteStartArray();
+                    foreach (FDGraphEdges entry in FDEdgeList)
+                    {
+                        var jsonDocument = JsonDocument.Parse(JsonSerializer.Serialize(entry));
+                        jsonDocument.RootElement.WriteTo(writer);
+                    }
+                    writer.WriteEndArray();
+                    writer.WritePropertyName("nodes");
+                    writer.WriteStartArray();
+                    foreach (KeyValuePair<string, NodeInfo> entry in NodeMap)
+                    {
+                        var jsonDocument = JsonDocument.Parse(JsonSerializer.Serialize(new
+                        {
+                            name = entry.Key,
+                            id = entry.Value.Index,
+                            color = entry.Value.ColorId,
+                            layer = entry.Value.Layer,
+                            cornerStone = entry.Value.LayerCornerStone
+                        }));
+                        jsonDocument.RootElement.WriteTo(writer);
+                    }
+                    writer.WriteEndArray();
+                    writer.WriteEndObject();
+                }
+                return Encoding.UTF8.GetString(stream.ToArray());
             }
-
-            dataset.Add(new JProperty("links", edges));
-            dataset.Add(new JProperty("nodes", nodes));
-
-            return dataset;
         }
 
         public class FDGraphEdges
         {
             public int source { get; set; }
             public int target { get; set; }
+            public int distance { get; set; }
         }
     }
 }

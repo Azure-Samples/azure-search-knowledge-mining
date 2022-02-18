@@ -7,11 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage.Auth;
 using CognitiveSearch.UI.Models;
-using Newtonsoft.Json.Linq;
-using Microsoft.Azure.Search.Models;
 
 namespace CognitiveSearch.UI.Controllers
 {
@@ -20,236 +16,129 @@ namespace CognitiveSearch.UI.Controllers
         private IConfiguration _configuration { get; set; }
         private DocumentSearchClient _docSearch { get; set; }
         private DocumentSearchClient _timeReferenceSearch { get; set; }
-        private string _idField { get; set; }
-        bool _isPathBase64Encoded { get; set; }
 
-        // data source information. Currently supporting 3 data sources indexed by different indexers
-        private static string[] containerAddresses = null; 
-        private static string[] tokens = null;
-
-        // this should match the default value used in appsettings.json.  
-        private static string defaultContainerUriValue = "https://{storage-account-name}.blob.core.windows.net/{container-name}";
+        private string _configurationError { get; set; }
 
         public HomeController(IConfiguration configuration)
         {
             _configuration = configuration;
-            _docSearch = new DocumentSearchClient(configuration);
-            _timeReferenceSearch = configuration.GetSection("SearchIndexNameVideoIndexerTimeRef")?.Value != "" ? new DocumentSearchClient(configuration, true) : null;
-            _idField = _configuration.GetSection("KeyField")?.Value;
-            _isPathBase64Encoded = (_configuration.GetSection("IsPathBase64Encoded")?.Value == "True");
+            InitializeDocSearch();
+        }
+
+        private void InitializeDocSearch()
+        {
+            try
+            {
+                _docSearch = new DocumentSearchClient(_configuration);
+                _timeReferenceSearch = _configuration.GetSection("SearchIndexNameVideoIndexerTimeRef")?.Value != "" ? new DocumentSearchClient(_configuration, true) : null;
+
+            }
+            catch (Exception e)
+            {
+                _configurationError = $"The application settings are possibly incorrect. The server responded with this message: " + e.Message.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Checks that the search client was intiailized successfully.
+        /// If not, it will add the error reason to the ViewBag alert.
+        /// </summary>
+        /// <returns>A value indicating whether the search client was initialized succesfully.</returns>
+        public bool CheckDocSearchInitialized()
+        {
+            if (_docSearch == null)
+            {
+                ViewBag.Style = "alert-warning";
+                ViewBag.Message = _configurationError;
+                return false;
+            }
+
+            return true;
         }
 
         public IActionResult Index()
         {
+            CheckDocSearchInitialized();
+
             return View();
         }
 
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+
         }
 
-        public IActionResult Search()
+        public IActionResult Search([FromQuery]string q, [FromQuery]string facets = "", [FromQuery]int page = 1)
         {
-            return View();
-        }
+            // Split the facets.
+            //  Expected format: &facets=key1_val1,key1_val2,key2_val1
+            var searchFacets = facets
+                // Split by individual keys
+                .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                // Split key/values
+                .Select(f => f.Split("_", StringSplitOptions.RemoveEmptyEntries))
+                // Group by keys
+                .GroupBy(f => f[0])
+                // Select grouped key/values into SearchFacet array
+                .Select(g => new SearchFacet { Key = g.Key, Value = g.Select(f => f[1]).ToArray() })
+                .ToArray();
 
-        [HttpPost]
-        public IActionResult Search(string q)
-        {
-            var searchidId = _docSearch.GetSearchId().ToString();
-
-            if (searchidId != string.Empty)
-                TempData["searchId"] = searchidId;
-
-            TempData["query"] = q ?? "*";
-            TempData["applicationInstrumentationKey"] = _configuration.GetSection("InstrumentationKey")?.Value;
-
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult GetDocuments(string q = "", SearchFacet[] searchFacets = null, int currentPage = 1, string polygonString = null)
-        {
-            var tokens = GetContainerSasUris();
-
-            var selectFilter = _docSearch.Model.SelectFilter;
-
-            if (!string.IsNullOrEmpty(q))
+            var viewModel = SearchView(new SearchOptions
             {
-                q = q.Replace("?", "");
-            }
-
-            var response = _docSearch.Search(q, searchFacets, selectFilter, currentPage, polygonString);
-            var searchId = _docSearch.GetSearchId().ToString();
-            var facetResults = new List<object>();
-            var tagsResults = new List<object>();
-
-            if (response != null && response.Facets != null)
-            {
-                // Return only the selected facets from the Search Model
-                foreach (var facetResult in response.Facets.Where(f => _docSearch.Model.Facets.Where(x => x.Name == f.Key).Any()))
-                {
-                    var cleanValues = GetCleanFacetValues(facetResult);
-
-                    facetResults.Add(new
-                    {
-                        key = facetResult.Key,
-                        value = cleanValues
-                    });
-                }
-
-                foreach (var tagResult in response.Facets.Where(t => _docSearch.Model.Tags.Where(x => x.Name == t.Key).Any()))
-                {
-                    var cleanValues = GetCleanFacetValues(tagResult);
-
-                    tagsResults.Add(new
-                    {
-                        key = tagResult.Key,
-                        value = cleanValues
-                    });
-                }
-            }
-
-            return new JsonResult(new DocumentResult
-            {
-                Results = (response == null? null : response.Results),
-                Facets = facetResults,
-                Tags = tagsResults,
-                Count = (response == null? 0 :  Convert.ToInt32(response.Count)),
-                SearchId = searchId,
-                IdField = _idField,
-                Token = tokens[0],
-                IsPathBase64Encoded = _isPathBase64Encoded
+                q = q,
+                searchFacets = searchFacets,
+                currentPage = page
             });
+
+            return View(viewModel);
         }
 
-        /// <summary>
-        /// In some situations you may want to restrict the facets that are displayed in the
-        /// UI. This allows you to add some heuristics to remove facets that you may consider unnecessary.
-        /// </summary>
-        /// <param name="facetResult"></param>
-        /// <returns></returns>
-        private static IList<FacetResult> GetCleanFacetValues(KeyValuePair<string, IList<FacetResult>> facetResult)
+        public class SearchOptions
         {
-            IList<FacetResult> cleanValues = new List<FacetResult>();
-            
-            if (facetResult.Key == "people")
-            {
-                // only add names that are long enough 
-                foreach (var element in facetResult.Value)
-                {
-                    if (element.Value.ToString().Length >= 4)
-                    {
-                        cleanValues.Add(element);
-                    }
-                }
-
-                return cleanValues;
-            }
-            else
-            {
-                return facetResult.Value;
-            }
+            public string q { get; set; }
+            public SearchFacet[] searchFacets { get; set; }
+            public int currentPage { get; set; }
+            public string polygonString { get; set; }
         }
-
-        private static string Base64Decode(string input)
-        {
-            if (input == null) throw new ArgumentNullException("input");
-            int inputLength = input.Length;
-            if (inputLength  < 1) return null;
-
-            // Get padding chars
-            int numPadChars = (int)input[inputLength - 1] - (int)'0';            
-            if (numPadChars < 0 || numPadChars > 10)
-            {
-                return null;
-            }
-
-            // replace '-' and '_'
-            char[] base64Chars = new char[inputLength - 1 + numPadChars];
-            for (int iter = 0; iter < inputLength - 1; iter++)
-            {
-                char c = input[iter];
-
-                switch (c)
-                {
-                    case '-':
-                        base64Chars[iter] = '+';
-                        break;
-
-                    case '_':
-                        base64Chars[iter] = '/';
-                        break;
-
-                    default:
-                        base64Chars[iter] = c;
-                        break;
-                }
-            }
-
-            // Add padding chars
-            for (int iter = inputLength - 1; iter < base64Chars.Length; iter++)
-            {
-                base64Chars[iter] = '=';
-            }
-
-            var charArray = Convert.FromBase64CharArray(base64Chars, 0, base64Chars.Length);
-            return System.Text.Encoding.Default.GetString(charArray);
-        }
-
-        private static string Base64DecodeSimple(string input)
-        {
-            string base64Decoded;
-            byte[] data = System.Convert.FromBase64String(input);
-            base64Decoded = System.Text.ASCIIEncoding.ASCII.GetString(data);
-            return base64Decoded;
-        }        
-
 
         [HttpPost]
-        public IActionResult GetDocumentById(string id = "", string query = "")
+        public SearchResultViewModel SearchView([FromForm]SearchOptions searchParams)
         {
-            var response = _docSearch.LookUp(id);
-                        
-            if (query != "")
+            if (searchParams.q == null)
+                searchParams.q = "*";
+            if (searchParams.searchFacets == null)
+                searchParams.searchFacets = new SearchFacet[0];
+            if (searchParams.currentPage == 0)
+                searchParams.currentPage = 1;
+
+            string searchidId = null;
+
+            if (CheckDocSearchInitialized())
+                searchidId = _docSearch.GetSearchId().ToString();
+
+            var viewModel = new SearchResultViewModel
             {
-                string videoId = response.GetValueOrDefault("id", response.GetValueOrDefault("Id",0)).ToString();
-                string filter = "video_id eq '" + videoId + "'";
-                List<string> orderBy = new List<string>();
-                orderBy.Add("startTime asc");
-                var timeReferences = _timeReferenceSearch.Search(query,filtersString: filter, orderBy: orderBy);
-                string timeReference = "0";
-                if (timeReferences.Results.Count > 0)
-                    timeReference = timeReferences.Results.First().Document.GetValueOrDefault("startTime", 0).ToString(); // ContainsKey("startTime");
-                if (timeReference != "0")
-                    response.Add("time_reference", timeReference);
-            }
-
-            var decodedPath = id;
-
-            if (_isPathBase64Encoded)
-            {
-                decodedPath = Base64Decode(id);
-                if (decodedPath == null)
-                {
-                    decodedPath = Base64DecodeSimple(id);
-                }
-            }
-
-            string tokenToUse = GetToken(decodedPath);
-
-            return new JsonResult(
-                new DocumentResult
-                {
-                    Result = response,
-                    Token = tokenToUse,
-                    DecodedPath = decodedPath,
-                    IdField = _idField,
-                    IsPathBase64Encoded = _isPathBase64Encoded
-                });
+                documentResult = _docSearch.GetDocuments(searchParams.q, searchParams.searchFacets, searchParams.currentPage, searchParams.polygonString),
+                query = searchParams.q,
+                selectedFacets = searchParams.searchFacets,
+                currentPage = searchParams.currentPage,
+                searchId = searchidId ?? null,
+                applicationInstrumentationKey = _configuration.GetSection("InstrumentationKey")?.Value,
+                searchServiceName = _configuration.GetSection("SearchServiceName")?.Value,
+                indexName = _configuration.GetSection("SearchIndexName")?.Value,
+                facetableFields = _docSearch.Model.Facets.Select(k => k.Name).ToArray()
+            };
+            return viewModel;
         }
 
+        [HttpPost]
+        public IActionResult GetDocumentById(string id = "")
+        {
+            var result = _docSearch.GetDocumentById(id);
+
+            return new JsonResult(result);
+        }
 
         public class MapCredentials
         {
@@ -269,77 +158,27 @@ namespace CognitiveSearch.UI.Controllers
                 });
         }
 
-        private string GetToken(string decodedPath)
-        {
-            // Initialize tokens and containers if not already initialized
-            GetContainerSasUris();
-
-            // Determine which token to use.
-            string tokenToUse;
-            if (decodedPath.ToLower().Contains(containerAddresses[1])) { tokenToUse = tokens[1]; }
-            else if (decodedPath.ToLower().Contains(containerAddresses[2])) { tokenToUse = tokens[2]; }
-            else { tokenToUse = tokens[0]; }
-
-            return tokenToUse;
-        }
-
-        /// <summary>
-        /// This will return up to 3 tokens for the storage accounts
-        /// </summary>
-        /// <returns></returns>
-        private string[] GetContainerSasUris()
-        {
-            // We need to refresh the tokens every time or they will become invalid.
-            tokens = new string[3];
-            containerAddresses = new string[3];
-
-            string accountName = _configuration.GetSection("StorageAccountName")?.Value;
-            string accountKey = _configuration.GetSection("StorageAccountKey")?.Value;
-
-            SharedAccessBlobPolicy adHocPolicy = new SharedAccessBlobPolicy()
-            {
-                SharedAccessExpiryTime = DateTime.UtcNow.AddHours(24),
-                Permissions = SharedAccessBlobPermissions.Read
-            };
-
-            containerAddresses[0] = _configuration.GetSection("StorageContainerAddress")?.Value.ToLower();
-            CloudBlobContainer container = new CloudBlobContainer(new Uri(containerAddresses[0]), new StorageCredentials(accountName, accountKey));
-            tokens[0] = container.GetSharedAccessSignature(adHocPolicy, null);
-
-            // Get token for second indexer data source
-            containerAddresses[1] = _configuration.GetSection("StorageContainerAddress2")?.Value.ToLower();
-            if (!String.Equals(containerAddresses[1], defaultContainerUriValue))
-            {
-                CloudBlobContainer container2 = new CloudBlobContainer(new Uri(containerAddresses[1]), new StorageCredentials(accountName, accountKey));
-                tokens[1] = container2.GetSharedAccessSignature(adHocPolicy, null);
-            }
-
-            // Get token for third indexer data source
-            containerAddresses[2] = _configuration.GetSection("StorageContainerAddress3")?.Value.ToLower();
-            if (!String.Equals(containerAddresses[2], defaultContainerUriValue))
-            {
-                CloudBlobContainer container3 = new CloudBlobContainer(new Uri(containerAddresses[2]), new StorageCredentials(accountName, accountKey));
-                tokens[2] = container3.GetSharedAccessSignature(adHocPolicy, null);
-            }
-
-            return tokens;
-        }
-
         [HttpPost]
-        public JObject GetGraphData(string query)
+        public ActionResult GetGraphData(string query, string[] fields, int maxLevels, int maxNodes)
         {
-            string facetsList = _configuration.GetSection("GraphFacet")?.Value;
+            string[] facetNames = fields;
 
-            string[] facetNames = facetsList.Split(new char[] {',',' '}, StringSplitOptions.RemoveEmptyEntries);
+            if (facetNames == null || facetNames.Length == 0)
+            {
+                string facetsList = _configuration.GetSection("GraphFacet")?.Value;
+
+                facetNames = facetsList.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            }
 
             if (query == null)
             {
                 query = "*";
             }
-            FacetGraphGenerator graphGenerator = new FacetGraphGenerator(_docSearch);
-            var graphJson = graphGenerator.GetFacetGraphNodes(query, facetNames.ToList<string>());
 
-            return graphJson;
+            FacetGraphGenerator graphGenerator = new FacetGraphGenerator(_docSearch);
+            var graphJson = graphGenerator.GetFacetGraphNodes(query, facetNames.ToList<string>(), maxLevels, maxNodes);
+
+            return Content(graphJson.ToString(), "application/json");
         }
 
         [HttpPost, HttpGet]

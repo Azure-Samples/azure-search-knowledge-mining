@@ -1,6 +1,9 @@
 ﻿<!-- Copyright (c) Microsoft Corporation. All rights reserved.
      Licensed under the MIT License. -->
 
+@using CognitiveSearch.UI.Configuration
+@inject AppConfig AppConfig
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,53 +11,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
 
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.2.0/css/fabric.components.min.css" />
     <link rel="stylesheet" href="~/lib/fabric-ui/fabric.css" />
     <link rel="stylesheet" href="~/lib/fabric-ui/fabric-9.4.0.scoped.css" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
-    <link rel="stylesheet" href="~/css/colors.css" />
+
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-
-    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.2.0/css/fabric.components.min.css" />
-
     <link rel="stylesheet" href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.css" type="text/css">
 
-    <script src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.js"></script>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/navbar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/colors.css" />
 
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
 
     <script src="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.2.0/js/fabric.min.js"></script>
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://d3js.org/d3-selection-multi.v1.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+    <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+    
+    <script src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.js"></script>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="container-fluid">
-            <div class="content">
-                <div class="navbar-header">
-                    <a href="~/Home/Index">
-                        <img href="~\Home\Index" class="navbar-brand-logo" src="~/images/Microsoft-logo_rgb_c-gray.png" />
-                    </a>
-                </div>
-                <span class="navbar-user">
-                    @*Bryan Foster*@
-                </span>
-            </div>
-        </div>
-    </nav>
+    @await Html.PartialAsync("_Header")
+
     <div class="container-fluid">
         @RenderBody()
     </div>
-    <div>
-        <footer class="main-footer">
-            <div class="content">
-                <span class="copyright">&copy; Microsoft 2019</span>
-            </div>
-        </footer>
-    </div>
 
-    <script src="~/lib/jquery/dist/jquery.js"></script>
-
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    @await Html.PartialAsync("_Footer")
 
     <script type="text/javascript">
         // Change JQueryUI plugin names to fix name collision with Bootstrap.
@@ -63,8 +51,6 @@
     </script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
 
-    <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
-    <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
     <script src="~/js/tags.js"></script>
     <script src="~/js/details.js"></script>
     <script src="~/js/appInsights.js"></script>
@@ -84,7 +70,9 @@
                     Search();
                 }
             });
-        })
+		})
+
+        customizable = '@AppConfig.Customizable';
     </script>
 
     @RenderSection("Scripts", required: false)
