@@ -12,7 +12,7 @@ git clone https://github.com/Azure-Samples/azure-search-knowledge-mining.git
 
 ## 2. Start the project
 
-Open **CognitiveSearch.UI.csproj** (02-Web UI Template\CognitiveSearch.UI) in Visual Studio 
+Open **CognitiveSearch.UI.sln** (02-Web UI Template\CognitiveSearch.UI) in Visual Studio 
 
 ## 3. Update appsettings.json
 

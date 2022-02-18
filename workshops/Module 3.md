@@ -1,6 +1,8 @@
 # Module 3: Introduction to Azure Functions and Custom Skills
 **Objective:** Introduce the tools and provide concepts key to building [custom skills](https://docs.microsoft.com/en-us/azure/search/cognitive-search-custom-skill-interface). Building a custom skill gives you a way to insert transformations unique to your content. A custom skill executes independently, applying whatever enrichment step you require and allowing you to develop extremely powerful and domain specific knowledge mining solutions.  
 
+> Note: The skill you're creating below is now also available out-of-the-box as the [Custom Entity Lookup cognitive skill](https://docs.microsoft.com/azure/search/cognitive-search-skill-custom-entity-lookup) and can be used instead of the Azure Function. However, learning to build and test custom skills is valuable so this module has been left as-is. 
+
 In this module we will develop a custom skill to extend the data that was indexed in the previous module.  Your new skill will identify and extract disease names from the data set and store them as entities in a separate field attached to the document.  By doing this, it will allow us to leverage capabilities such as:
 
 1) Leveraging [facets](https://docs.microsoft.com/en-us/azure/search/search-filters-facets) to show the diseases and their counts that are mentioned in the corpus of search results
@@ -58,7 +60,7 @@ We will first test the application locally.
 ![](images/azurefunction.png)
 
 
-4) Open PostMan and click on **New** to create a new Request (you can add this to any collection you'd like)
+4) Open Postman and click on **New** to create a new Request (you can add this to any collection you'd like)
 5) Enter the URL copied and change the request type from GET to POST.
 
 ![](images/postman2.png)

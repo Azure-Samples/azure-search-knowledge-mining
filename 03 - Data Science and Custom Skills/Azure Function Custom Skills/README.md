@@ -7,7 +7,7 @@ The custom skills and templates that were previously in this directory can now b
 
 ## Features
 
-This project provides the following custom skills:
+This project provides the following custom skills along with many other options:
 
 * [**HelloWorld**](https://github.com/Azure-Samples/azure-search-power-skills/blob/master/Template/HelloWorld/README.md): a minimal skill that can be used as a starting point or template for your own skills.
 * [**GeoPointFromName**](https://github.com/Azure-Samples/azure-search-power-skills/blob/master/Geo/GeoPointFromName/README.md): retrieves coordinates from place names and addresses.
@@ -16,6 +16,6 @@ This project provides the following custom skills:
 * [**ImageStore**](https://github.com/Azure-Samples/azure-search-power-skills/blob/master/Vision/ImageStore/README.md): stores and fetches base64-encoded images to and from blob storage.
 * [**HocrGenerator**](https://github.com/Azure-Samples/azure-search-power-skills/blob/master/Vision/HocrGenerator/README.md): transforms the result of OCR into the hOCR format.
 * [**AnalyzeForm**](https://github.com/Azure-Samples/azure-search-power-skills/blob/master/Vision/AnalyzeForm/README.md): recognizes form fields in a document.
-* [**CustomEntityLookup**](https://github.com/Azure-Samples/azure-search-power-skills/blob/master//Text/CustomEntityLookup): finds custom entity names in text.
+* [**CustomEntityLookup**](https://github.com/Azure-Samples/azure-search-power-skills/blob/master/Text/CustomEntitySearch/README.md): finds custom entity names in text.
 * [**Tokenizer**](https://github.com/Azure-Samples/azure-search-power-skills/blob/master/Text/Tokenizer/README.md): extracts non-stop words from a text.
 * [**Distinct**](https://github.com/Azure-Samples/azure-search-power-skills/blob/master/Text/Distinct/README.md): de-duplicates a list of terms.

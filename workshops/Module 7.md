@@ -6,14 +6,14 @@ In the below module you will take a set of purely anonymized patient data (patie
 
 ## SQL Database Connection Information
 
-If you happen to have SQL Server Management Studio, you can connect to the Azure SQL database that holds the data will be indexing, however that is not required for this module.  To connect to the database you will use the following information:
+If you happen to have SQL Server Management Studio, you can connect to the Azure SQL database that holds the data will be indexing, however that is not required for this module.  To connect to the database you will use the following information from https://azsplayground.blob.core.windows.net/public/medical-demo-connection-string.txt.  Keep in mind that one should normally guard your username/password for SQL authentication closely.  In this case, we are intentionally sharing account information for read-only access to support this public demo.  
 
 ```
 Server: azs-playground.database.windows.net
 Database: medical-demo
 User: reader
-Password: EdrERBt3j6mZDP
-Table: patient-info
+Password: (see the value in https://azsplayground.blob.core.windows.net/public/medical-demo-connection-string.txt)
+Table: patient_info
 ```
 
 Here is what the data looks like:
@@ -271,6 +271,10 @@ Body:
 ### Create the Data Source
 Replace the [searchservice] with your search service and use your admin api key in the header.
 
+Replace the [connectionString] with the value in https://azsplayground.blob.core.windows.net/public/medical-demo-connection-string.txt.  Keep in mind that normally, one would not openly share a connection string.  
+
+There is no need to replace the [patient_info].  The square brackets there are valid syntax for a SQL table.  
+
 PUT: https://[searchservice].search.windows.net/datasources/medical-demo?api-version=2019-05-06
 
 Headers:
@@ -285,7 +289,7 @@ Body:
     "type": "azuresql",
     "subtype": null,
     "credentials": {
-        "connectionString": "Server=tcp:azs-playground.database.windows.net;Database=medical-demo;User ID=reader;Password= EdrERBt3j6mZDP;Trusted_Connection=False;Encrypt=True;"
+        "connectionString": [connectionString]
     },
     "container": {
         "name": "[patient_info]",

@@ -1,0 +1,10 @@
+{
+    "description": "Demo files to demonstrate cognitive search capabilities.",
+    "type": "azureblob",
+    "credentials": {
+        "connectionString": "{{env_storage_connection_string}}"
+    },
+    "container": {
+        "name": "{{env_storage_container}}"
+    }
+}
