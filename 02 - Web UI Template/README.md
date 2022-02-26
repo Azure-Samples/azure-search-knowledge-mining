@@ -15,7 +15,7 @@ You can run the UI:
 
 ## 1. Update .env 
 
-Modify the [.env file](./.env) with your application settings:
+Modify the [.env file](./Docker/.env) with your application settings:
 
 ### Required fields
 
