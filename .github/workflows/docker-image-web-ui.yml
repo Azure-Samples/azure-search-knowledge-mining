@@ -29,6 +29,6 @@ jobs:
     - name: Build the Docker image
       run: 
         cd "02 - Web UI Template";
-        docker build . --tag videokm.azurecr.io/web-ui:latest;
-        docker push videokm.azurecr.io/web-ui:latest
+        docker build . --tag ${{ secrets.ACR_LOGIN_SERVER }}/web-ui:latest;
+        docker push ${{ secrets.ACR_LOGIN_SERVER }}/web-ui:latest
       
