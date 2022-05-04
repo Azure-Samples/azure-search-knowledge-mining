@@ -23,6 +23,10 @@ function ShowDocument(id, index) {
 
             // Transcript Tab Content
             var transcriptContainerHTML = GetTranscriptHTML(result);
+            if (data.decodedPath.toLowerCase().includes(".htm")){
+                fileContainerHTML = GetTranscriptHTML(result);
+            }
+
 
             // Metadata Tab Content 
             var metadataContainerHTML = GetMetadataHTML(result);
@@ -79,7 +83,7 @@ function ShowDocument(id, index) {
 
             pivotLinksHTML += '<li id="metadata-pivot-link" class="ms-Pivot-link" data-content="metadata" title="Metadata" tabindex="1">Metadata</li>';
 
-            if (result.geoLocation !== null) {
+            if (result.geoLocation !== undefined && result.geoLocation !== null) {
                 pivotLinksHTML += '<li id="maps-pivot-link" class="ms-Pivot-link" data-content="maps" title="Maps" tabindex="1">Maps</li>';
             }
 

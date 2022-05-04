@@ -33,6 +33,8 @@ namespace CognitiveSearch.UI
         private string IndexName { get; set; }
         private string IndexerName { get; set; }
 
+        private string QueryLanguage { get; set; }
+
         private string idField { get; set; }
 
         // Client logs all searches in Application Insights
@@ -63,6 +65,7 @@ namespace CognitiveSearch.UI
                 apiKey = configuration.GetSection("SearchApiKey")?.Value;
                 IndexName = configuration.GetSection("SearchIndexName")?.Value;
                 IndexerName = configuration.GetSection("SearchIndexerName")?.Value;
+                QueryLanguage = configuration.GetSection("QueryLanguage")?.Value;
                 idField = configuration.GetSection("KeyField")?.Value;
                 telemetryClient.InstrumentationKey = configuration.GetSection("InstrumentationKey")?.Value;
 
@@ -132,10 +135,18 @@ namespace CognitiveSearch.UI
                 Size = 10,
                 Skip = (currentPage - 1) * 10,
                 IncludeTotalCount = true,
-                QueryType = SearchQueryType.Full,
+                QueryType = SearchQueryType.Semantic,//SearchQueryType.Full,
+                QueryLanguage = QueryLanguage,
+                QueryAnswer = "extractive",
                 HighlightPreTag = "<b>",
                 HighlightPostTag = "</b>"
             };
+
+            options.Select.Add("metadata_storage_name");
+            options.Select.Add("metadata_storage_path");
+
+            options.SearchFields.Add("metadata_storage_name");
+            options.SearchFields.Add("merged_content");
 
             foreach (string s in selectFilter)
             {
@@ -369,11 +380,24 @@ namespace CognitiveSearch.UI
                 SearchId = searchId,
                 IdField = idField,
                 Token = s_tokens[0],
-                IsPathBase64Encoded = _isPathBase64Encoded
+                IsPathBase64Encoded = _isPathBase64Encoded,
+                Answer = response.Answers != null && response.Answers.Count() > 0 ? response.Answers[0].Highlights : null,
+                Captions = new List<Caption>()
             };
 
             string json = JsonConvert.SerializeObject(facetResults);
 
+            foreach (var x in result.Results)
+            { // response.GetResults() 
+                if (x.Captions != null)
+                {
+                    Caption c = new Caption();
+                    c.metadata_storage_name = x.Document.GetString("metadata_storage_name");
+                    c.text = x.Captions[0]?.Text;
+
+                    result.Captions.Add(c);
+                }
+            }
 
             return result;
         }

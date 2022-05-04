@@ -123,8 +123,11 @@ namespace CognitiveSearch.UI.Controllers
                 applicationInstrumentationKey = _configuration.GetSection("InstrumentationKey")?.Value,
                 searchServiceName = _configuration.GetSection("SearchServiceName")?.Value,
                 indexName = _configuration.GetSection("SearchIndexName")?.Value,
-                facetableFields = _docSearch.Model.Facets.Select(k => k.Name).ToArray()
+                facetableFields = _docSearch.Model.Facets.Select(k => k.Name).ToArray(),
+                answer = ""
             };
+            viewModel.answer = viewModel.documentResult.Answer;
+            viewModel.captions = viewModel.documentResult.Captions;
             return viewModel;
         }
 

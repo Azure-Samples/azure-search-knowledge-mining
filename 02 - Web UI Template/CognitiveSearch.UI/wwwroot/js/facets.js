@@ -14,7 +14,7 @@ function UpdateFilterReset() {
                                 <h4 class="panel-title">Current Filters</h4>
                             </div>
                             <div>
-                                <div class="panel-body">`;
+                                <div class="panel-body panel-scroll">`;
 
         selectedFacets.forEach(function (item, index, array) { // foreach facet with a selected value
             var name = item.key;
@@ -56,6 +56,8 @@ function RemoveFilter(facet, value) {
 function UpdateFacets() {
     $("#facet-nav").html("");
 
+    facets.sort((a, b) => a.key.localeCompare(b.key));
+
     var facetResultsHTML = `<div class="panel-group" id="accordion">`;
     facets.forEach(function (item, index, array) {
         var name = item.key;
@@ -65,6 +67,16 @@ function UpdateFacets() {
 
             var title = name.replace(/([A-Z])/g, ' $1').replace(/^./, function (str) { return str.toUpperCase(); })
 
+            if (title == "Metadata_storage_file_extension"){
+                title = "File Extension"
+            }
+
+            if (title == "Metadata_author") {
+                title = "File Author";
+            }
+
+            title = title.replace("_clean", "");
+
             facetResultsHTML += `<div class="panel panel-default">
                                 <div class="panel-heading">
                                     <h4 class="panel-title" id="${name}-facets">
@@ -73,11 +85,11 @@ function UpdateFacets() {
                                 </div>`;
             if (index === 0) {
                 facetResultsHTML += `<div id="${name}" class="panel-collapse collapse in">
-                <div class="panel-body">`;
+                <div class="panel-body panel-scroll">`;
             }
             else {
                 facetResultsHTML += `<div id="${name}" class="panel-collapse collapse">
-                <div class="panel-body">`;
+                <div class="panel-body panel-scroll">`;
             }
 
             if (data !== null) {
