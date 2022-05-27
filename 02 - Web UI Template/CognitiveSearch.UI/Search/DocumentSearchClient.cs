@@ -149,13 +149,6 @@ namespace CognitiveSearch.UI
                 options.SemanticConfigurationName = SemanticConfiguration;
             }
 
-
-            options.Select.Add("metadata_storage_name");
-            options.Select.Add("metadata_storage_path");
-
-            options.SearchFields.Add("metadata_storage_name");
-            options.SearchFields.Add("merged_content");
-
             foreach (string s in selectFilter)
             {
                 options.Select.Add(s);
