@@ -34,6 +34,7 @@ namespace CognitiveSearch.UI
         private string IndexerName { get; set; }
 
         private string QueryLanguage { get; set; }
+        private string SemanticConfiguration { get; set; }
 
         private string idField { get; set; }
 
@@ -66,6 +67,7 @@ namespace CognitiveSearch.UI
                 IndexName = configuration.GetSection("SearchIndexName")?.Value;
                 IndexerName = configuration.GetSection("SearchIndexerName")?.Value;
                 QueryLanguage = configuration.GetSection("QueryLanguage")?.Value;
+                SemanticConfiguration = configuration.GetSection("SemanticConfiguration")?.Value;
                 idField = configuration.GetSection("KeyField")?.Value;
                 telemetryClient.InstrumentationKey = configuration.GetSection("InstrumentationKey")?.Value;
 
@@ -91,11 +93,11 @@ namespace CognitiveSearch.UI
             }
         }
 
-        public SearchResults<SearchDocument> Search(string searchText, SearchFacet[] searchFacets = null, string[] selectFilter = null, int currentPage = 1, string polygonString = null)
+        public SearchResults<SearchDocument> Search(string searchText, SearchFacet[] searchFacets = null, string[] selectFilter = null, int currentPage = 1, string polygonString = null, SearchQueryType queryType= SearchQueryType.Semantic)
         {
             try
             {
-                SearchOptions options = GenerateSearchOptions(searchFacets, selectFilter, currentPage, polygonString);
+                SearchOptions options = GenerateSearchOptions(searchFacets, selectFilter, currentPage, polygonString, queryType);
 
                 //if (!string.IsNullOrEmpty(telemetryClient.InstrumentationKey))
                 //{
@@ -127,7 +129,7 @@ namespace CognitiveSearch.UI
             return null;
         }
 
-        public SearchOptions GenerateSearchOptions(SearchFacet[] searchFacets = null, string[] selectFilter = null, int currentPage = 1, string polygonString = null)
+        public SearchOptions GenerateSearchOptions(SearchFacet[] searchFacets = null, string[] selectFilter = null, int currentPage = 1, string polygonString = null, SearchQueryType queryType = SearchQueryType.Full)
         {
             SearchOptions options = new SearchOptions()
             {
@@ -135,12 +137,18 @@ namespace CognitiveSearch.UI
                 Size = 10,
                 Skip = (currentPage - 1) * 10,
                 IncludeTotalCount = true,
-                QueryType = SearchQueryType.Semantic,//SearchQueryType.Full,
-                QueryLanguage = QueryLanguage,
-                QueryAnswer = "extractive",
+                QueryType = queryType,
                 HighlightPreTag = "<b>",
                 HighlightPostTag = "</b>"
             };
+
+            if (queryType == SearchQueryType.Semantic)
+            {
+                options.QueryLanguage = QueryLanguage;
+                options.QueryAnswer = "extractive";
+                options.SemanticConfigurationName = SemanticConfiguration;
+            }
+
 
             options.Select.Add("metadata_storage_name");
             options.Select.Add("metadata_storage_path");
@@ -329,7 +337,7 @@ namespace CognitiveSearch.UI
             return null;
         }
 
-        public DocumentResult GetDocuments(string q, SearchFacet[] searchFacets, int currentPage, string polygonString = null)
+        public DocumentResult GetDocuments(string q, SearchFacet[] searchFacets, int currentPage, string polygonString = null, SearchQueryType queryType = SearchQueryType.Full)
         {
             GetContainerSasUris();
 
@@ -340,7 +348,7 @@ namespace CognitiveSearch.UI
                 q = q.Replace("?", "");
             }
 
-            var response = Search(q, searchFacets, selectFilter, currentPage, polygonString);
+            var response = Search(q, searchFacets, selectFilter, currentPage, polygonString, queryType);
             var searchId = GetSearchId().ToString();
             var facetResults = new List<Facet>();
             var tagsResults = new List<object>();

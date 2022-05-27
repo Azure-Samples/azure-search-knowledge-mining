@@ -22,6 +22,8 @@ namespace CognitiveSearch.UI.Models
 
         public string answer { get; set; }
 
-        public List<Caption> captions { get; set; }
+        public List<Caption> captions { get; set; } 
+
+        public string queryType { get; set; }
     }
 }

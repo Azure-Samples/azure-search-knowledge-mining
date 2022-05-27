@@ -62,12 +62,23 @@ function UpdateResultsView() {
         }
     }
 
+    var queryType = "";
+
+    if ($('#semantic-toogle').is(":checked")) {
+        // it is checked
+        queryType = "Semantic";
+    }
+    else {
+        queryType = "Full";
+    }
+
     $.post('/home/searchview',
         {
             q: q !== undefined ? q : "*",
             searchFacets: selectedFacets,
             currentPage: currentPage,
-            polygonString: polygonString
+            polygonString: polygonString,
+            queryType: queryType
         },
         function (viewModel) {
             $('#loading-indicator').css("display", "none");
