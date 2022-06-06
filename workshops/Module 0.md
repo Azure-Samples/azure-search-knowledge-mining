@@ -17,7 +17,7 @@ Please make sure you fulfill the following pre-requisites before starting the wo
     1. **Open** Azure Storage Explorer and select *Manage Accounts*, *Add and Account...*, *Use a shared access signature (SAS) URI*. Select *Next*
     1. **Add** the following *URI*, then select *Next*, then select *Connect*
         ```
-        https://kmworkshop.blob.core.windows.net/clinical-trials-small?sv=2019-10-10&st=2020-09-14T19%3A21%3A00Z&se=2022-09-16T19%3A21%3A00Z&sr=c&sp=rl&sig=CtoGmOSkbap8ZOslI9EYeWs148gw4NdYpynU0Eyoj4s%3D
+        https://kmworkshop.blob.core.windows.net/clinical-trials-small?sv=2020-10-02&st=2022-05-06T17%3A02%3A00Z&se=2024-06-07T17%3A02%3A00Z&sr=c&sp=rl&sig=EkgZHm2A5l509O%2FBZf7j2B60QsIlHOQuXJpvX46%2BO3o%3D
         ```
     1. **Select** *Toggle Explorer* to view the Explorer. Right click on the *clinical-trials-small* Blob Container that you just connected to and select *Copy Blob Container*
         ![](images/copyblobcontainer.png)
