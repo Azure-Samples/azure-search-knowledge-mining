@@ -25,5 +25,7 @@ namespace CognitiveSearch.UI.Models
         public List<Caption> captions { get; set; } 
 
         public string queryType { get; set; }
+
+        public bool semanticEnabled { get; set; }
     }
 }

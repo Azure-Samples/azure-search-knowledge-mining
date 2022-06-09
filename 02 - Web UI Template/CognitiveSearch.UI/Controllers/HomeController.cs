@@ -134,7 +134,8 @@ namespace CognitiveSearch.UI.Controllers
                 searchServiceName = _configuration.GetSection("SearchServiceName")?.Value,
                 indexName = _configuration.GetSection("SearchIndexName")?.Value,
                 facetableFields = _docSearch.Model.Facets.Select(k => k.Name).ToArray(),
-                answer = ""
+                answer = "",
+                semanticEnabled = (_configuration.GetSection("SemanticConfiguration")?.Value != "")
             };
             viewModel.answer = viewModel.documentResult.Answer;
             viewModel.captions = viewModel.documentResult.Captions;

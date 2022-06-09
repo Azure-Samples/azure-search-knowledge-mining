@@ -15,6 +15,7 @@
     applicationInstrumentationKey = @Html.Raw(Json.Serialize(Model.applicationInstrumentationKey));
     searchServiceName = @Html.Raw(Json.Serialize(Model.searchServiceName));
     indexName = @Html.Raw(Json.Serialize(Model.indexName));
+    semanticEnabled = @Html.Raw(Json.Serialize(Model.semanticEnabled));
 </script>
 <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
 
@@ -66,7 +67,7 @@
                 <button id="search-button" class="btn btn-default" onclick="Search();"><span class="ms-Icon ms-Icon--Search"></span></button>
             </span>
         </div>
-        <div class="input-group">
+        <div class="input-group" style="@(Model.semanticEnabled?"display:block":"display:none")">
             Semantic Search
             <label class="switch"> <input name="queryType" id="semantic-toogle" type="checkbox"><span class="slider round"></span> </label>
         </div>
