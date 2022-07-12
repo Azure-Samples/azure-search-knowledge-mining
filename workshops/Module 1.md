@@ -137,6 +137,10 @@ Add a parameter &$count=true to determine that there are 8 documents that refer 
 gaucher&highlight=content&$count=true
 ```
 
+### Optional - Semantic Search 
+
+If you are interested in using [Semantic Search](https://docs.microsoft.com/en-us/azure/search/semantic-search-overview) and have already selected a Semantic Search plan, you will see a **Semantic Configuration** tab. You will need to create a Semantic Configuration as a required parameter for Semantic requests. Alternatively on the **Search Explorer** tab, expand **Query Options (Preview)**, toggle Semantic to "On" and select the configuration you created. You have now successfully enabled Semantic Search and all query's requested in the portal will be a Semantic Search query type!
+
 ### Searching the Content using Postman
 
 The search explorer is useful for performing queries like this, however most developers want to use external tools to start working against the service.  For that reason, open Postman to perform the rest of the below search queries.  To set up the queries we will set the Headers as:
