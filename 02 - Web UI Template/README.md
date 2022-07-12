@@ -70,13 +70,14 @@ While some fields are optional, we recommend not removing them from *appsettings
   "OrganizationWebSiteUrl": "https://www.microsoft.com"
 
 ```
-
-1. **InstrumentationKey** - Optional instumentation key for Application Insights. The instrumentation key connects the web app to Application Inisghts in order to populate the Power BI reports.
-2. **StorageContainerAddress2** & **StorageContainerAddress3** - Optional container addresses if using more than one indexer
-3. **AzureMapsSubscriptionKey** - You have the option to provide an Azure Maps account if you would like to display a geographic point in a map in the document details. The code expects a field called *geolocation* of type Edm.GeographyPoint. If your wish to change this behavior (for instance if you would like to use a different field), you can modify details.js.
+1. **QueryLanguage** - Optional query language if using Semantic Searc requests.
+2. **SemanticConfiguration** - Once you have a selected a Semantic Search plan, you can now create a Semantic Configuration in your index. 
+3. **InstrumentationKey** - Optional instumentation key for Application Insights. The instrumentation key connects the web app to Application Inisghts in order to populate the Power BI reports.
+4. **StorageContainerAddress2** & **StorageContainerAddress3** - Optional container addresses if using more than one indexer
+5. **AzureMapsSubscriptionKey** - You have the option to provide an Azure Maps account if you would like to display a geographic point in a map in the document details. The code expects a field called *geolocation* of type Edm.GeographyPoint. If your wish to change this behavior (for instance if you would like to use a different field), you can modify details.js.
 ![geolocation](../images/geolocation.png)
-4. **GraphFacet** - The GraphFacet is used for generating the relationship graph. This can now be edited in the UI.
-5. **Customizable** - Determines if user is allowed to *customize* the web app. Customizations include uploading documents and changing the colors/logo of the web app. **OrganizationName**,  **OrganizationLogo**, and **OrganizationWebSiteUrl** are additional fields that also allow you to do light customization.
+6. **GraphFacet** - The GraphFacet is used for generating the relationship graph. This can now be edited in the UI.
+7. **Customizable** - Determines if user is allowed to *customize* the web app. Customizations include uploading documents and changing the colors/logo of the web app. **OrganizationName**,  **OrganizationLogo**, and **OrganizationWebSiteUrl** are additional fields that also allow you to do light customization.
 
 ## 2. Update SearchModel.cs
 
