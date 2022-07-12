@@ -49,7 +49,6 @@ While some fields are optional, we recommend not removing them from *appsettings
   "QueryLanguage": "{query-language-name}",
   "SemanticConfiguration": "{semantic-config-name}",
   
-  
   // Optional instrumentation key
   "InstrumentationKey": "",
 
