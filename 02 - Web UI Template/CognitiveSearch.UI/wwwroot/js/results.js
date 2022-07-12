@@ -197,12 +197,20 @@ function UpdateMap(data) {
     }
 }
 
-function UpdateResults(data) {
+function UpdateResults(data, answer) {
     var resultsHtml = '';
 
     $("#doc-count").html(` Available Results: ${data.count}`);
 
+    if (data.answer !== undefined && data.answer !== null) {
 
+        $('#query-div').html(` Question: ${data.query}`).show();
+        $('#answer-div').html(` Answer: ${data.answer}`).show();
+    }
+    else {
+        $('#query-div').html(``).hide();
+        $('#answer-div').html(``).hide();
+    }
 
     for (var i = 0; i < data.results.length; i++) {
 
@@ -214,7 +222,17 @@ function UpdateResults(data) {
         var title;
         var content;
 
-        if (result.highlights) {
+        var caption = data.captions[i];
+
+        if (answer && caption) {
+            if (caption.text == answer.replaceAll("<em>", "").replaceAll("</em>", "")) {
+                content = "<em>" + caption.text + "</em>";
+            }
+            else {
+                content = caption.text;
+            }
+        }
+        else if (result.highlights) {
             if (result.highlights?.merged_content) {
                 content = result.highlights?.merged_content[0];
             } else if (result.highlights?.content) {
@@ -238,7 +256,7 @@ function UpdateResults(data) {
         }
 
         if (document["metadata_storage_name"] !== undefined) {
-            name = document.metadata_storage_name.split(".")[0];
+            name = document.metadata_storage_name;//.split(".").slice(0,-1).join();
         }
         
         if (document["metadata_title"] !== undefined && document["metadata_title"] !== null) {

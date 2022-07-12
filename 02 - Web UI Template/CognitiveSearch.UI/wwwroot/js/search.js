@@ -62,12 +62,23 @@ function UpdateResultsView() {
         }
     }
 
+    var queryType = "";
+
+    if ($('#semantic-toogle').is(":checked")) {
+        // it is checked
+        queryType = "Semantic";
+    }
+    else {
+        queryType = "Full";
+    }
+
     $.post('/home/searchview',
         {
             q: q !== undefined ? q : "*",
             searchFacets: selectedFacets,
             currentPage: currentPage,
-            polygonString: polygonString
+            polygonString: polygonString,
+            queryType: queryType
         },
         function (viewModel) {
             $('#loading-indicator').css("display", "none");
@@ -85,17 +96,22 @@ function Update(viewModel) {
 
     var data = viewModel.documentResult;
     results = data.results;
+    data.query = viewModel.query;
     facets = data.facets;
     tags = data.tags;
     token = data.token;
 
     searchId = data.searchId;
 
+    var answer = data.answer;
+
+    data.captions = viewModel.captions;
+
     //Facets
     UpdateFacets();
 
     //Results List
-    UpdateResults(data);
+    UpdateResults(data, answer);
 
     //Map
     UpdateMap(data);
