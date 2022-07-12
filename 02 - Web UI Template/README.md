@@ -45,7 +45,7 @@ This file contains a mix of required and optional fields described below.
 While some fields are optional, we recommend not removing them from *appsettings.json* to avoid any possible errors.
 
 ```json
-   // Optional fields to enable Semantic Search (e.g. "en-US" and "semantic-config")
+  // Optional fields to enable Semantic Search (e.g. "en-US" and "semantic-config")
   "QueryLanguage": "{query-language-name}",
   "SemanticConfiguration": "{semantic-config-name}",
   
