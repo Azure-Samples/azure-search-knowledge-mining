@@ -70,7 +70,7 @@ While some fields are optional, we recommend not removing them from *appsettings
   "OrganizationWebSiteUrl": "https://www.microsoft.com"
 
 ```
-1. **QueryLanguage** - Optional query language if using Semantic Searc requests.
+1. **QueryLanguage** - Optional query language if using Semantic Search requests.
 2. **SemanticConfiguration** - Once you have a selected a Semantic Search plan, you can now create a Semantic Configuration in your index. 
 3. **InstrumentationKey** - Optional instumentation key for Application Insights. The instrumentation key connects the web app to Application Inisghts in order to populate the Power BI reports.
 4. **StorageContainerAddress2** & **StorageContainerAddress3** - Optional container addresses if using more than one indexer
