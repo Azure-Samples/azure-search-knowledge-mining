@@ -66,7 +66,7 @@ OrganizationWebSiteUrl=https://www.microsoft.com
 
 ## 2. Run the UI
 ```shell
-docker run -d -env-file .env -p 80:80 ACR_NAME/IMAGE_NAME:latest
+docker run -d -env-file .env -p 80:80 kmworkshop.azurecr.io/web-ui:latest
 ```
 
 ## Prerequisites for building with Visual Studio
