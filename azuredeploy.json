@@ -23,7 +23,7 @@
         },
         "hostingPlanSku": {
             "type": "string",
-            "defaultValue": "F1",
+            "defaultValue": "B1",
             "allowedValues": [
                 "F1",
                 "D1",
@@ -99,7 +99,7 @@
     },
     "resources": [
         {
-            "apiVersion": "2016-09-01",
+            "apiVersion": "2020-06-01",
             "name": "[variables('hostingPlanName')]",
             "type": "Microsoft.Web/serverfarms",
             "location": "[parameters('location')]",
@@ -107,8 +107,10 @@
                 "name": "[parameters('hostingPlanSku')]"
             },
             "properties": {
-                "name": "[variables('hostingPlanName')]"
-            }
+                "name": "[variables('hostingPlanName')]",
+                "reserved": true
+            },
+            "kind": "linux"
         },
         {
             "name": "[variables('storageAccountName')]",
@@ -122,7 +124,7 @@
             }
         },
         {
-            "apiVersion": "2016-08-01",
+            "apiVersion": "2020-06-01",
             "name": "[variables('websiteName')]",
             "type": "Microsoft.Web/sites",
             "location": "[parameters('location')]",
@@ -130,7 +132,10 @@
                 "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
             ],
             "properties": {
-                "serverFarmId": "[variables('hostingPlanName')]"
+                "serverFarmId": "[variables('hostingPlanName')]",
+                "siteConfig": {
+                    "linuxFxVersion": "DOCKER|kmworkshop.azurecr.io/web-ui:latest"
+                }
             }
         },
         {
