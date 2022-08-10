@@ -23,7 +23,7 @@
         },
         "hostingPlanSku": {
             "type": "string",
-            "defaultValue": "F1",
+            "defaultValue": "B1",
             "allowedValues": [
                 "F1",
                 "D1",
@@ -95,11 +95,16 @@
         "searchServiceName": "[concat(parameters('resourcePrefix'), '-search-service')]",
         "cognitiveServicesAccountName": "[concat(parameters('resourcePrefix'), '-cognitive-services')]",
         "functionAppName":"[concat(parameters('resourcePrefix'), '-function-app')]",
-        "storageAccountId":"[concat(parameters('resourcePrefix'))]"
+        "storageAccountId":"[concat(parameters('resourcePrefix'))]",
+        "storageContainerName" : "documents",
+        "dataSourceName": "[concat(parameters('resourcePrefix'), '-ds')]",
+        "skillsetName": "[concat(parameters('resourcePrefix'), '-skills')]",     
+        "indexName": "[concat(parameters('resourcePrefix'), '-index')]",
+        "indexerName": "[concat(parameters('resourcePrefix'), '-indexer')]"
     },
     "resources": [
         {
-            "apiVersion": "2016-09-01",
+            "apiVersion": "2020-06-01",
             "name": "[variables('hostingPlanName')]",
             "type": "Microsoft.Web/serverfarms",
             "location": "[parameters('location')]",
@@ -107,13 +112,15 @@
                 "name": "[parameters('hostingPlanSku')]"
             },
             "properties": {
-                "name": "[variables('hostingPlanName')]"
-            }
+                "name": "[variables('hostingPlanName')]",
+                "reserved": true
+            },
+            "kind": "linux"
         },
         {
             "name": "[variables('storageAccountName')]",
             "type": "Microsoft.Storage/storageAccounts",
-            "apiVersion": "2018-07-01",
+            "apiVersion": "2021-08-01",
             "location": "[parameters('location')]",
             "kind": "StorageV2",
             "sku": {
@@ -122,7 +129,23 @@
             }
         },
         {
-            "apiVersion": "2016-08-01",
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2021-08-01",
+            "name": "[concat(variables('storageAccountName'), '/default/', variables('storageContainerName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+            ],
+            "properties": {
+                "immutableStorageWithVersioning": {
+                    "enabled": false
+                },
+                "defaultEncryptionScope": "$account-encryption-key",
+                "denyEncryptionScopeOverride": false,
+                "publicAccess": "None"
+            }
+        },
+        {
+            "apiVersion": "2020-06-01",
             "name": "[variables('websiteName')]",
             "type": "Microsoft.Web/sites",
             "location": "[parameters('location')]",
@@ -130,7 +153,10 @@
                 "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
             ],
             "properties": {
-                "serverFarmId": "[variables('hostingPlanName')]"
+                "serverFarmId": "[variables('hostingPlanName')]",
+                "siteConfig": {
+                    "linuxFxVersion": "DOCKER|kmworkshop.azurecr.io/web-ui:latest"
+                }
             }
         },
         {
@@ -168,17 +194,21 @@
             "properties": {}
         },
         {
-            "apiVersion": "2016-03-01",
+            "apiVersion": "2021-02-01",
             "type": "Microsoft.Web/sites",
             "name": "[variables('functionAppName')]",
             "location": "[parameters('location')]",
-            "kind": "functionapp",
+            "kind": "functionapp,linux",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
-                "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
+                "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",
+                "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
+
             ],
             "properties": {
+                "serverFarmId": "[variables('hostingPlanName')]",
                 "siteConfig": {
+                    "alwaysOn": true,
                     "appSettings": [
                         {
                             "name": "AzureWebJobsStorage",
@@ -210,6 +240,46 @@
                         }
                     ]
                 }
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2021-03-01",
+            "name": "[format('{0}/{1}', variables('websiteName'), 'appsettings')]",
+            "kind": "string",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', variables('websiteName'))]"
+            ],
+            "properties": {
+                "SearchServiceName": "[variables('searchServiceName')]",
+                "SearchApiKey": "[listAdminKeys(concat('Microsoft.Search/searchServices/', variables('searchServiceName')), '2021-04-01-preview').primaryKey]",
+                "SearchIndexName": "[variables('indexName')]",
+                "SearchIndexerName": "[variables('indexerName')]",
+                "StorageAccountName": "[variables('storageAccountName')]",
+                "StorageAccountKey": "[listKeys(resourceId(resourceGroup().name,'Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-04-01').keys[0].value]",
+                "StorageContainerAddress": "[concat('https://', variables('storageAccountName') ,'.blob.core.windows.net/', variables('storageContainerName'))]",
+                "KeyField": "metadata_storage_path",
+                "IsPathBase64Encoded": true
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deploymentScripts",
+            "apiVersion": "2020-10-01",
+            "name": "DeployAzureCognitiveSearchAssets",
+            "location": "[resourceGroup().location]",
+            "kind": "AzurePowerShell",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]",
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('cognitiveServicesAccountName'))]",
+                "[resourceId('Microsoft.Search/searchServices', variables('searchServiceName'))]"
+            ],
+            "properties": {
+              "azPowerShellVersion": "6.4",
+              "primaryScriptUri": "https://raw.githubusercontent.com/Azure-Samples/azure-search-knowledge-mining/Web-UI-Simplified-deployment/00%20-%20Resource%20Deployment/SearchAssets.ps1",
+              "arguments": "[concat('-searchServiceName', ' ', variables('searchServiceName'),' ', '-searchServiceKey', ' ', listAdminKeys(concat('Microsoft.Search/searchServices/', variables('searchServiceName')), '2021-04-01-preview').primaryKey,' ', '-storageAccount', ' ', variables('storageAccountName'),' ', '-storageKey', ' ', listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1,' ', '-storageContainerName', ' ', variables('storageContainerName'),' ', '-cogServicesKey', ' ', listKeys(resourceId(resourceGroup().name,'Microsoft.CognitiveServices/accounts', variables('cognitiveServicesAccountName')), '2017-04-18').key1,' ', '-dataSourceName', ' ', variables('dataSourceName'),' ', '-skillsetName', ' ', variables('skillsetName'),' ', '-indexName', ' ', variables('indexName'),' ', '-indexerName', ' ', variables('indexerName'))]",
+              "timeout": "PT1H",
+              "cleanupPreference": "OnSuccess",
+              "retentionInterval": "P1D"
             }
         },
         { 
