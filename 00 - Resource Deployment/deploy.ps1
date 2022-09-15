@@ -1,4 +1,4 @@
-﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License.
 
 Write-Host "Ensuring Azure dependencies are installed."
@@ -20,7 +20,7 @@ Guidance for choosing parameters for resource deployment:
  uniqueName: Choose a name that is globally unique and less than 12 characters. This name will be used as a prefix for the resources created and the resultant name must not confict with any other Azure resource. 
    Ex: FabrikamTestPilot1
  
- resourceGroup: Please create a resource group in your Azure account and retreive it's resource group name.
+ resourceGroup: Please create a resource group in your Azure account and retrieve it's resource group name.
    Ex: testpilotresourcegroup
 
  subscriptionId: Your subscription id.
@@ -135,6 +135,70 @@ function Deploy
 
     FindOrCreateResourceGroup;
 
+    function CreateSearchServices
+    {
+        # Display and accept RAI and Face Legal Terms and agreement before continue running this script
+        Write-Host "One of the Azure resources that is created when deploying this script is a [Cognitive Services multi-service account](https://docs.microsoft.com/azure/cognitive-services/cognitive-services-apis-create-account). You must acknowledge that you have read, understood and agree to the Responsible AI (RAI) Legal Terms and Face Legal Tems so the script can run successfully. Otherwise, the script execution will be cancelled.
+
+        Below are the RAI and Face Legal Terms. For more recent Terms that may be added after this sample is published, review Cognitive Services Terms of Use documentation:
+
+        **Responsible AI Notice**
+
+        Microsoft provides technical documentation regarding the appropriate operation applicable to this Cognitive Service that is made available by Microsoft. Customer acknowledges and agrees that they have reviewed this documentation and will use this service in accordance with it. This Cognitive Services is intended to process Customer Data that includes Biometric Data (as may be further described in product documentation) that Customer may incorporate into its own systems used for personal identification or other purposes. Customer acknowledges and agrees that it is responsible for complying with the Biometric Data obligations contained in the Online Services DPA.
+
+        [Online Services DPA](https://aka.ms/DPA)
+
+        [Responsible Use of AI documentation for Spatial Analysis](https://go.microsoft.com/fwlink/?linkid=2162377)
+
+        [Responsible Use of AI documentation for Text Analytics for Health](https://go.microsoft.com/fwlink/?linkid=2161275)
+
+        [Responsible Use of AI documentation for Text Analytics PII](https://go.microsoft.com/fwlink/?linkid=2162376)
+
+
+        **Face Notice**
+
+        This service or any Face service that is being created by this Subscription Id, is not by or for a police department in the United States."
+
+        $aiterms = Read-Host "Do you agree with the RAI and Face Legal Terms displayed above? (Y/N)"
+
+        if($aiterms -eq "y") {
+            # Register features for RAI and Face Terms after they have been accepted
+            Register-AzProviderFeature -FeatureName LegalTerms.ComputerVision.SpatialAnaysisRAITermsAccepted -ProviderNamespace Microsoft.CognitiveServices
+            # Create a cognitive services resource
+            Write-Host "Creating Cognitive Services";
+            $cogServices = New-AzCognitiveServicesAccount `
+                -ResourceGroupName $resourceGroupName `
+                -Name $cogServicesName `
+                -Location $location `
+                -SkuName S0 `
+                -Type CognitiveServices
+            $global:cogServicesKey = (Get-AzCognitiveServicesAccountKey -ResourceGroupName $resourceGroupName -name $cogServicesName).Key1   
+            Write-Host "Cognitive Services Key: '$global:cogServicesKey'";
+            
+            # Create a new search service
+            # Alternatively, you can now use the Az.Search module: https://docs.microsoft.com/en-us/azure/search/search-manage-powershell 
+            Write-Host "Creating Search Service";
+            $searchService = New-AzSearchService  `
+                -ResourceGroupName $resourceGroupName `
+                -Name $searchServiceName `
+                -Sku $searchSku -Location $location `
+                -PartitionCount 1 `
+                -ReplicaCount 1
+
+            $global:searchServiceKey = (Get-AzSearchAdminKeyPair -ResourceGroupName $resourceGroupName -ServiceName $searchServiceName).Primary         
+            Write-Host "Search Service Key: '$global:searchServiceKey'";
+        }else {
+            #RAI and Face Legal Terms were not accepted
+            Write-Host "RAI and Face Legal Terms were not accepted. Script execution can't continue unless they are read and accepted";
+            Exit
+        }
+        
+        
+        
+	}
+
+    CreateSearchServices;
+
     
     function CreateStorageAccountAndContainer
     {
@@ -172,37 +236,7 @@ function Deploy
     CreateStorageAccountAndContainer;
     
 
-    
-
-    function CreateSearchServices
-    {
-        # Create a cognitive services resource
-        Write-Host "Creating Cognitive Services";
-        $cogServices = New-AzCognitiveServicesAccount `
-            -ResourceGroupName $resourceGroupName `
-            -Name $cogServicesName `
-            -Location $location `
-            -SkuName S0 `
-            -Type CognitiveServices
-        $global:cogServicesKey = (Get-AzCognitiveServicesAccountKey -ResourceGroupName $resourceGroupName -name $cogServicesName).Key1   
-        Write-Host "Cognitive Services Key: '$global:cogServicesKey'";
-            
-        # Create a new search service
-        # Alternatively, you can now use the Az.Search module: https://docs.microsoft.com/en-us/azure/search/search-manage-powershell 
-        Write-Host "Creating Search Service";
-        $searchService = New-AzSearchService  `
-            -ResourceGroupName $resourceGroupName `
-            -Name $searchServiceName `
-            -Sku $searchSku -Location $location `
-            -PartitionCount 1 `
-            -ReplicaCount 1
-
-        $global:searchServiceKey = (Get-AzSearchAdminKeyPair -ResourceGroupName $resourceGroupName -ServiceName $searchServiceName).Primary         
-        Write-Host "Search Service Key: '$global:searchServiceKey'";
-	}
-
-    CreateSearchServices;
-    
+        
 
     function CreateSearchIndex
     {
