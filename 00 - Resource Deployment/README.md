@@ -13,9 +13,9 @@ There are two options for deploying the resources to Azure for this solution acc
     
     *Pre-requisites to run the script:*
     
-    - Running PowerShell script with Administrator rights
+    - You must run PowerShell script with Administrator rights.
     
-    - Accepting Responsible AI (RAI) and Face Legal Terms. One of the Azure resources that is created when deploying this script is a [Cognitive Services multi-service account](https://docs.microsoft.com/azure/cognitive-services/cognitive-services-apis-create-account). You must acknowledge that you have read, understood and agree to the Responsible AI (RAI) and Face Legal Terms so the script can run successfully. Otherwise, the script execution will be cancelled.
+    - You must read, understand and agree to *Responsible AI (RAI)* and *Face Legal Terms*. One of the Azure resources that is created when deploying this script is a [Cognitive Services multi-service account](https://docs.microsoft.com/azure/cognitive-services/cognitive-services-apis-create-account). You must acknowledge that you have read, understood and agree to the Responsible AI (RAI) and Face Legal Terms so the script can run successfully. Otherwise, the script execution will be cancelled.
     
     - Your Azure account must have a Cognitive Services Contributor role assigned in order for you to agree to the responsible AI terms and create a resource. To get this role assigned to your account, follow the steps in the Assign roles documentation, or contact your administrator.
 
