@@ -91,7 +91,7 @@ function Deploy
     {
         # Sign in
         Write-Host "Logging in for '$subscriptionId'";
-        Connect-AzAccount;
+        Connect-AzAccount -UseDeviceAuthentication;
 
         # Select subscription
         Write-Host "Selecting subscription '$subscriptionId'";
