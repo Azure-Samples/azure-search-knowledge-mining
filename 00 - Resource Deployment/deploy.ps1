@@ -92,6 +92,7 @@ function Deploy
         # Sign in
         Write-Host "Logging in for '$subscriptionId'";
         Connect-AzAccount;
+	#Use "Connect-AzAccount -UseDeviceAuthentication;" instead of just "Connect-AzAccount" if you would like to be signed in with the account that is already logged on.
 
         # Select subscription
         Write-Host "Selecting subscription '$subscriptionId'";
