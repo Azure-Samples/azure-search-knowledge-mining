@@ -20,6 +20,10 @@ function UpdateFilterReset() {
             var name = item.key;
             var result = facets.filter(function (f) { return f.key === name; })[0];
 
+            if (result == undefined){
+                result = facets.filter(function (f) { return f.key.substring(f.key.indexOf('/') +1 ) === name; })[0];
+            }
+
             if (item.value && item.value.length > 0) {
                 item.value.forEach(function (item2, index2, array) {
                     var idx = result.value.indexOf(result.value.filter(function (v) {
@@ -65,6 +69,7 @@ function UpdateFacets() {
 
         if (data !== null && data.length > 0) {
 
+            name = name.substring(name.indexOf('/') +1);
             var title = name.replace(/([A-Z])/g, ' $1').replace(/^./, function (str) { return str.toUpperCase(); })
 
             if (title == "Metadata_storage_file_extension"){

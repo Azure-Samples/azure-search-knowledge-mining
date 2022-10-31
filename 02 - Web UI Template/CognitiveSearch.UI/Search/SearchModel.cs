@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Azure.Search.Documents.Indexes.Models;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -83,6 +84,14 @@ namespace CognitiveSearch.UI
                 foreach (var field in schema.Fields.Where(f => f.Value.IsFacetable))
                 {
                     Facets.Add(field.Value);
+                }
+
+                foreach (var field in schema.Fields.Where(f => f.Value.IsComplex == true))
+                {
+                    foreach(var subField in field.Value.Fields.Where(f => f.Value.IsFacetable))
+                    {
+                        Facets.Add(subField.Value);
+                    }
                 }
             }
 
