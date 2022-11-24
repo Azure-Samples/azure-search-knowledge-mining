@@ -85,5 +85,16 @@ namespace CognitiveSearch.UI.Controllers
             var container = new BlobContainerClient(new Uri(containerAddress), new StorageSharedKeyCredential(accountName, accountKey));
             return container;
         }
+
+        [HttpGet("download")]
+        public async Task<IActionResult> DownloadBlobAsync(string blobUri="")
+        {
+
+            Uri blobUriEncoded = new Uri(blobUri);
+            BlobClient blobClient = new BlobClient(blobUriEncoded);
+
+            var stream = await blobClient.OpenReadAsync();
+            return File(stream, "image/tif", "image.tif");
+        }
     }
 }
