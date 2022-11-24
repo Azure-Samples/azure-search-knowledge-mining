@@ -239,6 +239,26 @@ function GetFileHTML(data, result) {
             fileContainerHTML =
                 `<iframe class="file-container" src="${src}"></iframe>`;
         }
+        else if (pathLower.includes(".tiff") || (pathLower.includes(".tif"))){
+            let url = '/download?blobUri=' + encodeURIComponent(path)
+            fetch(url)
+                .then(response => response.arrayBuffer())
+                .then(responseBuffer => {
+                    var tiff = new Tiff({buffer: responseBuffer});
+                    var width = tiff.width();
+                    var height = tiff.height();
+                    var canvas = tiff.toCanvas();
+                    var div_width = $('#file-viewer').width() - 10;
+                    if (canvas) {
+                        canvas.setAttribute('style', 'width:' + (div_width) +
+                        'px; height: ' + (height*0.25) + 'px');
+                    }
+                    // document.body.append(canvas);
+                    $('#file-viewer').html(canvas);
+                })
+            fileContainerHTML =
+                `<div>Download the file here: <a href="${path}">Download</a></div>`;
+        }
         else {
             fileContainerHTML =
                 `<div>This file cannot be previewed. Download it here to view: <a href="${path}">Download</a></div>`;
