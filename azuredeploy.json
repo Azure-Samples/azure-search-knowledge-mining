@@ -44,7 +44,7 @@
         },
         "searchServiceSku": {
             "type": "string",
-            "defaultValue": "basic",
+            "defaultValue": "standard",
             "allowedValues": [
                 "free",
                 "basic",
