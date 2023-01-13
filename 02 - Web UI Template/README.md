@@ -7,8 +7,21 @@ In just a few steps, you can configure this template UI to query your search ind
 
 ## Run the UI
 You can run the UI:
+-  [Creating an Azure Web App](#create-an-azure-web-app)
 -  [Pulling a pre-built docker image](#prerequisites-for-pulling-with-docker)
 -  [Building the .NET Core MVC Web app with Visual Studio](#prerequisites-for-building-with-visual-studio)
+
+## Create an Azure Web App
+1. Open the Azure Portal
+2. Click on "Create a resource"
+3. Search for "Web App"
+4. Define your "Web App" name, resource group, App Service Plan and "Docker Container" for the "Publish" setting
+![web app deploy 1](../images/webapp-1.png)
+5. Define the Docker settings as follow:
+-   Server URL: https://kmworkshop.azurecr.io
+-   Image and tag: kmworkshop.azurecr.io/web-ui:latest
+![web app deploy 2](../images/webapp-2.png)
+6. Create the "Web App"
 
 ## Prerequisites for pulling with Docker
 1. Docker - [Download](https://www.docker.com/products/docker-desktop)
