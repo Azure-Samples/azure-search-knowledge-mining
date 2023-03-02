@@ -38,7 +38,7 @@ In order to successfully complete your solution, you'll need to gain access and 
 
 The directions provided in this guide assume you have a fundamental working knowledge of the Azure portal, Azure Functions, Azure Cognitive Search, Visual Studio and Postman. For additional training and support, please see:
 
-* [Knowledge Mining Bootcamp](https://github.com/MicrosoftLearning/LearnAI-KnowledgeMiningBootcamp)
+* [Introduction to Azure Cognitive Search](https://learn.microsoft.com/training/modules/intro-to-azure-search/)
 * [AI in Cognitive Search documentation](https://docs.microsoft.com/azure/search/cognitive-search-resources-documentation)
 
 ## Process overview
@@ -84,16 +84,8 @@ This folder contains a small data set in a variety of file formats that you can 
 ### [Workshop](https://github.com/Azure-Samples/azure-search-knowledge-mining/tree/master/workshops)
 
 Become an Azure Cognitive Search expert in a day!
-This folder contains a self paced workshop that teaches you everything you need to know. Most developer with Azure familiarity should be able to complete the majority of the modules below in 8 hours.
+This folder contains a self paced workshop that teaches you everything you need to know. Most developers with Azure familiarity should be able to complete the majority of the modules in the training within 8 hours.
 
-+ [Module 0 - Pre-Requisites](https://github.com/Azure-Samples/azure-search-knowledge-mining/blob/master/workshops/Module%200.md) (*you must complete prior to moving on!*)
-+ [Module 1 - Using Azure Portal to Build a Search Index and Knowledge Store](https://github.com/Azure-Samples/azure-search-knowledge-mining/blob/master/workshops/Module%201.md)
-+ [Module 2 - Visualizing the Results with a Demo Front-End](https://github.com/Azure-Samples/azure-search-knowledge-mining/blob/master/workshops/Module%202.md)
-+ [Module 3 - Introduction to Custom Skills and Azure Functions](https://github.com/Azure-Samples/azure-search-knowledge-mining/blob/master/workshops/Module%203.md)
-+ [Module 4 - Learning the Object Model](https://github.com/Azure-Samples/azure-search-knowledge-mining/blob/master/workshops/Module%204.md)
-+ [Module 5 - Advanced Azure Cognitive Search: Analyzers and Scoring Profiles](https://github.com/Azure-Samples/azure-search-knowledge-mining/blob/master/workshops/Module%205.md)
-+ [Module 6 - Analyzing Your Data with PowerBI](https://github.com/Azure-Samples/azure-search-knowledge-mining/blob/master/workshops/Module%206.md)
-+ [Module 7 - Using Azure Cognitive Search to index structured data](https://github.com/Azure-Samples/azure-search-knowledge-mining/blob/master/workshops/Module%207.md) (Optional)
 
 ## License
 
