@@ -39,6 +39,11 @@ We recommend using this collection to create an initial index and then iterating
 
     You can then *check the indexer status* to see if documents are processing or if there are any errors. If the indexer does not start running automatically, you can run the indexer manually.
 
+## Verify Index 
+
+Use search explorer or postment to search data
+
+
 ## Additional Resources
 
 For more help working with Postman, see the [documentation](https://learning.postman.com/docs/getting-started/introduction/) on the Postman website.
