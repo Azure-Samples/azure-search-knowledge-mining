@@ -86,9 +86,12 @@ docker run -d --env-file .env -p 80:80 kmworkshop.azurecr.io/web-ui:latest
 
 1. Visual Studio 2019 or newer - [Download](https://visualstudio.microsoft.com/downloads/)
 
-## 1. Update appsettings.json
+## 1. Update appsettings configuration
 
-To configure your web app to connect to your Azure services, simply update the *appsettings.json* file.
+To configure your web app to connect to your Azure services,  update the *appsettings.json* file and rebuild container.
+
+Or update web app configuration:
+![](../images/appsettings.png)
 
 This file contains a mix of required and optional fields described below.
 
