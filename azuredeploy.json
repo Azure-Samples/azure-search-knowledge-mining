@@ -97,8 +97,8 @@
         "functionAppName":"[concat(parameters('resourcePrefix'), '-function-app')]",
         "storageAccountId":"[concat(parameters('resourcePrefix'))]",
         "storageContainerName" : "documents",
-        "dataSourceName": "[concat(parameters('resourcePrefix'), '-ds')]",
-        "skillsetName": "[concat(parameters('resourcePrefix'), '-skills')]",     
+        "dataSourceName": "[concat(parameters('resourcePrefix'), '-datasource')]",
+        "skillsetName": "[concat(parameters('resourcePrefix'), '-skillset')]",     
         "indexName": "[concat(parameters('resourcePrefix'), '-index')]",
         "indexerName": "[concat(parameters('resourcePrefix'), '-indexer')]"
     },

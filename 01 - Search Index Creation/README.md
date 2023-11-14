@@ -22,3 +22,5 @@ This folder includes three options for creating an index. Each of these approach
 1. [Create a search index using the Azure Portal](./Create-Index-AzurePortal.md)
 2. [Create a search index using PowerShell](./Create-Index-PowerShell.md)
 3. [Create a search index using Postman](./Create-Index-Postman.md)
+
+4. Optionally - go thru Sentiment Analysis setup example in [01.1 - BuiltIn Skills](./01.1%20-%20BuiltIn%20Skills/)
