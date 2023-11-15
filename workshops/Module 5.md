@@ -1,4 +1,4 @@
-# Module 5: Advanced Azure Cognitive Search
+# Module 5: Advanced Azure AI Search
 
 In this module we are going to cover two advanced search topics:
 * Custom Analyzers 
@@ -13,7 +13,7 @@ You might imagine numerous examples of where phonetic search could help includin
 * People names (for example Cavanagh vs. Kavanaugh)
 * Audio Transcription Mistakes (for examples SQL being transcribed as sequel)
 
-Azure Cognitive Search provides various phonetic encoders that will encode words in different ways.  The one we will use is called doubleMetaphone and this encodes both mukopolisakaridosis and mucopolysaccharidosis to a code of MKPL.  Since it is stored in the index as MKPL, when someone searches for either mukopolisakaridosis or mucopolysaccharidosis, they both get encoded to the same value and as a result you get a match.
+Azure AI Search provides various phonetic encoders that will encode words in different ways.  The one we will use is called doubleMetaphone and this encodes both mukopolisakaridosis and mucopolysaccharidosis to a code of MKPL.  Since it is stored in the index as MKPL, when someone searches for either mukopolisakaridosis or mucopolysaccharidosis, they both get encoded to the same value and as a result you get a match.
 
 ### Adding a Phonetic field to the Index
 Let's modify the index like we did in the previous module to add a new field called diseasesPhonetic which makes use of the Phonetic Custom Analyzer.
@@ -84,7 +84,7 @@ In the portal, **RESET** the indexer and re **RUN** the indexer again.
  ![](images/rerun.png)
 
 ### Testing the Analyzer
-You can validate what this encoding looks like by executing the following two requests using the Azure Cognitive Search Analyze API against your search index and the phonetic analyzer "my_phonetic" that was created in the previous module.:
+You can validate what this encoding looks like by executing the following two requests using the Azure AI Search Analyze API against your search index and the phonetic analyzer "my_phonetic" that was created in the previous module.:
 
 ```
 POST: https://{name of your service}.search.windows.net/indexes/[search index]/analyze?api-version=2019-05-06
@@ -121,9 +121,9 @@ There are a lot of other intersecting custom analyzers and tokenizers that can b
 
 ## Ranking using Scoring Profiles
 
-Azure Cognitive Search uses a number of textual based factors to determine what are the most relevant documents to send back. This is primarily based on an algorithm called TF/IDF. Term Frequency (TF) looks at how often a query term matches in a single document. Inverse Document Frequency (IDF) looks at how often a query term matches in many documents (common examples include "is" "or" "the").
+Azure AI Search uses a number of textual based factors to determine what are the most relevant documents to send back. This is primarily based on an algorithm called TF/IDF. Term Frequency (TF) looks at how often a query term matches in a single document. Inverse Document Frequency (IDF) looks at how often a query term matches in many documents (common examples include "is" "or" "the").
 
-In some cases, the ranking of results that Azure Cognitive Search provides by default are not optimal. For example, what if in the past year there have been recent developments in treating the morquio disease so a user wants to search for clinical trials that discuss the "morquio" disease and they are mostly interested in clinical trials that have been updated in the past year? The default ranking of results does not take into account each clinical trial's lastUpdatePosted field.
+In some cases, the ranking of results that Azure AI Search provides by default are not optimal. For example, what if in the past year there have been recent developments in treating the morquio disease so a user wants to search for clinical trials that discuss the "morquio" disease and they are mostly interested in clinical trials that have been updated in the past year? The default ranking of results does not take into account each clinical trial's lastUpdatePosted field.
 
 Luckily you have a lot of control over this in Azure Cognitve Search. One way to handle this scenario might be to order results in descending order by the lastUpdatePosted field since we've made that field Sortable in the index. While sorting by a particular field is useful in some scenarios, this might give us clinical trials at the top of the list that aren't as relevant as results lower down the list even though they were recently updated.
 
