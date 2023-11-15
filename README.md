@@ -7,6 +7,7 @@ languages:
 - powershell
 products:
 - azure
+- azure-ai-search
 description: "Welcome to the Knowledge Mining Solution Accelerator!"
 urlFragment: azure-search-knowledge-mining
 ---
@@ -15,13 +16,16 @@ urlFragment: azure-search-knowledge-mining
 
 # Knowledge Mining Solution Accelerator
 
+> [!IMPORTANT]  
+> As of November 15, 2023, Azure Cognitive Search has been renamed to Azure AI Search.
+
 ## About this repository
 
-Welcome to the Knowledge Mining Solution Accelerator! This accelerator provides developers with all of the resources they need to quickly build an initial Knowledge Mining prototype with [Azure Cognitive Search](https://docs.microsoft.com/azure/search/cognitive-search-concept-intro). Use this accelerator to jump-start your development efforts with your own data or as a learning tool to better understand how you can use Cognitive Search to meet the unique needs of your business.
+Welcome to the Knowledge Mining Solution Accelerator! This accelerator provides developers with all of the resources they need to quickly build an initial Knowledge Mining prototype with [Azure AI Search](https://docs.microsoft.com/azure/search/cognitive-search-concept-intro). Use this accelerator to jump-start your development efforts with your own data or as a learning tool to better understand how you can use AI Search to meet the unique needs of your business.
 
-In this repository, we've provided you with all of the artifacts you need to quickly create a Cognitive Search Solution including: templates for deploying the appropriate Azure resources, assets for creating your first search index, templates for using custom skills, a basic web app, and PowerBI reports to monitor search solution performance. We've infused best practices throughout the documentation to help guide you. With Cognitive Search, you can easily index both digital data (such as documents and text files) and analog data (such as images and scanned documents).
+In this repository, we've provided you with all of the artifacts you need to quickly create a AI Search Solution including: templates for deploying the appropriate Azure resources, assets for creating your first search index, templates for using custom skills, a basic web app, and PowerBI reports to monitor search solution performance. We've infused best practices throughout the documentation to help guide you. With AI Search, you can easily index both digital data (such as documents and text files) and analog data (such as images and scanned documents).
 
-> Note: This guide uses the AI enrichment feature of Cognitive Search. AI enrichment allows you to ingest many kinds of data (documents, text files, images, scanned docs, and more), extract their contents, enrich and transform it, and then index it for exploration purposes. To learn more about this feature, see the [AI in Cognitive Search](https://docs.microsoft.com/azure/search/cognitive-search-concept-intro) doc.
+> Note: This guide uses the AI enrichment feature of AI Search. AI enrichment allows you to ingest many kinds of data (documents, text files, images, scanned docs, and more), extract their contents, enrich and transform it, and then index it for exploration purposes. To learn more about this feature, see the [AI Enrichment in AI Search](https://docs.microsoft.com/azure/search/cognitive-search-concept-intro) doc.
 
 Once you're finished, you'll have a web app ready to search your data.
 
@@ -34,18 +38,18 @@ In order to successfully complete your solution, you'll need to gain access and 
 * Azure subscription - [Create one for free](https://azure.microsoft.com/free/)
 * [Visual Studio 2019 or later](https://visualstudio.microsoft.com/downloads/) - Community edition or higher
 * [Postman](https://www.getpostman.com/) for making API calls
-* Documents uploaded to any data source supported by Azure Search Indexers. For a list of these, see [Indexers in Azure Cognitive Search](https://docs.microsoft.com/azure/search/search-indexer-overview). This solution accelerator uses Azure Blob Storage as a container for source data files. You can find sample documents in the **sample_documents/** folder.
+* Documents uploaded to any data source supported by Azure Search Indexers. For a list of these, see [Indexers in Azure AI Search](https://docs.microsoft.com/azure/search/search-indexer-overview). This solution accelerator uses Azure Blob Storage as a container for source data files. You can find sample documents in the **sample_documents/** folder.
 
-The directions provided in this guide assume you have a fundamental working knowledge of the Azure portal, Azure Functions, Azure Cognitive Search, Visual Studio and Postman. For additional training and support, please see:
+The directions provided in this guide assume you have a fundamental working knowledge of the Azure portal, Azure Functions, Azure AI Search, Visual Studio and Postman. For additional training and support, please see:
 
-* [Introduction to Azure Cognitive Search](https://learn.microsoft.com/training/modules/intro-to-azure-search/)
-* [AI in Cognitive Search documentation](https://docs.microsoft.com/azure/search/cognitive-search-resources-documentation)
+* [Introduction to Azure AI Search](https://learn.microsoft.com/training/modules/intro-to-azure-search/)
+* [AI enrichment in AI Search documentation](https://docs.microsoft.com/azure/search/cognitive-search-resources-documentation)
 
 ## Process overview
 
-Clone or download this repository and then navigate through each of these folders in order, following the steps outlined in each of the README files. When you complete all of the steps, you'll have a working end-to-end solution that combines data sources with data enrichment skills, a web app powered by Azure Cognitive Search, and intelligent reporting on user search activity.
+Clone or download this repository and then navigate through each of these folders in order, following the steps outlined in each of the README files. When you complete all of the steps, you'll have a working end-to-end solution that combines data sources with data enrichment skills, a web app powered by Azure AI Search, and intelligent reporting on user search activity.
 
-![the cognitive indexing pipelines used for processing unstructured data in Azure Search](images/architecture.jpg)
+![the AI indexing pipelines used for processing unstructured data in Azure AI Search](images/architecture.jpg)
 
 ### [00 - Resource Deployment](https://github.com/Azure-Samples/azure-search-knowledge-mining/tree/master/00%20-%20Resource%20Deployment)
 
@@ -59,7 +63,7 @@ Alternatively, you can automatically deploy the required resources using this bu
 
 ### [01 - Search Index Creation](https://github.com/Azure-Samples/azure-search-knowledge-mining/tree/master/01%20-%20Search%20Index%20Creation)
 
-This folder contains a Postman collection that you can use to create a search index. The collection is pre-configured to take advantage of out-of-the-box Cognitive Search functionality.
+This folder contains a Postman collection that you can use to create a search index. The collection is pre-configured to take advantage of out-of-the-box AI Search functionality.
 
 We recommend using this collection to create an initial search index and then iterating by editing the postman collection and adding custom skills as needed.
 
@@ -83,7 +87,7 @@ This folder contains a small data set in a variety of file formats that you can 
 
 ### [Workshop](https://github.com/Azure-Samples/azure-search-knowledge-mining/tree/master/workshops)
 
-Become an Azure Cognitive Search expert in a day!
+Become an Azure AI Search expert in a day!
 This folder contains a self paced workshop that teaches you everything you need to know. Most developers with Azure familiarity should be able to complete the majority of the modules in the training within 8 hours.
 
 
