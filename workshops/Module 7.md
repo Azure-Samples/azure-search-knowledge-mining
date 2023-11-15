@@ -2,7 +2,7 @@
 
 In the past modules, we focused on indexing content from unstructured sources such as PDF's.  Often, there is a lot of data that exists in structured data sources such as Azure SQL or Cosmos DB which could benefit from the ability to perform full-text search.  The advantage here, is that unlike unstructured data such as PDF's, the data has already been structured so we can make use of this through faceting and filtering.  Yet, still there is often text content that can benefit from "enrichment".  
 
-In the below module you will take a set of purely anonymized patient data (patient name, address, notes, etc) and index it into Azure Cognitive Search.  Just like in the previous module, we will leverage the Custom Skill to extract diseases from the patient notes and then create a resulting application to search the patient information.
+In the below module you will take a set of purely anonymized patient data (patient name, address, notes, etc) and index it into Azure AI Search.  Just like in the previous module, we will leverage the Custom Skill to extract diseases from the patient notes and then create a resulting application to search the patient information.
 
 ## SQL Database Connection Information
 
@@ -20,7 +20,7 @@ Here is what the data looks like:
 
  ![](images/sql-patient-info.png)
 
-## Indexing Content into Azure Cognitive Search
+## Indexing Content into Azure AI Search
 
 Just as we did in Module 3, we will leverage Postman to create the Data Source, Skillset, Indexer and Index to hold the data.  You could alternatively use the Portal, however, you will not be able to configure the Custom Skill for extracting diseases as the ability to do this in not yet available in the portal.
 
@@ -304,7 +304,7 @@ Body:
 Replace the [searchservice] with your search service and use your admin api key in the header.
 Note: The below skillset leverages a pre-existing Azure Function (https://diseaseextraction.azurewebsites.net/api/custom-search?code=HXS0y4rEoQZ9p55A7wqybSeYFmYP6Lruna8y8HoAGu3kNSoLf80XWw==) to extract the diseases.  You can use this as-is or change to the one you created in the previous module.
 
-You will also need to update the [Cognitive Services Key] with a valid Cognitive Services Key (that was created in the same region as your Azure Cognitive Search service).
+You will also need to update the [AI Services Key] with a valid AI Services Key (that was created in the same region as your Azure AI Search service).
 
 PUT: https://[searchservice].search.windows.net/skillsets/patient-demo?api-version=2019-05-06
 
@@ -445,7 +445,7 @@ Body:
     "cognitiveServices": {
         "@odata.type": "#Microsoft.Azure.Search.CognitiveServicesByKey",
         "description": "/subscriptions/ee787b9b-a25f-4d20-86e9-45fcea5253dd/resourceGroups/km-workshop/providers/Microsoft.CognitiveServices/accounts/kmworkshop",
-        "key": "[Cognitive Services Key]"
+        "key": "[AI Services Key]"
     }
 }
 ```

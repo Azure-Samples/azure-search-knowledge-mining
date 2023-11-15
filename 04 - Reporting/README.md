@@ -1,6 +1,6 @@
 # Reporting
 
-A PowerBI Template file has been created so you can quickly spin up reports based on the Cognitive Search Template UI. To create the reports, simply open **Cognitive Search.pbit** using PowerBI Desktop.
+A PowerBI Template file has been created so you can quickly spin up reports based on the AI Search Template UI. To create the reports, simply open **Cognitive Search.pbit** using PowerBI Desktop.
 
 ## Prerequisites
 
@@ -38,7 +38,7 @@ If you do not see any details in Power BI (even after hitting the Refresh button
 ## Additional Materials
 For more information on PowerBI and developing reports on PowerBI see [What is Power BI](https://docs.microsoft.com/en-us/power-bi/power-bi-overview).
 
-Alternatively, you can use the new Power BI report that is automatically included with Azure Cognitive Search. In order to access it, goto the Search instance in your subscription, navigate to `Search traffic analytics`, and select `Download Power BI report`.
+Alternatively, you can use the new Power BI report that is automatically included with Azure AI Search. In order to access it, goto the Search instance in your subscription, navigate to `Search traffic analytics`, and select `Download Power BI report`.
 
 Both reports have comparable capabilties and can be used to develop more sophisticated dashboards.
 

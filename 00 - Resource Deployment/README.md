@@ -15,15 +15,15 @@ There are two options for deploying the resources to Azure for this solution acc
     
     - You must run PowerShell script with Administrator rights.
     
-    - You must read, understand and agree to *Responsible AI (RAI)* and *Face Legal Terms*. One of the Azure resources that is created when deploying this script is a [Cognitive Services multi-service account](https://docs.microsoft.com/azure/cognitive-services/cognitive-services-apis-create-account). You must acknowledge that you have read, understood and agree to the Responsible AI (RAI) and Face Legal Terms so the script can run successfully. Otherwise, the script execution will be cancelled.
+    - You must read, understand and agree to *Responsible AI (RAI)* and *Face Legal Terms*. One of the Azure resources that is created when deploying this script is a [AI Services multi-service account](https://docs.microsoft.com/azure/cognitive-services/cognitive-services-apis-create-account). You must acknowledge that you have read, understood and agree to the Responsible AI (RAI) and Face Legal Terms so the script can run successfully. Otherwise, the script execution will be cancelled.
     
-    - Your Azure account must have a Cognitive Services Contributor role assigned in order for you to agree to the responsible AI terms and create a resource. To get this role assigned to your account, follow the steps in the Assign roles documentation, or contact your administrator.
+    - Your Azure account must have a AI Services Contributor role assigned in order for you to agree to the responsible AI terms and create a resource. To get this role assigned to your account, follow the steps in the Assign roles documentation, or contact your administrator.
 
-        Below are the RAI and Face Legal Terms. For more recent Terms that may be added after this sample is published, review Cognitive Services Terms of Use documentation.
+        Below are the RAI and Face Legal Terms. For more recent Terms that may be added after this sample is published, review AI Services Terms of Use documentation.
 
         **Responsible AI Notice**
 
-        Microsoft provides technical documentation regarding the appropriate operation applicable to this Cognitive Service that is made available by Microsoft. Customer acknowledges and agrees that they have reviewed this documentation and will use this service in accordance with it. This Cognitive Services is intended to process Customer Data that includes Biometric Data (as may be further described in product documentation) that Customer may incorporate into its own systems used for personal identification or other purposes. Customer acknowledges and agrees that it is responsible for complying with the Biometric Data obligations contained in the Online Services DPA.
+        Microsoft provides technical documentation regarding the appropriate operation applicable to this AI Service that is made available by Microsoft. Customer acknowledges and agrees that they have reviewed this documentation and will use this service in accordance with it. This AI Services is intended to process Customer Data that includes Biometric Data (as may be further described in product documentation) that Customer may incorporate into its own systems used for personal identification or other purposes. Customer acknowledges and agrees that it is responsible for complying with the Biometric Data obligations contained in the Online Services DPA.
 
         [Online Services DPA](https://aka.ms/DPA)
 
@@ -83,7 +83,7 @@ The PowerShell script will provision the following resources to your Azure subsc
 | Resource              | Usage                                                                                     |
 |-----------------------|-------------------------------------------------------------------------------------------|
 | [Azure Search Service](https://azure.microsoft.com/en-us/services/search/)  | The hosting service for the Search Index, Cognitive Skillset, and Search Indexer          |
-| [Azure Cognitive Services](https://docs.microsoft.com/en-us/azure/search/cognitive-search-attach-cognitive-services)	| Used by the Cognitive Skills pipeline to process unstructured data	|
+| [Azure AI Services](https://docs.microsoft.com/en-us/azure/search/cognitive-search-attach-cognitive-services)	| Used by the Cognitive Skills pipeline to process unstructured data	|
 |[Azure Storage Account](https://azure.microsoft.com/en-us/services/storage/?v=18.24) | Data source where raw files are stored                                                     |
 | [Web App](https://azure.microsoft.com/en-us/services/app-service/web/)               | The hosting service for the Search UI                                                     |
 | [Application Insights](https://azure.microsoft.com/en-us/services/monitor/)  | Telemetry monitoring service for the Search UI (*Optional*)									|

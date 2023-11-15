@@ -1,6 +1,6 @@
 # Search Index Creation
 
-There are several different ways to create a search index for Azure Cognitive Search. You can choose how to deploy an index based on your skillset, your preferred tools, or your desired level of automation.
+There are several different ways to create a search index for Azure AI Search. You can choose how to deploy an index based on your skillset, your preferred tools, or your desired level of automation.
 
 >**Note:** If you ran the `deploy.ps1` script in the previous step, you've already created your search index so you can skip to the next step.
 

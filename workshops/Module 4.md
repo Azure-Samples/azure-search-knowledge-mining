@@ -28,7 +28,7 @@ Sometimes the portal makes it easy to make an edit. However we can also do it pr
 
 The first field we will add will be called "diseases" and it will simply hold a collection of diseases extracted from the text.  That is the focus of the remainder of this module.  
 
-The second field, called "diseasesPhonetic" will also hold the diseases extracted, however, it will use something called a Phonetic analyzer, which is one of the many Custom Analyzers that Azure Cognitive Search makes available to users.  As you might guess, the Phonetic analyzer allows you to search for words that sounds phonetically similar - we will be adding this field and exploring the phonetic analyzer further in Module 5.  
+The second field, called "diseasesPhonetic" will also hold the diseases extracted, however, it will use something called a Phonetic analyzer, which is one of the many Custom Analyzers that Azure AI Search makes available to users.  As you might guess, the Phonetic analyzer allows you to search for words that sounds phonetically similar - we will be adding this field and exploring the phonetic analyzer further in Module 5.  
 
 We can first retrieve the current index schema by opening Postman and making the following GET request:
 
@@ -37,7 +37,7 @@ GET https://{name of your service}.search.windows.net/indexes/clinical-trials-sm
 ```
 
 For all of the subsequent requests, you will need to set the following two headers values:
-* api-key: [Enter Admin API Key from Azure Cognitive Search portal]
+* api-key: [Enter Admin API Key from Azure AI Search portal]
 * Content-Type: application/json
 
 ![](images/get-index-schema.png)
@@ -307,7 +307,7 @@ Now, let’s reprocess documents. Go to the portal to **RESET** your Indexer and
  
 It will take a little time to index the resulting content, however we can go to the "Search Explorer" from the portal and start looking at the resulting data.  
 
-From your Azure Cognitive Search service, choose Indexes and then click on the index you have been working with in this module.
+From your Azure AI Search service, choose Indexes and then click on the index you have been working with in this module.
 In the query string, enter: 
 
 ```
@@ -332,4 +332,4 @@ Try adjusting this query to only include documents that talk about 'morquio' and
   </p>
 </details>
 
-### Next: [Module 5: Advanced Cognitive Search](Module&#32;5.md)
+### Next: [Module 5: Advanced AI Search](Module&#32;5.md)
