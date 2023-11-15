@@ -1,7 +1,7 @@
 
 # Module 1: Using Azure Portal to Create Your Index - No Code Required
 
-This module uses the Azure Portal to create your first Azure Cognitive Search index without writing any code.  Following these steps you will: ingest a set of files (clinical-trials); extract both structured and unstructured text from those files; index their content and learn how to query your new index.  Finally, we'll use the Azure Portal to project enriched data into a Knowledge Store (new Preview capability), which we'll explore in greater detail in Module 6.
+This module uses the Azure Portal to create your first Azure AI Search index without writing any code.  Following these steps you will: ingest a set of files (clinical-trials); extract both structured and unstructured text from those files; index their content and learn how to query your new index.  Finally, we'll use the Azure Portal to project enriched data into a Knowledge Store (new Preview capability), which we'll explore in greater detail in Module 6.
 
 The instructions that follow assume that you have completed all of the pre-requisites found in the [ReadMe](./README.md) to this lab and have provisioned all of the necessary resources to your Azure subscription.  If you have not already completed these steps, you will need to do so prior to moving forward.
 
@@ -32,14 +32,14 @@ The instructions that follow assume that you have completed all of the pre-requi
 
 ## Skillset
 
-In Azure Cognitive Search, we call extraction and enrichment steps cognitive skills, which are combined into a skillset referenced during indexing.  In this exercise, you will be learning how to use the [built-in skills](https://docs.microsoft.com/en-us/azure/search/cognitive-search-predefined-skills) through the Azure Portal.  In a later module, we will show you how to attach these skills programmatically and how to build your own [custom skills](https://docs.microsoft.com/en-us/azure/search/cognitive-search-custom-skill-interface).
+In Azure AI Search, we call extraction and enrichment steps cognitive skills, which are combined into a skillset referenced during indexing.  In this exercise, you will be learning how to use the [built-in skills](https://docs.microsoft.com/en-us/azure/search/cognitive-search-predefined-skills) through the Azure Portal.  In a later module, we will show you how to attach these skills programmatically and how to build your own [custom skills](https://docs.microsoft.com/en-us/azure/search/cognitive-search-custom-skill-interface).
 
 In the next three steps, you will be working through the three drop-down arrows presented: 
 
 ![](images/attachenrich.png)
 
 
-### Attach the Cognitive Services 
+### Attach the AI Services 
 
 This is the resource you created earlier as part of your initial lab set up and is used to power your pre-built AI models.
 
@@ -84,7 +84,7 @@ We're going to go ahead and create the Knowledge Store now through the Azure Por
 
 
 ## Index Definition
-In this step, you are designing your Azure Cognitive Search index.  This is an important and powerful part of the index build process as you select the types of Analyzer(s) you want to use and make determinations on features such as which fields and data will be retrievable, filterable, sortable, and searchable. 
+In this step, you are designing your Azure AI Search index.  This is an important and powerful part of the index build process as you select the types of Analyzer(s) you want to use and make determinations on features such as which fields and data will be retrievable, filterable, sortable, and searchable. 
 
 1. Give your index a name like *clinical-trials-small*
 
