@@ -27,9 +27,9 @@ Please make sure you fulfill the following pre-requisites before starting the wo
 1.	**Create** an [Azure Search](https://docs.microsoft.com/en-us/azure/search/search-create-service-portal) resource. (A Free Tier should be sufficient for this workshop).
 [Learn more](https://docs.microsoft.com/en-us/azure/search/search-sku-tier)
 
-1.	**Create** a [Cognitive Services resource](https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account?tabs=multiservice%2Cwindows).
+1.	**Create** a [AI Services resource](https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account?tabs=multiservice%2Cwindows).
 
-  *Note - You need to create the Cognitive Services resource in the same region as you Azure Search resource.*
+  *Note - You need to create the AI Services resource in the same region as you Azure Search resource.*
 
 1.	**Install** [Visual Studio 2019](https://visualstudio.microsoft.com/downloads/). Make sure you can create ASP.Net websites with it. We'll be using .NET Core 3.1
 1. **Install** [Postman](https://www.getpostman.com/)
