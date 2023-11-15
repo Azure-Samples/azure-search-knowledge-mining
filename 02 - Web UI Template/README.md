@@ -1,4 +1,4 @@
-# Cognitive Search UI Template
+# AI Search UI Template
 This folder contains a basic web front end that can be used to quickly create a view of your search results.  With just a few simple steps, you can configure this template UI to query your newly created search index. **CognitiveSearch.UI** is a .NET Core MVC Web app used as a Template UI for querying a search index. This is the focus of this README.
 
 In just a few steps, you can configure this template UI to query your search index. This template will render a web page similar to the following:
@@ -43,10 +43,10 @@ KeyField=metadata_storage_path
 IsPathBase64Encoded=true
 ```
 
-- **SearchServiceName** - The name of your Azure Cognitive Search service
-- **SearchApiKey** - The API Key for your Azure Cognitive Search service
-- **SearchIndexName** - The name of your Azure Cognitive Search index
-- **SearchIndexerName** - The name of your Azure Cognitive Search indexer
+- **SearchServiceName** - The name of your Azure AI Search service
+- **SearchApiKey** - The API Key for your Azure AI Search service
+- **SearchIndexName** - The name of your Azure AI Search index
+- **SearchIndexerName** - The name of your Azure AI Search indexer
 - **StorageAccountName** - The name of your Azure Blob Storage Account
 - **StorageAccountKey** - The key for your Azure Blob Storage Account
 - **StorageContainerAddress** - The URL to the storage container where your - documents are stored. This should be in the following format: *https://- *storageaccountname*.blob.core.windows.net/*containername**
@@ -110,10 +110,10 @@ This file contains a mix of required and optional fields described below.
   "IsPathBase64Encoded": true,
 ```
 
-1. **SearchServiceName** - The name of your Azure Cognitive Search service
-2. **SearchApiKey** - The API Key for your Azure Cognitive Search service
-3. **SearchIndexName** - The name of your Azure Cognitive Search index
-4. **SearchIndexerName** - The name of your Azure Cognitive Search indexer
+1. **SearchServiceName** - The name of your Azure AI Search service
+2. **SearchApiKey** - The API Key for your Azure AI Search service
+3. **SearchIndexName** - The name of your Azure AI Search index
+4. **SearchIndexerName** - The name of your Azure AI Search indexer
 5. **StorageAccountName** - The name of your Azure Blob Storage Account
 6. **StorageAccountKey** - The key for your Azure Blob Storage Account
 7. **StorageContainerAddress** - The URL to the storage container where your documents are stored. This should be in the following format: *https://*storageaccountname*.blob.core.windows.net/*containername**
@@ -174,7 +174,7 @@ If you would like to further customize the UI, you can update the following fiel
 
 ## 3. Add additional customization
 
-This template serves as a great baseline for a Cognitive Search solution, however, you may want to make additional updates depending on your use case.
+This template serves as a great baseline for a AI Search solution, however, you may want to make additional updates depending on your use case.
 
 We have a special behavior if you have a field called *translated_text*. The UI will automatically show the original text and the translated text in the UI. This can be handy. If you would like to change this behavior (disable it, or change the name of the field), you can do that at details.js (GetTranscriptHTML method).
 
@@ -188,4 +188,4 @@ Much of the UI is rendered dynamically by javascript. Some important files to kn
 
 2. **wwroot/js/details.js** - contains the code for rending the detail view once a result is selected
 
-3. **Search/DocumentSearchClient.cs** - contains the code for talking with Azure Cognitive Search's APIs. Setting breakpoints in this file is a great way to debug.
+3. **Search/DocumentSearchClient.cs** - contains the code for talking with Azure AI Search's APIs. Setting breakpoints in this file is a great way to debug.
