@@ -123,6 +123,7 @@
             "apiVersion": "2021-08-01",
             "location": "[parameters('location')]",
             "kind": "StorageV2",
+            "properties": { "allowBlobPublicAccess": true },
             "sku": {
                 "name": "[parameters('storageAccountType')]",
                 "tier": "Standard"
